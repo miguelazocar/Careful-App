@@ -1,0 +1,1117 @@
+{
+  "id": "toyota",
+  "name": "Toyota",
+  "engines": [
+    {
+      "id": "7a-fe",
+      "name": "1.8 16v (7A-FE)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "3zz-fe",
+      "name": "1.6 VVT-i 16v (3ZZ-FE)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "1zz-fe",
+      "name": "1.8 VVT-i 16v (1ZZ-FE)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "2zr-fe",
+      "name": "1.8 Dual VVT-i 16v (2ZR-FE/FBE)",
+      "fuel": "nafta",
+      "oil": {
+        "viscosity": "0W-20",
+        "spec": "API SN / ILSAC GF-5",
+        "liters": 4.2
+      },
+      "coolant": {
+        "type": "Toyota Super Long Life Coolant (SLLC)",
+        "color": "rosa"
+      }
+    },
+    {
+      "id": "m20a",
+      "name": "2.0 Dynamic Force 16v (M20A)",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Toyota Super Long Life Coolant (SLLC)",
+        "color": "rosa"
+      }
+    },
+    {
+      "id": "2nr-fe",
+      "name": "1.5 Dual VVT-i 16v (2NR-FE/FBE)",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Toyota Super Long Life Coolant (SLLC)",
+        "color": "rosa"
+      }
+    },
+    {
+      "id": "1az-fe",
+      "name": "2.0 VVT-i 16v (1AZ-FE)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "2az-fe",
+      "name": "2.4 VVT-i 16v (2AZ-FE)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "3zr-fae",
+      "name": "2.0 Valvematic 16v (3ZR-FAE)",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Toyota Super Long Life Coolant (SLLC)",
+        "color": "rosa"
+      }
+    },
+    {
+      "id": "2ar-fe",
+      "name": "2.5 Dual VVT-i 16v (2AR-FE)",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Toyota Super Long Life Coolant (SLLC)",
+        "color": "rosa"
+      }
+    },
+    {
+      "id": "1mz-fe",
+      "name": "3.0 V6 24v (1MZ-FE)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "2gr-fe",
+      "name": "3.5 V6 Dual VVT-i 24v (2GR-FE)",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Toyota Super Long Life Coolant (SLLC)",
+        "color": "rosa"
+      }
+    },
+    {
+      "id": "2tr-fe",
+      "name": "2.7 VVT-i 16v (2TR-FE)",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Toyota Super Long Life Coolant (SLLC)",
+        "color": "rosa"
+      }
+    },
+    {
+      "id": "fa20",
+      "name": "2.0 Bóxer 16v (FA20)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "2zr-fxe",
+      "name": "1.8 Hybrid 16v (2ZR-FXE)",
+      "fuel": "hibrido",
+      "coolant": {
+        "type": "Toyota Super Long Life Coolant (SLLC)",
+        "color": "rosa"
+      }
+    },
+    {
+      "id": "a25a-fxs",
+      "name": "2.5 Hybrid 16v (A25A-FXS)",
+      "fuel": "hibrido",
+      "coolant": {
+        "type": "Toyota Super Long Life Coolant (SLLC)",
+        "color": "rosa"
+      }
+    },
+    {
+      "id": "2c",
+      "name": "2.0 D 8v (2C)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "3l",
+      "name": "2.8 D 8v (3L)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "1kz-te",
+      "name": "3.0 TD 8v (1KZ-TE)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "2kd-ftv",
+      "name": "2.5 D-4D 16v (2KD-FTV)",
+      "fuel": "diesel",
+      "coolant": {
+        "type": "Toyota Super Long Life Coolant (SLLC)",
+        "color": "rosa"
+      }
+    },
+    {
+      "id": "1kd-ftv",
+      "name": "3.0 D-4D 16v (1KD-FTV)",
+      "fuel": "diesel",
+      "coolant": {
+        "type": "Toyota Super Long Life Coolant (SLLC)",
+        "color": "rosa"
+      }
+    },
+    {
+      "id": "2gd-ftv",
+      "name": "2.4 D-4D 16v (2GD-FTV)",
+      "fuel": "diesel",
+      "coolant": {
+        "type": "Toyota Super Long Life Coolant (SLLC)",
+        "color": "rosa"
+      }
+    },
+    {
+      "id": "1gd-ftv",
+      "name": "2.8 D-4D 16v (1GD-FTV)",
+      "fuel": "diesel",
+      "oil": {
+        "viscosity": "5W-30",
+        "spec": "ACEA C2",
+        "liters": 7.5
+      },
+      "coolant": {
+        "type": "Toyota Super Long Life Coolant (SLLC)",
+        "color": "rosa"
+      }
+    },
+    {
+      "id": "1gd-ftv-prado",
+      "name": "2.8 D-4D 16v (1GD-FTV)",
+      "fuel": "diesel",
+      "coolant": {
+        "type": "Toyota Super Long Life Coolant (SLLC)",
+        "color": "rosa"
+      }
+    },
+    {
+      "id": "1gd-ftv-hiace",
+      "name": "2.8 D-4D 16v (1GD-FTV)",
+      "fuel": "diesel",
+      "coolant": {
+        "type": "Toyota Super Long Life Coolant (SLLC)",
+        "color": "rosa"
+      }
+    },
+    {
+      "id": "1hd-fte",
+      "name": "4.2 TD 24v (1HD-FTE)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "1vd-ftv",
+      "name": "4.5 V8 D-4D 32v (1VD-FTV)",
+      "fuel": "diesel",
+      "coolant": {
+        "type": "Toyota Super Long Life Coolant (SLLC)",
+        "color": "rosa"
+      }
+    },
+    {
+      "id": "f33a-ftv",
+      "name": "3.3 V6 D-4D biturbo (F33A-FTV)",
+      "fuel": "diesel",
+      "coolant": {
+        "type": "Toyota Super Long Life Coolant (SLLC)",
+        "color": "rosa"
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "corolla",
+      "name": "Corolla",
+      "body": "sedan",
+      "years": [
+        2000,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.8 XEi",
+          "years": [
+            2000,
+            2002
+          ],
+          "engineId": "7a-fe",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 SEG AT",
+          "years": [
+            2000,
+            2002
+          ],
+          "engineId": "7a-fe",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 D XLi",
+          "years": [
+            2000,
+            2002
+          ],
+          "engineId": "2c",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 XLi",
+          "years": [
+            2003,
+            2008
+          ],
+          "engineId": "3zz-fe",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 XEi",
+          "years": [
+            2003,
+            2008
+          ],
+          "engineId": "1zz-fe",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 SEG AT",
+          "years": [
+            2003,
+            2008
+          ],
+          "engineId": "1zz-fe",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.8 XLi",
+          "years": [
+            2009,
+            2019
+          ],
+          "engineId": "2zr-fe",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 XEi",
+          "years": [
+            2009,
+            2019
+          ],
+          "engineId": "2zr-fe",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 XEi AT",
+          "years": [
+            2009,
+            2014
+          ],
+          "engineId": "2zr-fe",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.8 SEG AT",
+          "years": [
+            2009,
+            2014
+          ],
+          "engineId": "2zr-fe",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.8 XEi CVT",
+          "years": [
+            2015,
+            2019
+          ],
+          "engineId": "2zr-fe",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.8 SEG CVT",
+          "years": [
+            2015,
+            2019
+          ],
+          "engineId": "2zr-fe",
+          "transmission": "cvt"
+        },
+        {
+          "name": "2.0 XLi CVT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "m20a",
+          "transmission": "cvt"
+        },
+        {
+          "name": "2.0 XEi CVT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "m20a",
+          "transmission": "cvt"
+        },
+        {
+          "name": "2.0 SEG CVT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "m20a",
+          "transmission": "cvt"
+        },
+        {
+          "name": "2.0 GR-Sport CVT",
+          "years": [
+            2022,
+            null
+          ],
+          "engineId": "m20a",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.8 Hybrid XEi",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "2zr-fxe",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.8 Hybrid SEG",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "2zr-fxe",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "corolla-cross",
+      "name": "Corolla Cross",
+      "body": "suv",
+      "years": [
+        2021,
+        null
+      ],
+      "variants": [
+        {
+          "name": "2.0 XLi CVT",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "m20a",
+          "transmission": "cvt"
+        },
+        {
+          "name": "2.0 XEi CVT",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "m20a",
+          "transmission": "cvt"
+        },
+        {
+          "name": "2.0 GR-Sport CVT",
+          "years": [
+            2023,
+            null
+          ],
+          "engineId": "m20a",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.8 Hybrid XEi",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "2zr-fxe",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.8 Hybrid SEG",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "2zr-fxe",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "etios",
+      "name": "Etios",
+      "body": "hatchback",
+      "years": [
+        2013,
+        2022
+      ],
+      "variants": [
+        {
+          "name": "1.5 X",
+          "years": [
+            2013,
+            2022
+          ],
+          "engineId": "2nr-fe",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 XS",
+          "years": [
+            2013,
+            2022
+          ],
+          "engineId": "2nr-fe",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 XLS",
+          "years": [
+            2013,
+            2022
+          ],
+          "engineId": "2nr-fe",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 XLS AT",
+          "years": [
+            2017,
+            2022
+          ],
+          "engineId": "2nr-fe",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.5 Cross",
+          "years": [
+            2014,
+            2020
+          ],
+          "engineId": "2nr-fe",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 X Sedán",
+          "years": [
+            2013,
+            2022
+          ],
+          "engineId": "2nr-fe",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 XLS Sedán",
+          "years": [
+            2013,
+            2022
+          ],
+          "engineId": "2nr-fe",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 XLS Sedán AT",
+          "years": [
+            2017,
+            2022
+          ],
+          "engineId": "2nr-fe",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "yaris",
+      "name": "Yaris",
+      "body": "hatchback",
+      "years": [
+        2018,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.5 XS",
+          "engineId": "2nr-fe",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 XS CVT",
+          "engineId": "2nr-fe",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.5 XLS CVT",
+          "engineId": "2nr-fe",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.5 S CVT",
+          "engineId": "2nr-fe",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.5 XS Sedán CVT",
+          "engineId": "2nr-fe",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.5 XLS Sedán CVT",
+          "engineId": "2nr-fe",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "hilux",
+      "name": "Hilux",
+      "body": "pickup",
+      "years": [
+        2000,
+        null
+      ],
+      "variants": [
+        {
+          "name": "2.8 D DX 4x2 CS",
+          "years": [
+            2000,
+            2005
+          ],
+          "engineId": "3l",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.8 D DX 4x4 CD",
+          "years": [
+            2000,
+            2005
+          ],
+          "engineId": "3l",
+          "transmission": "manual"
+        },
+        {
+          "name": "3.0 TD SRV 4x4 CD",
+          "years": [
+            2000,
+            2005
+          ],
+          "engineId": "1kz-te",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.5 D-4D DX 4x2 CS",
+          "years": [
+            2005,
+            2015
+          ],
+          "engineId": "2kd-ftv",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.5 D-4D DX 4x2 CD",
+          "years": [
+            2005,
+            2015
+          ],
+          "engineId": "2kd-ftv",
+          "transmission": "manual"
+        },
+        {
+          "name": "3.0 D-4D SR 4x4 CD",
+          "years": [
+            2005,
+            2015
+          ],
+          "engineId": "1kd-ftv",
+          "transmission": "manual"
+        },
+        {
+          "name": "3.0 D-4D SRV 4x4 CD",
+          "years": [
+            2005,
+            2015
+          ],
+          "engineId": "1kd-ftv",
+          "transmission": "manual"
+        },
+        {
+          "name": "3.0 D-4D SRV 4x4 CD AT",
+          "years": [
+            2009,
+            2015
+          ],
+          "engineId": "1kd-ftv",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.7 VVT-i SRV 4x2 CD",
+          "years": [
+            2005,
+            2015
+          ],
+          "engineId": "2tr-fe",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.4 D-4D DX 4x2 CS",
+          "years": [
+            2016,
+            null
+          ],
+          "engineId": "2gd-ftv",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.4 D-4D DX 4x4 CD",
+          "years": [
+            2016,
+            null
+          ],
+          "engineId": "2gd-ftv",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.8 D-4D SR 4x4 CD",
+          "years": [
+            2016,
+            null
+          ],
+          "engineId": "1gd-ftv",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.8 D-4D SRV 4x4 CD",
+          "years": [
+            2016,
+            null
+          ],
+          "engineId": "1gd-ftv",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.8 D-4D SRV 4x4 CD AT",
+          "years": [
+            2016,
+            null
+          ],
+          "engineId": "1gd-ftv",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.8 D-4D SRX 4x4 CD AT",
+          "years": [
+            2016,
+            null
+          ],
+          "engineId": "1gd-ftv",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.8 D-4D GR-Sport 4x4 CD AT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "1gd-ftv",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "sw4",
+      "name": "SW4",
+      "body": "suv",
+      "years": [
+        2005,
+        null
+      ],
+      "variants": [
+        {
+          "name": "3.0 D-4D SRV 4x4",
+          "years": [
+            2005,
+            2015
+          ],
+          "engineId": "1kd-ftv",
+          "transmission": "manual"
+        },
+        {
+          "name": "3.0 D-4D SRV 4x4 AT",
+          "years": [
+            2005,
+            2015
+          ],
+          "engineId": "1kd-ftv",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.8 D-4D SR 4x4",
+          "years": [
+            2016,
+            null
+          ],
+          "engineId": "1gd-ftv",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.8 D-4D SRV 4x4",
+          "years": [
+            2016,
+            null
+          ],
+          "engineId": "1gd-ftv",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.8 D-4D SRX 4x4 AT",
+          "years": [
+            2016,
+            null
+          ],
+          "engineId": "1gd-ftv",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.8 D-4D Diamond 4x4 AT",
+          "years": [
+            2019,
+            2022
+          ],
+          "engineId": "1gd-ftv",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.8 D-4D GR-Sport 4x4 AT",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "1gd-ftv",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "rav4",
+      "name": "RAV4",
+      "body": "suv",
+      "years": [
+        2001,
+        null
+      ],
+      "variants": [
+        {
+          "name": "2.0 4x2",
+          "years": [
+            2001,
+            2005
+          ],
+          "engineId": "1az-fe",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 4x4 AT",
+          "years": [
+            2001,
+            2005
+          ],
+          "engineId": "1az-fe",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.4 4x2",
+          "years": [
+            2006,
+            2012
+          ],
+          "engineId": "2az-fe",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.4 4x4 AT",
+          "years": [
+            2006,
+            2012
+          ],
+          "engineId": "2az-fe",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 4x2 CVT",
+          "years": [
+            2013,
+            2018
+          ],
+          "engineId": "3zr-fae",
+          "transmission": "cvt"
+        },
+        {
+          "name": "2.5 4x4 AT",
+          "years": [
+            2013,
+            2018
+          ],
+          "engineId": "2ar-fe",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.5 Hybrid 4x2",
+          "years": [
+            2019,
+            null
+          ],
+          "engineId": "a25a-fxs",
+          "transmission": "cvt"
+        },
+        {
+          "name": "2.5 Hybrid Limited AWD",
+          "years": [
+            2019,
+            null
+          ],
+          "engineId": "a25a-fxs",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "camry",
+      "name": "Camry",
+      "body": "sedan",
+      "years": [
+        2002,
+        null
+      ],
+      "variants": [
+        {
+          "name": "2.4 AT",
+          "years": [
+            2002,
+            2011
+          ],
+          "engineId": "2az-fe",
+          "transmission": "automatica"
+        },
+        {
+          "name": "3.0 V6 AT",
+          "years": [
+            2002,
+            2006
+          ],
+          "engineId": "1mz-fe",
+          "transmission": "automatica"
+        },
+        {
+          "name": "3.5 V6 AT",
+          "years": [
+            2007,
+            2017
+          ],
+          "engineId": "2gr-fe",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.5 AT",
+          "years": [
+            2012,
+            2017
+          ],
+          "engineId": "2ar-fe",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.5 Hybrid",
+          "years": [
+            2019,
+            null
+          ],
+          "engineId": "a25a-fxs",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "prius",
+      "name": "Prius",
+      "body": "hatchback",
+      "years": [
+        2009,
+        2022
+      ],
+      "variants": [
+        {
+          "name": "1.8 Hybrid",
+          "engineId": "2zr-fxe",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "land-cruiser-prado",
+      "name": "Land Cruiser Prado",
+      "body": "suv",
+      "years": [
+        2003,
+        null
+      ],
+      "variants": [
+        {
+          "name": "3.0 D-4D TX",
+          "years": [
+            2003,
+            2015
+          ],
+          "engineId": "1kd-ftv",
+          "transmission": "manual"
+        },
+        {
+          "name": "3.0 D-4D VX AT",
+          "years": [
+            2003,
+            2015
+          ],
+          "engineId": "1kd-ftv",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.8 D-4D TX-L AT",
+          "years": [
+            2016,
+            null
+          ],
+          "engineId": "1gd-ftv-prado",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.8 D-4D VX AT",
+          "years": [
+            2016,
+            null
+          ],
+          "engineId": "1gd-ftv-prado",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "land-cruiser",
+      "name": "Land Cruiser",
+      "body": "suv",
+      "years": [
+        2000,
+        null
+      ],
+      "variants": [
+        {
+          "name": "4.2 TD VX AT",
+          "years": [
+            2000,
+            2007
+          ],
+          "engineId": "1hd-fte",
+          "transmission": "automatica"
+        },
+        {
+          "name": "4.5 V8 D-4D VX AT",
+          "years": [
+            2008,
+            2021
+          ],
+          "engineId": "1vd-ftv",
+          "transmission": "automatica"
+        },
+        {
+          "name": "3.3 V6 D-4D VX AT",
+          "years": [
+            2022,
+            null
+          ],
+          "engineId": "f33a-ftv",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "hiace",
+      "name": "Hiace",
+      "body": "van",
+      "years": [
+        2019,
+        null
+      ],
+      "variants": [
+        {
+          "name": "2.8 Furgón L1H1",
+          "engineId": "1gd-ftv-hiace"
+        },
+        {
+          "name": "2.8 Furgón L2H2",
+          "engineId": "1gd-ftv-hiace"
+        },
+        {
+          "name": "2.8 Commuter",
+          "engineId": "1gd-ftv-hiace"
+        },
+        {
+          "name": "2.8 Wagon",
+          "engineId": "1gd-ftv-hiace"
+        }
+      ]
+    },
+    {
+      "id": "innova",
+      "name": "Innova",
+      "body": "minivan",
+      "years": [
+        2016,
+        2021
+      ],
+      "variants": [
+        {
+          "name": "2.7 SR",
+          "engineId": "2tr-fe",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.7 SRV AT",
+          "engineId": "2tr-fe",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "86",
+      "name": "86",
+      "body": "coupe",
+      "years": [
+        2013,
+        2021
+      ],
+      "variants": [
+        {
+          "name": "2.0",
+          "engineId": "fa20",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 AT",
+          "engineId": "fa20",
+          "transmission": "automatica"
+        }
+      ]
+    }
+  ]
+}

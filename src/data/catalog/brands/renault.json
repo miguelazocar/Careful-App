@@ -1,0 +1,1019 @@
+{
+  "id": "renault",
+  "name": "Renault",
+  "engines": [
+    {
+      "id": "d7f-1.2-8v",
+      "name": "1.2 8v 58–60 CV (D7F)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "d4f-1.2-16v",
+      "name": "1.2 16v 75 CV (D4F)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "k7m-1.6-8v",
+      "name": "1.6 8v 85–90 CV (K7M)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "k4m-1.6-16v",
+      "name": "1.6 16v 105–115 CV (K4M)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "renault-1.6-16v",
+      "name": "1.6 16v 110–115 CV (K4M/H4M)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "h4m-1.6-sce",
+      "name": "1.6 SCe 16v 110–120 CV (H4M)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "b4d-1.0-sce",
+      "name": "1.0 SCe 12v 66–68 CV (B4D)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "tce-1.0",
+      "name": "1.0 TCe 12v 120 CV",
+      "fuel": "nafta"
+    },
+    {
+      "id": "h5ht-1.3-tce",
+      "name": "1.3 TCe 150–163 CV (H5Ht)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "f3r-2.0-8v",
+      "name": "2.0 8v 113 CV (F3R)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "f4r-2.0-16v",
+      "name": "2.0 16v 135–145 CV (F4R)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "f4rt-2.0-turbo",
+      "name": "2.0 Turbo 180–250 CV (F4Rt)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m4r-2.0-16v",
+      "name": "2.0 16v 140–143 CV (M4R)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "l7x-3.0-v6",
+      "name": "3.0 V6 24v (L7X)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "qr25-2.5",
+      "name": "2.5 16v 170 CV (QR25)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "etech-1.6-hybrid",
+      "name": "1.6 E-Tech Hybrid 145 CV",
+      "fuel": "hibrido"
+    },
+    {
+      "id": "etech-electric-65",
+      "name": "E-Tech eléctrico 65 CV",
+      "fuel": "electrico"
+    },
+    {
+      "id": "f8q-1.9d",
+      "name": "1.9 D 64 CV (F8Q)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "f9q-1.9-dci",
+      "name": "1.9 dTi/dCi 80–120 CV (F9Q)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "k9k-1.5-dci",
+      "name": "1.5 dCi 65–110 CV (K9K)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "g9u-2.5-dci",
+      "name": "2.5 dCi 120 CV (G9U)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "s9w-2.8-dti",
+      "name": "2.8 dTi 114 CV (S9W)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "m9t-2.3-dci",
+      "name": "2.3 dCi 130–190 CV (M9T)",
+      "fuel": "diesel"
+    }
+  ],
+  "models": [
+    {
+      "id": "clio",
+      "name": "Clio",
+      "body": "hatchback",
+      "years": [2000, 2012],
+      "variants": [
+        {
+          "name": "1.2 RN",
+          "years": [2000, 2006],
+          "engineId": "d7f-1.2-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 8v RT",
+          "years": [2000, 2006],
+          "engineId": "k7m-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Privilège",
+          "years": [2001, 2010],
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 D RND",
+          "years": [2000, 2004],
+          "engineId": "f8q-1.9d",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 dCi Authentique",
+          "years": [2005, 2010],
+          "engineId": "k9k-1.5-dci",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.2 16v Pack",
+          "years": [2007, 2012],
+          "engineId": "d4f-1.2-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "Sedán 1.6 16v Luxe",
+          "years": [2005, 2009],
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "clio-mio",
+      "name": "Clio Mio",
+      "body": "hatchback",
+      "years": [2013, 2016],
+      "variants": [
+        {
+          "name": "1.2 16v Confort",
+          "engineId": "d4f-1.2-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.2 16v Expression",
+          "engineId": "d4f-1.2-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.2 16v Dynamique",
+          "engineId": "d4f-1.2-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.2 16v GT Line",
+          "years": [2014, 2016],
+          "engineId": "d4f-1.2-16v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "symbol",
+      "name": "Symbol",
+      "body": "sedan",
+      "years": [2009, 2013],
+      "variants": [
+        {
+          "name": "1.6 8v Pack",
+          "engineId": "k7m-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Luxe",
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 dCi Pack",
+          "engineId": "k9k-1.5-dci",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "megane",
+      "name": "Megane",
+      "body": "sedan",
+      "years": [2000, 2010],
+      "variants": [
+        {
+          "name": "1.6 8v RN",
+          "years": [2000, 2004],
+          "engineId": "k7m-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v RXE",
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 8v RT",
+          "years": [2000, 2003],
+          "engineId": "f3r-2.0-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v RXE",
+          "years": [2000, 2008],
+          "engineId": "f4r-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 D RND",
+          "years": [2000, 2004],
+          "engineId": "f8q-1.9d",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 dTi RXE",
+          "years": [2000, 2006],
+          "engineId": "f9q-1.9-dci",
+          "transmission": "manual"
+        },
+        {
+          "name": "Tric 1.6 16v",
+          "years": [2000, 2006],
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "megane-ii",
+      "name": "Megane II",
+      "body": "sedan",
+      "years": [2006, 2011],
+      "variants": [
+        {
+          "name": "1.6 16v Luxe",
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Luxe",
+          "engineId": "f4r-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Privilège AT",
+          "engineId": "f4r-2.0-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.5 dCi Luxe",
+          "engineId": "k9k-1.5-dci",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "megane-iii",
+      "name": "Megane III",
+      "body": "hatchback",
+      "years": [2011, 2016],
+      "variants": [
+        {
+          "name": "1.6 16v Dynamique",
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Luxe",
+          "engineId": "m4r-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Privilège CVT",
+          "engineId": "m4r-2.0-16v",
+          "transmission": "cvt"
+        },
+        {
+          "name": "R.S. 2.0 Turbo",
+          "years": [2012, 2016],
+          "engineId": "f4rt-2.0-turbo",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fluence",
+      "name": "Fluence",
+      "body": "sedan",
+      "years": [2011, 2018],
+      "variants": [
+        {
+          "name": "1.6 16v Confort",
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Luxe",
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Luxe",
+          "engineId": "m4r-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Privilège CVT",
+          "engineId": "m4r-2.0-16v",
+          "transmission": "cvt"
+        },
+        {
+          "name": "GT 2.0 Turbo",
+          "years": [2013, 2016],
+          "engineId": "f4rt-2.0-turbo",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "scenic",
+      "name": "Scénic",
+      "body": "minivan",
+      "years": [2000, 2010],
+      "variants": [
+        {
+          "name": "1.6 16v RXE",
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v RXE",
+          "engineId": "f4r-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 dCi",
+          "engineId": "f9q-1.9-dci",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "laguna",
+      "name": "Laguna",
+      "body": "hatchback",
+      "years": [2000, 2005],
+      "variants": [
+        {
+          "name": "2.0 16v",
+          "engineId": "f4r-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "3.0 V6 AT",
+          "engineId": "l7x-3.0-v6",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "twingo",
+      "name": "Twingo",
+      "body": "hatchback",
+      "years": [2000, 2004],
+      "variants": [
+        {
+          "name": "1.2",
+          "engineId": "d7f-1.2-8v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "kangoo",
+      "name": "Kangoo",
+      "body": "van",
+      "years": [2000, null],
+      "variants": [
+        {
+          "name": "1.6 8v Furgón",
+          "years": [2000, 2018],
+          "engineId": "k7m-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 D Furgón",
+          "years": [2000, 2008],
+          "engineId": "f8q-1.9d",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 dCi Furgón",
+          "years": [2009, 2018],
+          "engineId": "k9k-1.5-dci",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 8v Authentique",
+          "years": [2000, 2018],
+          "engineId": "k7m-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 dCi Authentique Plus",
+          "years": [2009, 2018],
+          "engineId": "k9k-1.5-dci",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Sportway",
+          "years": [2010, 2018],
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "Kangoo II Express 1.6 16v",
+          "years": [2018, null],
+          "engineId": "renault-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "Kangoo II Express 1.5 dCi",
+          "years": [2018, null],
+          "engineId": "k9k-1.5-dci",
+          "transmission": "manual"
+        },
+        {
+          "name": "Kangoo II Zen 1.6 16v",
+          "years": [2018, null],
+          "engineId": "renault-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "Kangoo II Stepway 1.5 dCi",
+          "years": [2019, null],
+          "engineId": "k9k-1.5-dci",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "sandero",
+      "name": "Sandero",
+      "body": "hatchback",
+      "years": [2008, 2026],
+      "variants": [
+        {
+          "name": "1.6 8v Pack",
+          "years": [2008, 2014],
+          "engineId": "k7m-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Privilège",
+          "years": [2008, 2014],
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 8v Expression",
+          "years": [2015, 2019],
+          "engineId": "k7m-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Dynamique",
+          "years": [2015, 2019],
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Privilège AT",
+          "years": [2016, 2019],
+          "engineId": "k4m-1.6-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "R.S. 2.0 16v",
+          "years": [2016, 2022],
+          "engineId": "f4r-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 SCe Life",
+          "years": [2020, 2026],
+          "engineId": "h4m-1.6-sce",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 SCe Zen",
+          "years": [2020, 2026],
+          "engineId": "h4m-1.6-sce",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 SCe Intens CVT",
+          "years": [2020, 2026],
+          "engineId": "h4m-1.6-sce",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "sandero-stepway",
+      "name": "Sandero Stepway",
+      "body": "hatchback",
+      "years": [2009, 2026],
+      "variants": [
+        {
+          "name": "1.6 8v",
+          "years": [2009, 2014],
+          "engineId": "k7m-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v",
+          "years": [2009, 2014],
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Expression",
+          "years": [2015, 2019],
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Privilège",
+          "years": [2015, 2019],
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Privilège AT",
+          "years": [2016, 2019],
+          "engineId": "k4m-1.6-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 SCe Zen",
+          "years": [2020, 2026],
+          "engineId": "h4m-1.6-sce",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 SCe Intens CVT",
+          "years": [2020, 2026],
+          "engineId": "h4m-1.6-sce",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "logan",
+      "name": "Logan",
+      "body": "sedan",
+      "years": [2007, 2026],
+      "variants": [
+        {
+          "name": "1.6 8v Pack",
+          "years": [2007, 2014],
+          "engineId": "k7m-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 8v Expression",
+          "years": [2007, 2014],
+          "engineId": "k7m-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 dCi Pack",
+          "years": [2007, 2013],
+          "engineId": "k9k-1.5-dci",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 8v Authentique",
+          "years": [2015, 2019],
+          "engineId": "k7m-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Privilège",
+          "years": [2015, 2019],
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 SCe Life",
+          "years": [2020, 2026],
+          "engineId": "h4m-1.6-sce",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 SCe Zen",
+          "years": [2020, 2026],
+          "engineId": "h4m-1.6-sce",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 SCe Intens CVT",
+          "years": [2020, 2026],
+          "engineId": "h4m-1.6-sce",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "duster",
+      "name": "Duster",
+      "body": "suv",
+      "years": [2011, null],
+      "variants": [
+        {
+          "name": "1.6 16v Confort 4x2",
+          "years": [2011, 2020],
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Dynamique 4x2",
+          "years": [2011, 2020],
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Luxe 4x4",
+          "years": [2011, 2020],
+          "engineId": "f4r-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Privilège 4x2 AT",
+          "years": [2013, 2020],
+          "engineId": "f4r-2.0-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.5 dCi 4x2",
+          "years": [2011, 2015],
+          "engineId": "k9k-1.5-dci",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 SCe Zen",
+          "years": [2021, null],
+          "engineId": "h4m-1.6-sce",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 SCe Intens CVT",
+          "years": [2021, null],
+          "engineId": "h4m-1.6-sce",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.3 TCe Iconic 4x4",
+          "years": [2022, null],
+          "engineId": "h5ht-1.3-tce",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.3 TCe Iconic CVT",
+          "years": [2022, null],
+          "engineId": "h5ht-1.3-tce",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "duster-oroch",
+      "name": "Duster Oroch",
+      "body": "pickup",
+      "years": [2016, 2022],
+      "variants": [
+        {
+          "name": "1.6 16v Expression",
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Dynamique",
+          "engineId": "k4m-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Privilège",
+          "engineId": "f4r-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Privilège AT",
+          "engineId": "f4r-2.0-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 16v Outsider 4x4",
+          "years": [2017, 2022],
+          "engineId": "f4r-2.0-16v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "oroch",
+      "name": "Oroch",
+      "body": "pickup",
+      "years": [2023, null],
+      "variants": [
+        {
+          "name": "1.6 SCe Emotion",
+          "engineId": "h4m-1.6-sce",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.3 TCe Iconic CVT",
+          "engineId": "h5ht-1.3-tce",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.3 TCe Outsider 4x4",
+          "engineId": "h5ht-1.3-tce",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "captur",
+      "name": "Captur",
+      "body": "suv",
+      "years": [2017, 2024],
+      "variants": [
+        {
+          "name": "2.0 16v Zen",
+          "years": [2017, 2020],
+          "engineId": "f4r-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Intens AT",
+          "years": [2017, 2020],
+          "engineId": "f4r-2.0-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 SCe Life",
+          "years": [2018, 2021],
+          "engineId": "h4m-1.6-sce",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 SCe Intens CVT",
+          "years": [2019, 2021],
+          "engineId": "h4m-1.6-sce",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.3 TCe Iconic CVT",
+          "years": [2022, 2024],
+          "engineId": "h5ht-1.3-tce",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "koleos",
+      "name": "Koleos",
+      "body": "suv",
+      "years": [2009, 2023],
+      "variants": [
+        {
+          "name": "2.5 Dynamique 4x2",
+          "years": [2009, 2016],
+          "engineId": "qr25-2.5",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.5 Privilège 4x4 CVT",
+          "years": [2009, 2016],
+          "engineId": "qr25-2.5",
+          "transmission": "cvt"
+        },
+        {
+          "name": "2.5 Intens 4x4 CVT",
+          "years": [2017, 2023],
+          "engineId": "qr25-2.5",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "kwid",
+      "name": "Kwid",
+      "body": "hatchback",
+      "years": [2018, null],
+      "variants": [
+        {
+          "name": "1.0 SCe Life",
+          "engineId": "b4d-1.0-sce",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 SCe Zen",
+          "engineId": "b4d-1.0-sce",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 SCe Intens",
+          "engineId": "b4d-1.0-sce",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 SCe Outsider",
+          "years": [2020, null],
+          "engineId": "b4d-1.0-sce",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 SCe Iconic",
+          "years": [2023, null],
+          "engineId": "b4d-1.0-sce",
+          "transmission": "manual"
+        },
+        {
+          "name": "E-Tech",
+          "years": [2023, null],
+          "engineId": "etech-electric-65"
+        }
+      ]
+    },
+    {
+      "id": "alaskan",
+      "name": "Alaskan",
+      "body": "pickup",
+      "years": [2020, null],
+      "variants": [
+        {
+          "name": "2.3 dCi 160 Confort 4x2",
+          "engineId": "m9t-2.3-dci",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.3 dCi 160 Emotion 4x4",
+          "engineId": "m9t-2.3-dci",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.3 dCi 190 Intens 4x4",
+          "engineId": "m9t-2.3-dci",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.3 dCi 190 Iconic 4x4 AT",
+          "years": [2023, null],
+          "engineId": "m9t-2.3-dci",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "master",
+      "name": "Master",
+      "body": "van",
+      "years": [2000, null],
+      "variants": [
+        {
+          "name": "2.8 dTi Furgón",
+          "years": [2000, 2004],
+          "engineId": "s9w-2.8-dti",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.5 dCi Furgón",
+          "years": [2005, 2013],
+          "engineId": "g9u-2.5-dci",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.3 dCi Furgón",
+          "years": [2014, null],
+          "engineId": "m9t-2.3-dci",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.3 dCi Minibus",
+          "years": [2014, null],
+          "engineId": "m9t-2.3-dci",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "trafic",
+      "name": "Trafic",
+      "body": "van",
+      "years": [2000, 2002],
+      "variants": [
+        {
+          "name": "Furgón Corto"
+        },
+        {
+          "name": "Furgón Largo"
+        },
+        {
+          "name": "Minibus"
+        }
+      ]
+    },
+    {
+      "id": "kardian",
+      "name": "Kardian",
+      "body": "suv",
+      "years": [2025, null],
+      "variants": [
+        {
+          "name": "1.6 SCe Evolution",
+          "engineId": "h4m-1.6-sce",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 TCe Evolution EDC",
+          "engineId": "tce-1.0",
+          "transmission": "dsg"
+        },
+        {
+          "name": "1.0 TCe Techno EDC",
+          "engineId": "tce-1.0",
+          "transmission": "dsg"
+        },
+        {
+          "name": "1.0 TCe Premiere Edition EDC",
+          "engineId": "tce-1.0",
+          "transmission": "dsg"
+        }
+      ]
+    },
+    {
+      "id": "arkana",
+      "name": "Arkana",
+      "body": "suv",
+      "years": [2024, null],
+      "variants": [
+        {
+          "name": "E-Tech Hybrid Esprit Alpine",
+          "engineId": "etech-1.6-hybrid"
+        }
+      ]
+    },
+    {
+      "id": "boreal",
+      "name": "Boreal",
+      "body": "suv",
+      "years": [2026, null],
+      "variants": [
+        {
+          "name": "1.3 TCe Evolution EDC",
+          "engineId": "h5ht-1.3-tce",
+          "transmission": "dsg"
+        },
+        {
+          "name": "1.3 TCe Techno EDC",
+          "engineId": "h5ht-1.3-tce",
+          "transmission": "dsg"
+        },
+        {
+          "name": "1.3 TCe Iconic EDC",
+          "engineId": "h5ht-1.3-tce",
+          "transmission": "dsg"
+        }
+      ]
+    }
+  ]
+}

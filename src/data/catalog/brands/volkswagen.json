@@ -1,0 +1,1919 @@
+{
+  "id": "volkswagen",
+  "name": "Volkswagen",
+  "engines": [
+    {
+      "id": "vw-1.6-mi",
+      "name": "1.6 Mi 8v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ea111-1.4",
+      "name": "1.4 8v (EA111)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ea111-1.6",
+      "name": "1.6 8v 101 CV (EA111)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ea211-1.0-mpi",
+      "name": "1.0 MPI 12v 75 CV (EA211)",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Orgánico Si-OAT VW G13 (TL 774 J)",
+        "color": "lila"
+      }
+    },
+    {
+      "id": "ea211-1.6-msi",
+      "name": "1.6 MSI 16v 110 CV (EA211)",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Orgánico Si-OAT VW G13 (TL 774 J)",
+        "color": "lila"
+      }
+    },
+    {
+      "id": "ea211-1.0-tsi",
+      "name": "1.0 TSI 12v (EA211)",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Orgánico Si-OAT VW G13 (TL 774 J)",
+        "color": "lila"
+      }
+    },
+    {
+      "id": "ea211-1.4-tsi",
+      "name": "1.4 TSI 16v 150 CV (EA211)",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Orgánico Si-OAT VW G13 (TL 774 J)",
+        "color": "lila"
+      }
+    },
+    {
+      "id": "ea111-1.4-tsi",
+      "name": "1.4 TSI 16v 160 CV (EA111)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ea827-2.0",
+      "name": "2.0 8v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ea113-1.8t",
+      "name": "1.8 T 20v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ea113-2.0-tfsi",
+      "name": "2.0 TFSI 16v 200 CV (EA113)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ea888-gen2-2.0-tsi",
+      "name": "2.0 TSI 16v 200–211 CV (EA888 Gen1/Gen2)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ea888-gen3-2.0-tsi",
+      "name": "2.0 TSI 16v 220–300 CV (EA888 Gen3)",
+      "fuel": "nafta",
+      "oil": {
+        "viscosity": "5W-40",
+        "spec": "VW 502.00",
+        "liters": 5.7
+      },
+      "coolant": {
+        "type": "Orgánico Si-OAT VW G13 (TL 774 J)",
+        "color": "lila"
+      }
+    },
+    {
+      "id": "ea888-gen3-2.0-tsi-r",
+      "name": "2.0 TSI 16v 300 CV (EA888 Gen3, Golf R)",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Orgánico Si-OAT VW G13 (TL 774 J)",
+        "color": "lila"
+      }
+    },
+    {
+      "id": "ea888-evo4-2.0-tsi",
+      "name": "2.0 TSI 16v 245 CV (EA888 evo4)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ea855-2.5",
+      "name": "2.5 20v 5 cil",
+      "fuel": "nafta"
+    },
+    {
+      "id": "vr6-3.2",
+      "name": "3.2 VR6 24v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "vr6-3.6",
+      "name": "3.6 VR6 24v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ea827-1.9-sd",
+      "name": "1.9 SD 8v",
+      "fuel": "diesel"
+    },
+    {
+      "id": "ea188-1.9-tdi",
+      "name": "1.9 TDI 8v",
+      "fuel": "diesel"
+    },
+    {
+      "id": "ea189-2.0-tdi",
+      "name": "2.0 TDI 16v 140 CV",
+      "fuel": "diesel"
+    },
+    {
+      "id": "r5-2.5-tdi",
+      "name": "2.5 TDI R5 10v",
+      "fuel": "diesel"
+    },
+    {
+      "id": "v6-3.0-tdi",
+      "name": "3.0 V6 TDI 24v",
+      "fuel": "diesel"
+    },
+    {
+      "id": "amarok-2.0-tdi",
+      "name": "2.0 TDI 16v 122–140 CV",
+      "fuel": "diesel",
+      "oil": {
+        "viscosity": "5W-30",
+        "spec": "VW 507.00",
+        "liters": 7
+      },
+      "coolant": {
+        "type": "Orgánico Si-OAT VW G13 (TL 774 J)",
+        "color": "lila"
+      }
+    },
+    {
+      "id": "amarok-2.0-bitdi",
+      "name": "2.0 BiTDI 16v 163–180 CV",
+      "fuel": "diesel",
+      "oil": {
+        "viscosity": "5W-30",
+        "spec": "VW 507.00",
+        "liters": 7
+      },
+      "coolant": {
+        "type": "Orgánico Si-OAT VW G13 (TL 774 J)",
+        "color": "lila"
+      }
+    },
+    {
+      "id": "amarok-3.0-v6-tdi",
+      "name": "3.0 V6 TDI 24v 224–258 CV",
+      "fuel": "diesel",
+      "coolant": {
+        "type": "Orgánico Si-OAT VW G13 (TL 774 J)",
+        "color": "lila"
+      }
+    },
+    {
+      "id": "crafter-2.5-tdi",
+      "name": "2.5 TDI 5 cil",
+      "fuel": "diesel"
+    },
+    {
+      "id": "crafter-2.0-tdi",
+      "name": "2.0 TDI 16v",
+      "fuel": "diesel"
+    }
+  ],
+  "models": [
+    {
+      "id": "gol",
+      "name": "Gol",
+      "body": "hatchback",
+      "years": [
+        2000,
+        2014
+      ],
+      "variants": [
+        {
+          "name": "1.6 Mi 3P",
+          "years": [
+            2000,
+            2002
+          ],
+          "engineId": "vw-1.6-mi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Mi 5P",
+          "years": [
+            2000,
+            2002
+          ],
+          "engineId": "vw-1.6-mi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 SD 5P",
+          "years": [
+            2000,
+            2008
+          ],
+          "engineId": "ea827-1.9-sd",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Power 3P",
+          "years": [
+            2003,
+            2014
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Power 5P",
+          "years": [
+            2003,
+            2014
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Power 3P",
+          "years": [
+            2009,
+            2014
+          ],
+          "engineId": "ea111-1.4",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Power 5P",
+          "years": [
+            2009,
+            2014
+          ],
+          "engineId": "ea111-1.4",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "gol-country",
+      "name": "Gol Country",
+      "body": "wagon",
+      "years": [
+        2000,
+        2006
+      ],
+      "variants": [
+        {
+          "name": "1.6 Mi",
+          "years": [
+            2000,
+            2002
+          ],
+          "engineId": "vw-1.6-mi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Comfortline",
+          "years": [
+            2003,
+            2006
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 SD Comfortline",
+          "years": [
+            2000,
+            2006
+          ],
+          "engineId": "ea827-1.9-sd",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "gol-trend",
+      "name": "Gol Trend",
+      "body": "hatchback",
+      "years": [
+        2009,
+        2023
+      ],
+      "variants": [
+        {
+          "name": "1.6 Pack I",
+          "years": [
+            2009,
+            2016
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Pack II",
+          "years": [
+            2009,
+            2016
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Pack III",
+          "years": [
+            2009,
+            2016
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Sportline",
+          "years": [
+            2010,
+            2016
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 I-Motion Pack III",
+          "years": [
+            2011,
+            2016
+          ],
+          "engineId": "ea111-1.6"
+        },
+        {
+          "name": "1.6 Trendline",
+          "years": [
+            2017,
+            2018
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Trendline",
+          "years": [
+            2017,
+            2023
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Comfortline",
+          "years": [
+            2017,
+            2023
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Highline",
+          "years": [
+            2017,
+            2023
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Highline AT",
+          "years": [
+            2018,
+            2023
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "voyage",
+      "name": "Voyage",
+      "body": "sedan",
+      "years": [
+        2009,
+        2023
+      ],
+      "variants": [
+        {
+          "name": "1.6 Trendline",
+          "years": [
+            2013,
+            2016
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Comfortline",
+          "years": [
+            2009,
+            2016
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Highline",
+          "years": [
+            2009,
+            2016
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 I-Motion Highline",
+          "years": [
+            2011,
+            2016
+          ],
+          "engineId": "ea111-1.6"
+        },
+        {
+          "name": "1.6 MSI Trendline",
+          "years": [
+            2017,
+            2023
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Comfortline",
+          "years": [
+            2017,
+            2023
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Highline",
+          "years": [
+            2017,
+            2023
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Comfortline AT",
+          "years": [
+            2018,
+            2023
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "saveiro",
+      "name": "Saveiro",
+      "body": "pickup",
+      "years": [
+        2000,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.6 Mi",
+          "years": [
+            2000,
+            2002
+          ],
+          "engineId": "vw-1.6-mi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 SD",
+          "years": [
+            2000,
+            2009
+          ],
+          "engineId": "ea827-1.9-sd",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Power",
+          "years": [
+            2003,
+            2009
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Cabina Simple",
+          "years": [
+            2010,
+            2016
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Cabina Extendida",
+          "years": [
+            2010,
+            2016
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Cross Cabina Doble",
+          "years": [
+            2014,
+            2016
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Trendline Cabina Simple",
+          "years": [
+            2017,
+            null
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Trendline Cabina Doble",
+          "years": [
+            2017,
+            null
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Highline Cabina Doble",
+          "years": [
+            2017,
+            null
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Cross Cabina Doble",
+          "years": [
+            2017,
+            2023
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Extreme Cabina Doble",
+          "years": [
+            2024,
+            null
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fox",
+      "name": "Fox",
+      "body": "hatchback",
+      "years": [
+        2004,
+        2021
+      ],
+      "variants": [
+        {
+          "name": "1.6 Trendline 3P",
+          "years": [
+            2004,
+            2016
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Trendline 5P",
+          "years": [
+            2004,
+            2016
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Comfortline 5P",
+          "years": [
+            2004,
+            2016
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Highline 5P",
+          "years": [
+            2010,
+            2016
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 I-Motion Highline",
+          "years": [
+            2011,
+            2016
+          ],
+          "engineId": "ea111-1.6"
+        },
+        {
+          "name": "1.6 MSI Trendline",
+          "years": [
+            2017,
+            2021
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Comfortline",
+          "years": [
+            2017,
+            2021
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Highline",
+          "years": [
+            2017,
+            2021
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "crossfox",
+      "name": "CrossFox",
+      "body": "hatchback",
+      "years": [
+        2005,
+        2021
+      ],
+      "variants": [
+        {
+          "name": "1.6",
+          "years": [
+            2005,
+            2016
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Highline",
+          "years": [
+            2010,
+            2016
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 I-Motion Highline",
+          "years": [
+            2011,
+            2016
+          ],
+          "engineId": "ea111-1.6"
+        },
+        {
+          "name": "1.6 MSI",
+          "years": [
+            2017,
+            2021
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "suran",
+      "name": "Suran",
+      "body": "wagon",
+      "years": [
+        2006,
+        2019
+      ],
+      "variants": [
+        {
+          "name": "1.6 Comfortline",
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Highline",
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Trendline",
+          "years": [
+            2013,
+            2019
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Cross",
+          "years": [
+            2010,
+            2019
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Track",
+          "years": [
+            2014,
+            2019
+          ],
+          "engineId": "ea111-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 I-Motion Highline",
+          "years": [
+            2011,
+            2019
+          ],
+          "engineId": "ea111-1.6"
+        }
+      ]
+    },
+    {
+      "id": "up",
+      "name": "up!",
+      "body": "hatchback",
+      "years": [
+        2014,
+        2020
+      ],
+      "variants": [
+        {
+          "name": "1.0 take up!",
+          "engineId": "ea211-1.0-mpi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 move up!",
+          "engineId": "ea211-1.0-mpi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 high up!",
+          "engineId": "ea211-1.0-mpi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 cross up!",
+          "years": [
+            2015,
+            2020
+          ],
+          "engineId": "ea211-1.0-mpi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "polo-classic",
+      "name": "Polo Classic",
+      "body": "sedan",
+      "years": [
+        2000,
+        2007
+      ],
+      "variants": [
+        {
+          "name": "1.6 Format",
+          "engineId": "vw-1.6-mi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Comfortline",
+          "engineId": "vw-1.6-mi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 SD Format",
+          "engineId": "ea827-1.9-sd",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 SD Comfortline",
+          "engineId": "ea827-1.9-sd",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "polo",
+      "name": "Polo",
+      "body": "hatchback",
+      "years": [
+        2018,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.6 MSI Trendline",
+          "years": [
+            2018,
+            2023
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Comfortline",
+          "years": [
+            2018,
+            2023
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Comfortline AT",
+          "years": [
+            2018,
+            2023
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.0 TSI Comfortline AT",
+          "years": [
+            2019,
+            null
+          ],
+          "engineId": "ea211-1.0-tsi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.0 TSI Highline AT",
+          "years": [
+            2018,
+            null
+          ],
+          "engineId": "ea211-1.0-tsi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.4 TSI GTS AT",
+          "years": [
+            2021,
+            2023
+          ],
+          "engineId": "ea211-1.4-tsi",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "polo-track",
+      "name": "Polo Track",
+      "body": "hatchback",
+      "years": [
+        2023,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.6 MSI",
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "virtus",
+      "name": "Virtus",
+      "body": "sedan",
+      "years": [
+        2018,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.6 MSI Trendline",
+          "years": [
+            2018,
+            null
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Comfortline",
+          "years": [
+            2018,
+            2023
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Comfortline AT",
+          "years": [
+            2018,
+            2023
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.0 TSI Comfortline AT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "ea211-1.0-tsi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.0 TSI Highline AT",
+          "years": [
+            2018,
+            null
+          ],
+          "engineId": "ea211-1.0-tsi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.4 TSI GTS AT",
+          "years": [
+            2022,
+            null
+          ],
+          "engineId": "ea211-1.4-tsi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.4 TSI Exclusive AT",
+          "years": [
+            2023,
+            null
+          ],
+          "engineId": "ea211-1.4-tsi",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "vento",
+      "name": "Vento",
+      "body": "sedan",
+      "years": [
+        2006,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.9 TDI Advance",
+          "years": [
+            2006,
+            2010
+          ],
+          "engineId": "ea188-1.9-tdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.5 Advance",
+          "years": [
+            2006,
+            2014
+          ],
+          "engineId": "ea855-2.5",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.5 Luxury Tiptronic",
+          "years": [
+            2006,
+            2014
+          ],
+          "engineId": "ea855-2.5",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 T FSI Sportline DSG",
+          "years": [
+            2006,
+            2010
+          ],
+          "engineId": "ea113-2.0-tfsi",
+          "transmission": "dsg"
+        },
+        {
+          "name": "2.0 TDI Luxury DSG",
+          "years": [
+            2011,
+            2014
+          ],
+          "engineId": "ea189-2.0-tdi",
+          "transmission": "dsg"
+        },
+        {
+          "name": "2.0 TSI Highline DSG",
+          "years": [
+            2011,
+            2014
+          ],
+          "engineId": "ea888-gen2-2.0-tsi",
+          "transmission": "dsg"
+        },
+        {
+          "name": "2.0 TSI GLI DSG",
+          "years": [
+            2015,
+            2018
+          ],
+          "transmission": "dsg"
+        },
+        {
+          "name": "1.4 TSI Comfortline",
+          "years": [
+            2015,
+            2018
+          ],
+          "engineId": "ea211-1.4-tsi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 TSI Highline DSG",
+          "years": [
+            2015,
+            2018
+          ],
+          "engineId": "ea211-1.4-tsi",
+          "transmission": "dsg"
+        },
+        {
+          "name": "1.4 TSI Comfortline AT",
+          "years": [
+            2019,
+            2024
+          ],
+          "engineId": "ea211-1.4-tsi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.4 TSI Highline AT",
+          "years": [
+            2019,
+            2024
+          ],
+          "engineId": "ea211-1.4-tsi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 TSI GLI DSG",
+          "years": [
+            2019,
+            null
+          ],
+          "engineId": "ea888-gen3-2.0-tsi",
+          "transmission": "dsg"
+        }
+      ]
+    },
+    {
+      "id": "bora",
+      "name": "Bora",
+      "body": "sedan",
+      "years": [
+        2000,
+        2015
+      ],
+      "variants": [
+        {
+          "name": "2.0 Trendline",
+          "years": [
+            2000,
+            2015
+          ],
+          "engineId": "ea827-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 Highline",
+          "years": [
+            2000,
+            2015
+          ],
+          "engineId": "ea827-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 Highline Tiptronic",
+          "years": [
+            2000,
+            2015
+          ],
+          "engineId": "ea827-2.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.8 T Highline",
+          "years": [
+            2000,
+            2010
+          ],
+          "engineId": "ea113-1.8t",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 TDI Trendline",
+          "years": [
+            2000,
+            2010
+          ],
+          "engineId": "ea188-1.9-tdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 TDI Highline",
+          "years": [
+            2000,
+            2010
+          ],
+          "engineId": "ea188-1.9-tdi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "golf",
+      "name": "Golf",
+      "body": "hatchback",
+      "years": [
+        2000,
+        null
+      ],
+      "variants": [
+        {
+          "name": "2.0 Comfortline",
+          "years": [
+            2000,
+            2010
+          ],
+          "engineId": "ea827-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 Highline Tiptronic",
+          "years": [
+            2000,
+            2010
+          ],
+          "engineId": "ea827-2.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.8 T GTI",
+          "years": [
+            2000,
+            2006
+          ],
+          "engineId": "ea113-1.8t",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 TDI Comfortline",
+          "years": [
+            2000,
+            2006
+          ],
+          "engineId": "ea188-1.9-tdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 TSI Highline DSG",
+          "years": [
+            2010,
+            2013
+          ],
+          "engineId": "ea111-1.4-tsi",
+          "transmission": "dsg"
+        },
+        {
+          "name": "2.0 TSI GTI DSG",
+          "years": [
+            2010,
+            2013
+          ],
+          "engineId": "ea888-gen2-2.0-tsi",
+          "transmission": "dsg"
+        },
+        {
+          "name": "1.6 MSI Trendline",
+          "years": [
+            2017,
+            2020
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 TSI Comfortline",
+          "years": [
+            2014,
+            2020
+          ],
+          "engineId": "ea211-1.4-tsi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 TSI Highline DSG",
+          "years": [
+            2014,
+            2020
+          ],
+          "engineId": "ea211-1.4-tsi",
+          "transmission": "dsg"
+        },
+        {
+          "name": "2.0 TSI GTI DSG",
+          "years": [
+            2014,
+            2020
+          ],
+          "engineId": "ea888-gen3-2.0-tsi",
+          "transmission": "dsg"
+        },
+        {
+          "name": "2.0 TSI R 4Motion DSG",
+          "years": [
+            2016,
+            2020
+          ],
+          "engineId": "ea888-gen3-2.0-tsi-r",
+          "transmission": "dsg"
+        },
+        {
+          "name": "2.0 TSI GTI DSG",
+          "years": [
+            2022,
+            null
+          ],
+          "engineId": "ea888-evo4-2.0-tsi",
+          "transmission": "dsg"
+        }
+      ]
+    },
+    {
+      "id": "passat",
+      "name": "Passat",
+      "body": "sedan",
+      "years": [
+        2000,
+        2021
+      ],
+      "variants": [
+        {
+          "name": "1.8 T Highline",
+          "years": [
+            2000,
+            2005
+          ],
+          "engineId": "ea113-1.8t",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 T Highline Tiptronic",
+          "years": [
+            2000,
+            2005
+          ],
+          "engineId": "ea113-1.8t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.9 TDI Highline",
+          "years": [
+            2000,
+            2005
+          ],
+          "engineId": "ea188-1.9-tdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 T FSI Luxury Tiptronic",
+          "years": [
+            2006,
+            2010
+          ],
+          "engineId": "ea113-2.0-tfsi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 TDI Advance",
+          "years": [
+            2008,
+            2015
+          ],
+          "engineId": "ea189-2.0-tdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 TSI Luxury DSG",
+          "years": [
+            2011,
+            2015
+          ],
+          "engineId": "ea888-gen2-2.0-tsi",
+          "transmission": "dsg"
+        },
+        {
+          "name": "1.4 TSI Comfortline DSG",
+          "years": [
+            2016,
+            2021
+          ],
+          "engineId": "ea211-1.4-tsi",
+          "transmission": "dsg"
+        },
+        {
+          "name": "2.0 TSI Highline DSG",
+          "years": [
+            2016,
+            2021
+          ],
+          "engineId": "ea888-gen3-2.0-tsi",
+          "transmission": "dsg"
+        }
+      ]
+    },
+    {
+      "id": "passat-cc",
+      "name": "Passat CC",
+      "body": "sedan",
+      "years": [
+        2009,
+        2017
+      ],
+      "variants": [
+        {
+          "name": "2.0 TSI DSG",
+          "engineId": "ea888-gen2-2.0-tsi",
+          "transmission": "dsg"
+        },
+        {
+          "name": "3.6 V6 4Motion DSG",
+          "engineId": "vr6-3.6",
+          "transmission": "dsg"
+        }
+      ]
+    },
+    {
+      "id": "tiguan",
+      "name": "Tiguan",
+      "body": "suv",
+      "years": [
+        2009,
+        2017
+      ],
+      "variants": [
+        {
+          "name": "2.0 TSI Exclusive 4Motion AT",
+          "engineId": "ea888-gen2-2.0-tsi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 TSI Sport & Style 4Motion AT",
+          "engineId": "ea888-gen2-2.0-tsi",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "tiguan-allspace",
+      "name": "Tiguan Allspace",
+      "body": "suv",
+      "years": [
+        2018,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.4 TSI Trendline DSG",
+          "years": [
+            2018,
+            null
+          ],
+          "engineId": "ea211-1.4-tsi",
+          "transmission": "dsg"
+        },
+        {
+          "name": "2.0 TSI Comfortline 4Motion DSG",
+          "years": [
+            2018,
+            null
+          ],
+          "engineId": "ea888-gen3-2.0-tsi",
+          "transmission": "dsg"
+        },
+        {
+          "name": "2.0 TSI Highline 4Motion DSG",
+          "years": [
+            2018,
+            null
+          ],
+          "engineId": "ea888-gen3-2.0-tsi",
+          "transmission": "dsg"
+        },
+        {
+          "name": "2.0 TSI R-Line 4Motion DSG",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "ea888-gen3-2.0-tsi",
+          "transmission": "dsg"
+        }
+      ]
+    },
+    {
+      "id": "t-cross",
+      "name": "T-Cross",
+      "body": "suv",
+      "years": [
+        2020,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.6 MSI Trendline",
+          "years": [
+            2020,
+            2024
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 MSI Trendline AT",
+          "years": [
+            2020,
+            2024
+          ],
+          "engineId": "ea211-1.6-msi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.0 TSI Comfortline AT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "ea211-1.0-tsi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.0 TSI Trendline AT",
+          "years": [
+            2025,
+            null
+          ],
+          "engineId": "ea211-1.0-tsi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.4 TSI Highline AT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "ea211-1.4-tsi",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "nivus",
+      "name": "Nivus",
+      "body": "suv",
+      "years": [
+        2021,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.0 TSI Comfortline AT",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "ea211-1.0-tsi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.0 TSI Highline AT",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "ea211-1.0-tsi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.0 TSI Hero AT",
+          "years": [
+            2021,
+            2022
+          ],
+          "engineId": "ea211-1.0-tsi",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "taos",
+      "name": "Taos",
+      "body": "suv",
+      "years": [
+        2021,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.4 TSI Comfortline AT",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "ea211-1.4-tsi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.4 TSI Highline AT",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "ea211-1.4-tsi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.4 TSI Hero AT",
+          "years": [
+            2021,
+            2022
+          ],
+          "engineId": "ea211-1.4-tsi",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "amarok",
+      "name": "Amarok",
+      "body": "pickup",
+      "years": [
+        2010,
+        null
+      ],
+      "variants": [
+        {
+          "name": "2.0 TDI Startline 4x2",
+          "years": [
+            2010,
+            2016
+          ],
+          "engineId": "amarok-2.0-tdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 TDI Trendline 4x4",
+          "years": [
+            2010,
+            2016
+          ],
+          "engineId": "amarok-2.0-tdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 BiTDI Trendline 4x2",
+          "years": [
+            2010,
+            2016
+          ],
+          "engineId": "amarok-2.0-bitdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 BiTDI Highline 4x4",
+          "years": [
+            2010,
+            2016
+          ],
+          "engineId": "amarok-2.0-bitdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 BiTDI Highline 4x4 AT",
+          "years": [
+            2013,
+            2016
+          ],
+          "engineId": "amarok-2.0-bitdi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 TDI Trendline 4x2",
+          "years": [
+            2017,
+            null
+          ],
+          "engineId": "amarok-2.0-tdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 TDI Comfortline 4x4",
+          "years": [
+            2017,
+            null
+          ],
+          "engineId": "amarok-2.0-bitdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 TDI Comfortline 4x4 AT",
+          "years": [
+            2017,
+            null
+          ],
+          "engineId": "amarok-2.0-bitdi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 TDI Highline 4x4 AT",
+          "years": [
+            2017,
+            null
+          ],
+          "engineId": "amarok-2.0-bitdi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "3.0 V6 TDI Highline 4Motion AT",
+          "years": [
+            2017,
+            null
+          ],
+          "engineId": "amarok-3.0-v6-tdi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "3.0 V6 TDI Extreme 4Motion AT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "amarok-3.0-v6-tdi",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "sharan",
+      "name": "Sharan",
+      "body": "minivan",
+      "years": [
+        2000,
+        2010
+      ],
+      "variants": [
+        {
+          "name": "1.8 T Highline",
+          "engineId": "ea113-1.8t",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 T Highline Tiptronic",
+          "engineId": "ea113-1.8t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.9 TDI Trendline",
+          "engineId": "ea188-1.9-tdi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "scirocco",
+      "name": "Scirocco",
+      "body": "coupe",
+      "years": [
+        2009,
+        2016
+      ],
+      "variants": [
+        {
+          "name": "1.4 TSI DSG",
+          "engineId": "ea111-1.4-tsi",
+          "transmission": "dsg"
+        },
+        {
+          "name": "2.0 TSI DSG",
+          "engineId": "ea888-gen2-2.0-tsi",
+          "transmission": "dsg"
+        }
+      ]
+    },
+    {
+      "id": "new-beetle",
+      "name": "New Beetle",
+      "body": "hatchback",
+      "years": [
+        2000,
+        2010
+      ],
+      "variants": [
+        {
+          "name": "2.0 Advance",
+          "engineId": "ea827-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 Advance Tiptronic",
+          "engineId": "ea827-2.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.8 T Sport",
+          "years": [
+            2002,
+            2005
+          ],
+          "engineId": "ea113-1.8t",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "the-beetle",
+      "name": "The Beetle",
+      "body": "hatchback",
+      "years": [
+        2012,
+        2019
+      ],
+      "variants": [
+        {
+          "name": "1.4 TSI DSG",
+          "transmission": "dsg"
+        },
+        {
+          "name": "2.0 TSI DSG",
+          "years": [
+            2012,
+            2016
+          ],
+          "engineId": "ea888-gen2-2.0-tsi",
+          "transmission": "dsg"
+        }
+      ]
+    },
+    {
+      "id": "touareg",
+      "name": "Touareg",
+      "body": "suv",
+      "years": [
+        2004,
+        2018
+      ],
+      "variants": [
+        {
+          "name": "3.2 V6 Tiptronic",
+          "years": [
+            2004,
+            2010
+          ],
+          "engineId": "vr6-3.2",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.5 TDI R5 Tiptronic",
+          "years": [
+            2004,
+            2010
+          ],
+          "engineId": "r5-2.5-tdi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "3.0 V6 TDI Tiptronic",
+          "years": [
+            2008,
+            2018
+          ],
+          "engineId": "v6-3.0-tdi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "3.6 V6 FSI Tiptronic",
+          "years": [
+            2011,
+            2018
+          ],
+          "engineId": "vr6-3.6",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "crafter",
+      "name": "Crafter",
+      "body": "van",
+      "years": [
+        2008,
+        null
+      ],
+      "variants": [
+        {
+          "name": "2.5 TDI Furgón 35",
+          "years": [
+            2008,
+            2017
+          ],
+          "engineId": "crafter-2.5-tdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.5 TDI Furgón 50",
+          "years": [
+            2008,
+            2017
+          ],
+          "engineId": "crafter-2.5-tdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 TDI Furgón 35",
+          "years": [
+            2018,
+            null
+          ],
+          "engineId": "crafter-2.0-tdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 TDI Furgón 50",
+          "years": [
+            2018,
+            null
+          ],
+          "engineId": "crafter-2.0-tdi",
+          "transmission": "manual"
+        }
+      ]
+    }
+  ]
+}

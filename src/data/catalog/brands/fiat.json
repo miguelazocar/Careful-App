@@ -1,0 +1,1175 @@
+{
+  "id": "fiat",
+  "name": "Fiat",
+  "engines": [
+    {
+      "id": "fire-1.0-8v",
+      "name": "1.0 Fire Evo 8v 70–75 CV",
+      "fuel": "nafta"
+    },
+    {
+      "id": "fire-1.3-8v",
+      "name": "1.3 Fire 8v 66–71 CV",
+      "fuel": "nafta"
+    },
+    {
+      "id": "fire-1.4-8v",
+      "name": "1.4 Fire 8v 85–88 CV (Fire/Fire Evo)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "fiasa-1.6-8v",
+      "name": "1.6 8v MPI (Fiasa)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "torque-1.6-16v",
+      "name": "1.6 16v Torque 106 CV",
+      "fuel": "nafta"
+    },
+    {
+      "id": "fiat-1.8-16v",
+      "name": "1.8 16v 122–132 CV",
+      "fuel": "nafta"
+    },
+    {
+      "id": "pt-1.8-8v",
+      "name": "1.8 8v 103–114 CV (Powertrain)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "pt-1.9-16v",
+      "name": "1.9 16v 130 CV (Powertrain)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "etorq-1.6-16v",
+      "name": "1.6 E.torQ 16v 110–117 CV",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Orgánico OAT (Paraflu UP)"
+      }
+    },
+    {
+      "id": "etorq-1.8-16v",
+      "name": "1.8 E.torQ 16v 130–139 CV",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Orgánico OAT (Paraflu UP)"
+      }
+    },
+    {
+      "id": "firefly-1.3-8v",
+      "name": "1.3 Firefly 8v 99–101 CV",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Orgánico OAT (Paraflu UP)"
+      }
+    },
+    {
+      "id": "t200-1.0",
+      "name": "1.0 Turbo 200 (T200) 120–130 CV",
+      "fuel": "nafta"
+    },
+    {
+      "id": "t270-1.3",
+      "name": "1.3 Turbo 270 (T270) 175–185 CV",
+      "fuel": "nafta"
+    },
+    {
+      "id": "fiat-1.4-16v",
+      "name": "1.4 16v 100–105 CV",
+      "fuel": "nafta"
+    },
+    {
+      "id": "tjet-1.4",
+      "name": "1.4 T-Jet 16v 120–160 CV",
+      "fuel": "nafta"
+    },
+    {
+      "id": "multiair-1.4-turbo",
+      "name": "1.4 MultiAir Turbo 16v 170 CV",
+      "fuel": "nafta"
+    },
+    {
+      "id": "fiat-2.0-20v",
+      "name": "2.0 20v 5 cil. 142 CV",
+      "fuel": "nafta"
+    },
+    {
+      "id": "fiat-2.4-20v",
+      "name": "2.4 20v 5 cil. 160–167 CV",
+      "fuel": "nafta"
+    },
+    {
+      "id": "gema-2.4-16v",
+      "name": "2.4 16v 172 CV",
+      "fuel": "nafta"
+    },
+    {
+      "id": "hybrid-1.2",
+      "name": "1.2 Turbo Hybrid (48V)",
+      "fuel": "hibrido"
+    },
+    {
+      "id": "d-1.7",
+      "name": "1.7 D 8v 60 CV",
+      "fuel": "diesel"
+    },
+    {
+      "id": "td-1.7",
+      "name": "1.7 TD 8v 70 CV",
+      "fuel": "diesel"
+    },
+    {
+      "id": "mjet-1.3",
+      "name": "1.3 Multijet 16v 75–95 CV",
+      "fuel": "diesel"
+    },
+    {
+      "id": "mjet-2.0",
+      "name": "2.0 Multijet 16v 170 CV",
+      "fuel": "diesel"
+    },
+    {
+      "id": "mjet-2.2",
+      "name": "2.2 Multijet 200 CV",
+      "fuel": "diesel"
+    },
+    {
+      "id": "sofim-2.8",
+      "name": "2.8 D / JTD 8v (Sofim)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "f1a-2.3",
+      "name": "2.3 Multijet 16v 127–130 CV (F1A)",
+      "fuel": "diesel"
+    }
+  ],
+  "models": [
+    {
+      "id": "uno",
+      "name": "Uno",
+      "body": "hatchback",
+      "years": [2004, 2021],
+      "variants": [
+        {
+          "name": "1.3 Fire",
+          "years": [2004, 2013],
+          "engineId": "fire-1.3-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Attractive",
+          "years": [2011, 2016],
+          "engineId": "fire-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Sporting",
+          "years": [2012, 2016],
+          "engineId": "fire-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Way",
+          "years": [2011, 2017],
+          "engineId": "fire-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.3 Firefly Way",
+          "years": [2017, 2021],
+          "engineId": "firefly-1.3-8v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "palio",
+      "name": "Palio",
+      "body": "hatchback",
+      "years": [2000, 2017],
+      "variants": [
+        {
+          "name": "1.3 Fire EL",
+          "years": [2001, 2009],
+          "engineId": "fire-1.3-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Fire ELX",
+          "years": [2007, 2017],
+          "engineId": "fire-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v HLX",
+          "years": [2000, 2004],
+          "engineId": "torque-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 HLX",
+          "years": [2005, 2011],
+          "engineId": "pt-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.7 TD EL",
+          "years": [2000, 2006],
+          "engineId": "td-1.7",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.3 Multijet ELX",
+          "years": [2006, 2012],
+          "engineId": "mjet-1.3",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Attractive",
+          "years": [2012, 2017],
+          "engineId": "fire-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Essence",
+          "years": [2012, 2017],
+          "engineId": "etorq-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Sporting",
+          "years": [2013, 2017],
+          "engineId": "etorq-1.6-16v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "palio-weekend",
+      "name": "Palio Weekend",
+      "body": "wagon",
+      "years": [2000, 2020],
+      "variants": [
+        {
+          "name": "1.4 ELX",
+          "years": [2006, 2017],
+          "engineId": "fire-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v HLX",
+          "years": [2000, 2004],
+          "engineId": "torque-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.7 TD ELX",
+          "years": [2000, 2006],
+          "engineId": "td-1.7",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.3 Multijet ELX",
+          "years": [2006, 2012],
+          "engineId": "mjet-1.3",
+          "transmission": "manual"
+        },
+        {
+          "name": "Adventure 1.8",
+          "years": [2003, 2011],
+          "engineId": "pt-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "Adventure 1.6 E.torQ",
+          "years": [2012, 2020],
+          "engineId": "etorq-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "Adventure Locker 1.8 E.torQ",
+          "years": [2012, 2020],
+          "engineId": "etorq-1.8-16v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "siena",
+      "name": "Siena",
+      "body": "sedan",
+      "years": [2000, 2016],
+      "variants": [
+        {
+          "name": "1.3 Fire EL",
+          "years": [2002, 2008],
+          "engineId": "fire-1.3-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Fire EL",
+          "years": [2007, 2016],
+          "engineId": "fire-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v HLX",
+          "years": [2000, 2004],
+          "engineId": "torque-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 HLX",
+          "years": [2005, 2008],
+          "engineId": "pt-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.7 TD EL",
+          "years": [2000, 2006],
+          "engineId": "td-1.7",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.3 Multijet ELX",
+          "years": [2006, 2012],
+          "engineId": "mjet-1.3",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "grand-siena",
+      "name": "Grand Siena",
+      "body": "sedan",
+      "years": [2013, 2020],
+      "variants": [
+        {
+          "name": "1.4 Attractive",
+          "engineId": "fire-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Essence",
+          "engineId": "etorq-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Essence Dualogic",
+          "years": [2013, 2018],
+          "engineId": "etorq-1.6-16v"
+        }
+      ]
+    },
+    {
+      "id": "duna",
+      "name": "Duna",
+      "body": "sedan",
+      "years": [2000, 2001],
+      "variants": [
+        {
+          "name": "1.6 SCV",
+          "engineId": "fiasa-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.7 D SDL",
+          "engineId": "d-1.7",
+          "transmission": "manual"
+        },
+        {
+          "name": "Weekend 1.7 D",
+          "engineId": "d-1.7",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "punto",
+      "name": "Punto",
+      "body": "hatchback",
+      "years": [2008, 2017],
+      "variants": [
+        {
+          "name": "1.4 ELX",
+          "years": [2008, 2012],
+          "engineId": "fire-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Attractive",
+          "years": [2011, 2017],
+          "engineId": "fire-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 HLX",
+          "years": [2008, 2010],
+          "engineId": "pt-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.3 Multijet ELX",
+          "years": [2008, 2012],
+          "engineId": "mjet-1.3",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 T-Jet",
+          "years": [2010, 2013],
+          "engineId": "tjet-1.4",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Essence",
+          "years": [2011, 2017],
+          "engineId": "etorq-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Essence Dualogic",
+          "years": [2012, 2017],
+          "engineId": "etorq-1.6-16v"
+        },
+        {
+          "name": "1.8 Sporting",
+          "years": [2011, 2016],
+          "engineId": "etorq-1.8-16v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "linea",
+      "name": "Linea",
+      "body": "sedan",
+      "years": [2009, 2016],
+      "variants": [
+        {
+          "name": "1.9 16v Absolute",
+          "years": [2009, 2011],
+          "engineId": "pt-1.9-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 16v Absolute Dualogic",
+          "years": [2009, 2011],
+          "engineId": "pt-1.9-16v"
+        },
+        {
+          "name": "1.4 T-Jet",
+          "years": [2009, 2012],
+          "engineId": "tjet-1.4",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 E.torQ Essence",
+          "years": [2012, 2016],
+          "engineId": "etorq-1.8-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 E.torQ Absolute Dualogic",
+          "years": [2012, 2016],
+          "engineId": "etorq-1.8-16v"
+        }
+      ]
+    },
+    {
+      "id": "idea",
+      "name": "Idea",
+      "body": "minivan",
+      "years": [2006, 2016],
+      "variants": [
+        {
+          "name": "1.4 ELX",
+          "years": [2006, 2010],
+          "engineId": "fire-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 HLX",
+          "years": [2006, 2010],
+          "engineId": "pt-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "Adventure 1.8",
+          "years": [2009, 2011],
+          "engineId": "pt-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Attractive",
+          "years": [2011, 2016],
+          "engineId": "fire-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Essence",
+          "years": [2011, 2016],
+          "engineId": "etorq-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "Adventure 1.8 E.torQ",
+          "years": [2011, 2016],
+          "engineId": "etorq-1.8-16v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "stilo",
+      "name": "Stilo",
+      "body": "hatchback",
+      "years": [2003, 2010],
+      "variants": [
+        {
+          "name": "1.8 16v",
+          "years": [2003, 2004],
+          "engineId": "fiat-1.8-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 8v Attractive",
+          "years": [2005, 2010],
+          "engineId": "pt-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 8v Dualogic",
+          "years": [2008, 2010],
+          "engineId": "pt-1.8-8v"
+        },
+        {
+          "name": "2.4 20v Abarth",
+          "years": [2003, 2007],
+          "engineId": "fiat-2.4-20v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "bravo",
+      "name": "Bravo",
+      "body": "hatchback",
+      "years": [2011, 2016],
+      "variants": [
+        {
+          "name": "1.6 E.torQ Essence",
+          "years": [2014, 2016],
+          "engineId": "etorq-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 E.torQ Absolute",
+          "engineId": "etorq-1.8-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 E.torQ Absolute Dualogic",
+          "engineId": "etorq-1.8-16v"
+        },
+        {
+          "name": "1.4 T-Jet",
+          "engineId": "tjet-1.4",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "marea",
+      "name": "Marea",
+      "body": "sedan",
+      "years": [2000, 2007],
+      "variants": [
+        {
+          "name": "1.6 16v SX",
+          "years": [2000, 2002],
+          "engineId": "torque-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 16v ELX",
+          "years": [2001, 2007],
+          "engineId": "fiat-1.8-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 20v HLX",
+          "years": [2000, 2001],
+          "engineId": "fiat-2.0-20v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.4 20v HLX",
+          "years": [2001, 2007],
+          "engineId": "fiat-2.4-20v",
+          "transmission": "manual"
+        },
+        {
+          "name": "Weekend 1.8 16v ELX",
+          "years": [2001, 2007],
+          "engineId": "fiat-1.8-16v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "strada",
+      "name": "Strada",
+      "body": "pickup",
+      "years": [2000, null],
+      "variants": [
+        {
+          "name": "1.6 16v Trekking",
+          "years": [2000, 2004],
+          "engineId": "torque-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.7 TD",
+          "years": [2000, 2006],
+          "engineId": "td-1.7",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Fire Working",
+          "years": [2006, 2020],
+          "engineId": "fire-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.3 Multijet Working",
+          "years": [2006, 2012],
+          "engineId": "mjet-1.3",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 Adventure",
+          "years": [2004, 2010],
+          "engineId": "pt-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 E.torQ Trekking",
+          "years": [2011, 2020],
+          "engineId": "etorq-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 E.torQ Adventure Locker",
+          "years": [2011, 2020],
+          "engineId": "etorq-1.8-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Endurance",
+          "years": [2021, null],
+          "engineId": "fire-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Freedom",
+          "years": [2021, 2023],
+          "engineId": "fire-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.3 Firefly Volcano",
+          "years": [2021, null],
+          "engineId": "firefly-1.3-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.3 Firefly Volcano CVT",
+          "years": [2023, null],
+          "engineId": "firefly-1.3-8v",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.0 T200 Ranch CVT",
+          "years": [2024, null],
+          "engineId": "t200-1.0",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.0 T200 Ultra CVT",
+          "years": [2024, null],
+          "engineId": "t200-1.0",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "toro",
+      "name": "Toro",
+      "body": "pickup",
+      "years": [2017, null],
+      "variants": [
+        {
+          "name": "1.8 E.torQ Freedom AT",
+          "years": [2017, 2021],
+          "engineId": "etorq-1.8-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 Multijet Freedom 4x2",
+          "years": [2017, 2021],
+          "engineId": "mjet-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 Multijet Freedom 4x4 AT",
+          "engineId": "mjet-2.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 Multijet Volcano 4x4 AT",
+          "engineId": "mjet-2.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.3 T270 Freedom AT",
+          "years": [2022, null],
+          "engineId": "t270-1.3",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.3 T270 Volcano AT",
+          "years": [2022, null],
+          "engineId": "t270-1.3",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "cronos",
+      "name": "Cronos",
+      "body": "sedan",
+      "years": [2018, null],
+      "variants": [
+        {
+          "name": "1.3 Drive",
+          "engineId": "firefly-1.3-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.3 Drive GSR",
+          "years": [2018, 2021],
+          "engineId": "firefly-1.3-8v"
+        },
+        {
+          "name": "1.3 Like",
+          "years": [2021, null],
+          "engineId": "firefly-1.3-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.3 Drive Pack",
+          "years": [2020, null],
+          "engineId": "firefly-1.3-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.3 Precision CVT",
+          "years": [2022, null],
+          "engineId": "firefly-1.3-8v",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.8 Precision",
+          "years": [2018, 2021],
+          "engineId": "etorq-1.8-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 Precision AT",
+          "years": [2018, 2021],
+          "engineId": "etorq-1.8-16v",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "argo",
+      "name": "Argo",
+      "body": "hatchback",
+      "years": [2018, null],
+      "variants": [
+        {
+          "name": "1.3 Drive",
+          "engineId": "firefly-1.3-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.3 Drive GSR",
+          "years": [2018, 2021],
+          "engineId": "firefly-1.3-8v"
+        },
+        {
+          "name": "1.3 Trekking",
+          "years": [2020, null],
+          "engineId": "firefly-1.3-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.3 Drive CVT",
+          "years": [2023, null],
+          "engineId": "firefly-1.3-8v",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.8 Precision AT",
+          "years": [2018, 2021],
+          "engineId": "etorq-1.8-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.8 HGT",
+          "years": [2018, 2020],
+          "engineId": "etorq-1.8-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 HGT AT",
+          "years": [2018, 2020],
+          "engineId": "etorq-1.8-16v",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "mobi",
+      "name": "Mobi",
+      "body": "hatchback",
+      "years": [2017, null],
+      "variants": [
+        {
+          "name": "1.0 Easy",
+          "engineId": "fire-1.0-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 Way",
+          "engineId": "fire-1.0-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 Way On",
+          "years": [2017, 2020],
+          "engineId": "fire-1.0-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 Trekking",
+          "years": [2021, null],
+          "engineId": "fire-1.0-8v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "pulse",
+      "name": "Pulse",
+      "body": "suv",
+      "years": [2022, null],
+      "variants": [
+        {
+          "name": "1.3 Drive",
+          "engineId": "firefly-1.3-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.3 Drive CVT",
+          "engineId": "firefly-1.3-8v",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.0 T200 Audace CVT",
+          "engineId": "t200-1.0",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.0 T200 Impetus CVT",
+          "engineId": "t200-1.0",
+          "transmission": "cvt"
+        },
+        {
+          "name": "Abarth 1.3 T270 AT",
+          "years": [2023, null],
+          "engineId": "t270-1.3",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "fastback",
+      "name": "Fastback",
+      "body": "suv",
+      "years": [2023, null],
+      "variants": [
+        {
+          "name": "1.0 T200 Audace CVT",
+          "engineId": "t200-1.0",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.0 T200 Impetus CVT",
+          "engineId": "t200-1.0",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.3 T270 Limited Edition AT",
+          "years": [2023, 2024],
+          "engineId": "t270-1.3",
+          "transmission": "automatica"
+        },
+        {
+          "name": "Abarth 1.3 T270 AT",
+          "engineId": "t270-1.3",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "500",
+      "name": "500",
+      "body": "hatchback",
+      "years": [2009, 2019],
+      "variants": [
+        {
+          "name": "1.4 16v Sport",
+          "engineId": "fiat-1.4-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 16v Lounge",
+          "engineId": "fiat-1.4-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 16v Lounge AT",
+          "years": [2012, 2019],
+          "engineId": "fiat-1.4-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "Cabrio 1.4 16v",
+          "years": [2011, 2019],
+          "engineId": "fiat-1.4-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "Abarth 1.4 T-Jet",
+          "years": [2013, 2019],
+          "engineId": "tjet-1.4",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "500x",
+      "name": "500X",
+      "body": "suv",
+      "years": [2015, 2019],
+      "variants": [
+        {
+          "name": "1.6 E.torQ Pop",
+          "engineId": "etorq-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Turbo Cross AT",
+          "engineId": "multiair-1.4-turbo",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "600",
+      "name": "600",
+      "body": "suv",
+      "years": [2025, null],
+      "variants": [
+        {
+          "name": "1.2 Hybrid",
+          "engineId": "hybrid-1.2",
+          "transmission": "dsg"
+        }
+      ]
+    },
+    {
+      "id": "tipo",
+      "name": "Tipo",
+      "body": "hatchback",
+      "years": [2017, 2020],
+      "variants": [
+        {
+          "name": "1.6 E.torQ Pop",
+          "engineId": "etorq-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 E.torQ Easy",
+          "engineId": "etorq-1.6-16v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "freemont",
+      "name": "Freemont",
+      "body": "suv",
+      "years": [2012, 2015],
+      "variants": [
+        {
+          "name": "2.4 Emotion AT",
+          "engineId": "gema-2.4-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.4 Precision AT",
+          "engineId": "gema-2.4-16v",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "doblo",
+      "name": "Doblò",
+      "body": "van",
+      "years": [2001, 2021],
+      "variants": [
+        {
+          "name": "1.6 16v ELX",
+          "years": [2001, 2004],
+          "engineId": "torque-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Fire ELX",
+          "years": [2004, 2015],
+          "engineId": "fire-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Cargo",
+          "years": [2004, 2021],
+          "engineId": "fire-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.3 Multijet Cargo",
+          "years": [2006, 2012],
+          "engineId": "mjet-1.3",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 Adventure",
+          "years": [2004, 2010],
+          "engineId": "pt-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 E.torQ Essence",
+          "years": [2011, 2021],
+          "engineId": "etorq-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 E.torQ Adventure",
+          "years": [2011, 2021],
+          "engineId": "etorq-1.8-16v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fiorino",
+      "name": "Fiorino",
+      "body": "van",
+      "years": [2000, null],
+      "variants": [
+        {
+          "name": "1.7 TD",
+          "years": [2000, 2006],
+          "engineId": "td-1.7",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.3 Fire",
+          "years": [2004, 2013],
+          "engineId": "fire-1.3-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Fire Evo",
+          "years": [2014, null],
+          "engineId": "fire-1.4-8v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "ducato",
+      "name": "Ducato",
+      "body": "van",
+      "years": [2000, null],
+      "variants": [
+        {
+          "name": "2.8 D Furgón",
+          "years": [2000, 2004],
+          "engineId": "sofim-2.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.8 JTD Furgón",
+          "years": [2004, 2009],
+          "engineId": "sofim-2.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.3 Multijet Furgón",
+          "years": [2010, null],
+          "engineId": "f1a-2.3",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.3 Multijet Minibus",
+          "years": [2010, null],
+          "engineId": "f1a-2.3",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "titano",
+      "name": "Titano",
+      "body": "pickup",
+      "years": [2024, null],
+      "variants": [
+        {
+          "name": "2.2 Multijet Endurance 4x4",
+          "engineId": "mjet-2.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.2 Multijet Freedom 4x4 AT",
+          "engineId": "mjet-2.2",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.2 Multijet Ranch 4x4 AT",
+          "engineId": "mjet-2.2",
+          "transmission": "automatica"
+        }
+      ]
+    }
+  ]
+}

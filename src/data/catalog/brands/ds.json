@@ -1,0 +1,259 @@
+{
+  "id": "ds",
+  "name": "DS",
+  "engines": [
+    {
+      "id": "ep6-1.6-vti",
+      "name": "1.6 VTi 16v 120 CV (EP6)",
+      "fuel": "nafta",
+      "oil": {
+        "viscosity": "5W-30",
+        "spec": "PSA B71 2290",
+        "liters": 4.25
+      }
+    },
+    {
+      "id": "ep6-1.6-thp",
+      "name": "1.6 THP 156–165 CV (EP6 Turbo)",
+      "fuel": "nafta",
+      "oil": {
+        "viscosity": "5W-30",
+        "spec": "PSA B71 2290",
+        "liters": 4.25
+      }
+    },
+    {
+      "id": "ep6-1.6-thp-200",
+      "name": "1.6 THP 200–208 CV (EP6 Turbo)",
+      "fuel": "nafta",
+      "oil": {
+        "viscosity": "5W-30",
+        "spec": "PSA B71 2290",
+        "liters": 4.25
+      }
+    },
+    {
+      "id": "eb2dt-1.2-puretech",
+      "name": "1.2 PureTech Turbo 130–155 CV (EB2DTS)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ep6fdt-1.6-puretech",
+      "name": "1.6 PureTech 180–225 CV (EP6FDT)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "dw10-2.0-bluehdi",
+      "name": "2.0 BlueHDi 180 CV (DW10)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "hybrid-1.2-136",
+      "name": "1.2 Hybrid 136 CV (48V)",
+      "fuel": "hibrido"
+    },
+    {
+      "id": "etense-4x4-300",
+      "name": "E-Tense 4x4 300 CV (1.6 PureTech + 2 motores eléctricos, híbrido enchufable)",
+      "fuel": "hibrido"
+    }
+  ],
+  "models": [
+    {
+      "id": "ds3",
+      "name": "DS3",
+      "body": "hatchback",
+      "years": [2010, 2019],
+      "variants": [
+        {
+          "name": "1.6 VTi So Chic",
+          "years": [2010, 2015],
+          "engineId": "ep6-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi So Chic AT",
+          "years": [2011, 2015],
+          "engineId": "ep6-1.6-vti",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP Sport Chic",
+          "engineId": "ep6-1.6-thp",
+          "transmission": "manual"
+        },
+        {
+          "name": "Cabrio 1.6 THP Sport Chic",
+          "years": [2013, 2019],
+          "engineId": "ep6-1.6-thp",
+          "transmission": "manual"
+        },
+        {
+          "name": "Racing 1.6 THP",
+          "years": [2012, 2014],
+          "engineId": "ep6-1.6-thp-200",
+          "transmission": "manual"
+        },
+        {
+          "name": "Performance 1.6 THP",
+          "years": [2016, 2019],
+          "engineId": "ep6-1.6-thp-200",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "ds4",
+      "name": "DS4",
+      "body": "hatchback",
+      "years": [2012, 2018],
+      "variants": [
+        {
+          "name": "1.6 THP So Chic AT",
+          "engineId": "ep6-1.6-thp",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP Sport Chic",
+          "engineId": "ep6-1.6-thp-200",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "ds5",
+      "name": "DS5",
+      "body": "hatchback",
+      "years": [2012, 2018],
+      "variants": [
+        {
+          "name": "1.6 THP So Chic AT",
+          "engineId": "ep6-1.6-thp",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP Sport Chic",
+          "engineId": "ep6-1.6-thp-200",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "ds-3-crossback",
+      "name": "DS 3 Crossback",
+      "body": "suv",
+      "years": [2019, 2022],
+      "variants": [
+        {
+          "name": "1.2 PureTech 130 So Chic AT",
+          "engineId": "eb2dt-1.2-puretech",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.2 PureTech 155 Performance Line AT",
+          "engineId": "eb2dt-1.2-puretech",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.2 PureTech 155 Grand Chic AT",
+          "engineId": "eb2dt-1.2-puretech",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "ds-3",
+      "name": "DS 3",
+      "body": "suv",
+      "years": [2023, null],
+      "variants": [
+        {
+          "name": "1.2 PureTech 130 AT",
+          "years": [2023, 2025],
+          "engineId": "eb2dt-1.2-puretech",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.2 Hybrid 136",
+          "years": [2025, null],
+          "engineId": "hybrid-1.2-136",
+          "transmission": "dsg"
+        }
+      ]
+    },
+    {
+      "id": "ds-4",
+      "name": "DS 4",
+      "body": "hatchback",
+      "years": [2022, null],
+      "variants": [
+        {
+          "name": "1.6 PureTech 225 AT",
+          "engineId": "ep6fdt-1.6-puretech",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.2 Hybrid 136",
+          "years": [2025, null],
+          "engineId": "hybrid-1.2-136",
+          "transmission": "dsg"
+        }
+      ]
+    },
+    {
+      "id": "ds-7-crossback",
+      "name": "DS 7 Crossback",
+      "body": "suv",
+      "years": [2018, 2022],
+      "variants": [
+        {
+          "name": "1.6 PureTech 180 So Chic AT",
+          "engineId": "ep6fdt-1.6-puretech",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 PureTech 225 Grand Chic AT",
+          "engineId": "ep6fdt-1.6-puretech",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 BlueHDi 180 Be Chic AT",
+          "engineId": "dw10-2.0-bluehdi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "E-Tense 4x4 300",
+          "years": [2021, 2022],
+          "engineId": "etense-4x4-300",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "ds-7",
+      "name": "DS 7",
+      "body": "suv",
+      "years": [2023, null],
+      "variants": [
+        {
+          "name": "E-Tense 4x4 300",
+          "engineId": "etense-4x4-300",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "ds-9",
+      "name": "DS 9",
+      "body": "sedan",
+      "years": [2021, 2025],
+      "variants": [
+        {
+          "name": "1.6 PureTech 225 Rivoli+ AT",
+          "engineId": "ep6fdt-1.6-puretech",
+          "transmission": "automatica"
+        }
+      ]
+    }
+  ]
+}

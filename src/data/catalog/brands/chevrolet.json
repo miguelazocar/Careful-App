@@ -1,0 +1,1434 @@
+{
+  "id": "chevrolet",
+  "name": "Chevrolet",
+  "engines": [
+    {
+      "id": "fam1-1.4-8v",
+      "name": "1.4 MPFI 8v Econo.Flex",
+      "fuel": "nafta"
+    },
+    {
+      "id": "fam1-1.6-8v",
+      "name": "1.6 MPFI 8v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "fam1-1.8-8v",
+      "name": "1.8 MPFI 8v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "spe4-1.4",
+      "name": "1.4 SPE/4 8v",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Orgánico OAT GM Dex-Cool",
+        "color": "naranja"
+      }
+    },
+    {
+      "id": "spe4-1.8",
+      "name": "1.8 SPE/4 8v",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Orgánico OAT GM Dex-Cool",
+        "color": "naranja"
+      }
+    },
+    {
+      "id": "fam2-2.0-8v",
+      "name": "2.0 MPFI 8v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "fam2-2.0-16v",
+      "name": "2.0 16v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "fam2-2.2-16v",
+      "name": "2.2 16v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "fam2-2.4-16v",
+      "name": "2.4 16v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ecotec-1.6",
+      "name": "1.6 Ecotec 16v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ecotec-1.8",
+      "name": "1.8 Ecotec 16v",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Orgánico OAT GM Dex-Cool",
+        "color": "naranja"
+      }
+    },
+    {
+      "id": "ecotec-2.4",
+      "name": "2.4 Ecotec 16v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ecotec-1.4t",
+      "name": "1.4 Turbo Ecotec 16v",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Orgánico OAT GM Dex-Cool",
+        "color": "naranja"
+      }
+    },
+    {
+      "id": "ecotec-1.5t",
+      "name": "1.5 Turbo Ecotec 16v",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Orgánico OAT GM Dex-Cool",
+        "color": "naranja"
+      }
+    },
+    {
+      "id": "css-1.2",
+      "name": "1.2 CSS Prime 12v",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Orgánico OAT GM Dex-Cool",
+        "color": "naranja"
+      }
+    },
+    {
+      "id": "css-1.0t",
+      "name": "1.0 Turbo CSS Prime 12v",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Orgánico OAT GM Dex-Cool",
+        "color": "naranja"
+      }
+    },
+    {
+      "id": "css-1.2t",
+      "name": "1.2 Turbo CSS Prime 12v",
+      "fuel": "nafta",
+      "coolant": {
+        "type": "Orgánico OAT GM Dex-Cool",
+        "color": "naranja"
+      }
+    },
+    {
+      "id": "alloytec-3.2-v6",
+      "name": "3.2 V6 Alloytec 24v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "v6-3.6",
+      "name": "3.6 V6 24v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "v8-6.2",
+      "name": "6.2 V8 16v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "isuzu-1.7-d",
+      "name": "1.7 D",
+      "fuel": "diesel"
+    },
+    {
+      "id": "vcdi-2.0",
+      "name": "2.0 VCDi 16v",
+      "fuel": "diesel"
+    },
+    {
+      "id": "vcdi-2.2",
+      "name": "2.2 VCDi 16v",
+      "fuel": "diesel"
+    },
+    {
+      "id": "mwm-2.8-td",
+      "name": "2.8 TD MWM Sprint",
+      "fuel": "diesel"
+    },
+    {
+      "id": "duramax-2.8",
+      "name": "2.8 CTDI Duramax 16v",
+      "fuel": "diesel",
+      "coolant": {
+        "type": "Orgánico OAT GM Dex-Cool",
+        "color": "naranja"
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "corsa",
+      "name": "Corsa",
+      "body": "hatchback",
+      "years": [
+        2000,
+        2002
+      ],
+      "variants": [
+        {
+          "name": "1.6 GL 3P",
+          "engineId": "fam1-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 GL 5P",
+          "engineId": "fam1-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 GLS 4P",
+          "engineId": "fam1-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 GL Wagon",
+          "engineId": "fam1-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.7 D GL 4P",
+          "engineId": "isuzu-1.7-d",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.7 D GL Wagon",
+          "engineId": "isuzu-1.7-d",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "corsa-classic",
+      "name": "Corsa Classic",
+      "body": "sedan",
+      "years": [
+        2003,
+        2010
+      ],
+      "variants": [
+        {
+          "name": "1.6 Super 4P",
+          "engineId": "fam1-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 GL 4P",
+          "engineId": "fam1-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 GLS 4P",
+          "engineId": "fam1-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 3P",
+          "engineId": "fam1-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 5P",
+          "engineId": "fam1-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Wagon",
+          "engineId": "fam1-1.6-8v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "classic",
+      "name": "Classic",
+      "body": "sedan",
+      "years": [
+        2011,
+        2016
+      ],
+      "variants": [
+        {
+          "name": "1.4 LS",
+          "engineId": "fam1-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 LT",
+          "engineId": "fam1-1.4-8v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "corsa-ii",
+      "name": "Corsa II",
+      "body": "hatchback",
+      "years": [
+        2003,
+        2012
+      ],
+      "variants": [
+        {
+          "name": "1.8 GL 3P",
+          "engineId": "fam1-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 GL 5P",
+          "engineId": "fam1-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 GLS 5P",
+          "engineId": "fam1-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 GL 4P",
+          "engineId": "fam1-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 GLS 4P",
+          "engineId": "fam1-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 CD 4P",
+          "engineId": "fam1-1.8-8v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "celta",
+      "name": "Celta",
+      "body": "hatchback",
+      "years": [
+        2006,
+        2011
+      ],
+      "variants": [
+        {
+          "name": "1.4 LS 3P",
+          "engineId": "fam1-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 LS 5P",
+          "engineId": "fam1-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 LT 5P",
+          "engineId": "fam1-1.4-8v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "agile",
+      "name": "Agile",
+      "body": "hatchback",
+      "years": [
+        2010,
+        2016
+      ],
+      "variants": [
+        {
+          "name": "1.4 LS",
+          "engineId": "fam1-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 LT",
+          "engineId": "fam1-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 LTZ",
+          "engineId": "fam1-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 LTZ Effect",
+          "years": [
+            2013,
+            2016
+          ],
+          "engineId": "fam1-1.4-8v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "prisma",
+      "name": "Prisma",
+      "body": "sedan",
+      "years": [
+        2013,
+        2019
+      ],
+      "variants": [
+        {
+          "name": "1.4 LS",
+          "engineId": "spe4-1.4",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 LT",
+          "engineId": "spe4-1.4",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 LTZ",
+          "engineId": "spe4-1.4",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 LTZ AT",
+          "years": [
+            2014,
+            2019
+          ],
+          "engineId": "spe4-1.4",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.4 Joy LS",
+          "years": [
+            2017,
+            2019
+          ],
+          "engineId": "spe4-1.4",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "onix",
+      "name": "Onix",
+      "body": "hatchback",
+      "years": [
+        2013,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.4 LS",
+          "years": [
+            2013,
+            2019
+          ],
+          "engineId": "spe4-1.4",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 LT",
+          "years": [
+            2013,
+            2019
+          ],
+          "engineId": "spe4-1.4",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 LTZ",
+          "years": [
+            2013,
+            2019
+          ],
+          "engineId": "spe4-1.4",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 LTZ AT",
+          "years": [
+            2014,
+            2019
+          ],
+          "engineId": "spe4-1.4",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.4 Effect",
+          "years": [
+            2015,
+            2019
+          ],
+          "engineId": "spe4-1.4",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Activ",
+          "years": [
+            2017,
+            2019
+          ],
+          "engineId": "spe4-1.4",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.2 LS",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "css-1.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.2 LT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "css-1.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 Turbo LT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "css-1.0t",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 Turbo LTZ AT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "css-1.0t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.0 Turbo Premier AT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "css-1.0t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.0 Turbo RS",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "css-1.0t"
+        }
+      ]
+    },
+    {
+      "id": "onix-joy",
+      "name": "Onix Joy",
+      "body": "hatchback",
+      "years": [
+        2017,
+        2019
+      ],
+      "variants": [
+        {
+          "name": "1.4 LS",
+          "engineId": "spe4-1.4",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "joy",
+      "name": "Joy",
+      "body": "hatchback",
+      "years": [
+        2020,
+        2022
+      ],
+      "variants": [
+        {
+          "name": "1.4 Black",
+          "engineId": "spe4-1.4",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "joy-plus",
+      "name": "Joy Plus",
+      "body": "sedan",
+      "years": [
+        2020,
+        2022
+      ],
+      "variants": [
+        {
+          "name": "1.4 Black",
+          "engineId": "spe4-1.4",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "onix-plus",
+      "name": "Onix Plus",
+      "body": "sedan",
+      "years": [
+        2020,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.2 LT",
+          "engineId": "css-1.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 Turbo LT",
+          "engineId": "css-1.0t",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 Turbo LTZ",
+          "engineId": "css-1.0t",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 Turbo LTZ AT",
+          "engineId": "css-1.0t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.0 Turbo Premier AT",
+          "engineId": "css-1.0t",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "cobalt",
+      "name": "Cobalt",
+      "body": "sedan",
+      "years": [
+        2013,
+        2018
+      ],
+      "variants": [
+        {
+          "name": "1.8 LT",
+          "engineId": "spe4-1.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 LTZ",
+          "engineId": "spe4-1.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 LTZ AT",
+          "engineId": "spe4-1.8",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "spin",
+      "name": "Spin",
+      "body": "minivan",
+      "years": [
+        2013,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.8 LT 5 asientos",
+          "years": [
+            2013,
+            null
+          ],
+          "engineId": "spe4-1.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 LTZ 7 asientos",
+          "years": [
+            2013,
+            null
+          ],
+          "engineId": "spe4-1.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 LTZ 7 asientos AT",
+          "years": [
+            2013,
+            null
+          ],
+          "engineId": "spe4-1.8",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.8 Activ",
+          "years": [
+            2015,
+            null
+          ],
+          "engineId": "spe4-1.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 Premier 7 asientos AT",
+          "years": [
+            2019,
+            null
+          ],
+          "engineId": "spe4-1.8",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "cruze",
+      "name": "Cruze",
+      "body": "sedan",
+      "years": [
+        2010,
+        2023
+      ],
+      "variants": [
+        {
+          "name": "1.8 LT",
+          "years": [
+            2010,
+            2016
+          ],
+          "engineId": "ecotec-1.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 LT AT",
+          "years": [
+            2010,
+            2016
+          ],
+          "engineId": "ecotec-1.8",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.8 LTZ",
+          "years": [
+            2010,
+            2016
+          ],
+          "engineId": "ecotec-1.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 LTZ AT",
+          "years": [
+            2010,
+            2016
+          ],
+          "engineId": "ecotec-1.8",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.8 LTZ 5P",
+          "years": [
+            2012,
+            2016
+          ],
+          "engineId": "ecotec-1.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 VCDi LT",
+          "years": [
+            2010,
+            2013
+          ],
+          "engineId": "vcdi-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 VCDi LTZ AT",
+          "years": [
+            2010,
+            2013
+          ],
+          "engineId": "vcdi-2.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.4 Turbo LT",
+          "years": [
+            2017,
+            2023
+          ],
+          "engineId": "ecotec-1.4t",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Turbo LTZ",
+          "years": [
+            2017,
+            2023
+          ],
+          "engineId": "ecotec-1.4t",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 Turbo LTZ AT",
+          "years": [
+            2017,
+            2023
+          ],
+          "engineId": "ecotec-1.4t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.4 Turbo Premier AT",
+          "years": [
+            2017,
+            2023
+          ],
+          "engineId": "ecotec-1.4t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.4 Turbo RS AT",
+          "years": [
+            2021,
+            2023
+          ],
+          "engineId": "ecotec-1.4t",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "astra",
+      "name": "Astra",
+      "body": "hatchback",
+      "years": [
+        2000,
+        2012
+      ],
+      "variants": [
+        {
+          "name": "2.0 GL 5P",
+          "engineId": "fam2-2.0-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 GLS 5P",
+          "engineId": "fam2-2.0-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 GLS 4P",
+          "engineId": "fam2-2.0-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v CD 4P",
+          "engineId": "fam2-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v GSi 3P",
+          "years": [
+            2005,
+            2011
+          ],
+          "engineId": "fam2-2.0-16v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "vectra",
+      "name": "Vectra",
+      "body": "sedan",
+      "years": [
+        2000,
+        2011
+      ],
+      "variants": [
+        {
+          "name": "2.2 16v GLS",
+          "years": [
+            2000,
+            2005
+          ],
+          "engineId": "fam2-2.2-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.2 16v CD AT",
+          "years": [
+            2000,
+            2005
+          ],
+          "engineId": "fam2-2.2-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 GL",
+          "years": [
+            2006,
+            2011
+          ],
+          "engineId": "fam2-2.0-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.4 16v CD",
+          "years": [
+            2006,
+            2011
+          ],
+          "engineId": "fam2-2.4-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.4 16v CD AT",
+          "years": [
+            2006,
+            2011
+          ],
+          "engineId": "fam2-2.4-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.4 16v GT 5P",
+          "years": [
+            2008,
+            2011
+          ],
+          "engineId": "fam2-2.4-16v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "meriva",
+      "name": "Meriva",
+      "body": "minivan",
+      "years": [
+        2003,
+        2012
+      ],
+      "variants": [
+        {
+          "name": "1.8 GL",
+          "engineId": "fam1-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 GL Plus",
+          "engineId": "fam1-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 GLS",
+          "engineId": "fam1-1.8-8v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "zafira",
+      "name": "Zafira",
+      "body": "minivan",
+      "years": [
+        2001,
+        2012
+      ],
+      "variants": [
+        {
+          "name": "2.0 GL",
+          "engineId": "fam2-2.0-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 GLS",
+          "engineId": "fam2-2.0-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v CD",
+          "engineId": "fam2-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v CD AT",
+          "engineId": "fam2-2.0-16v",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "tracker",
+      "name": "Tracker",
+      "body": "suv",
+      "years": [
+        2013,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.8 LT 4x2",
+          "years": [
+            2013,
+            2019
+          ],
+          "engineId": "ecotec-1.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 LTZ AWD AT",
+          "years": [
+            2013,
+            2019
+          ],
+          "engineId": "ecotec-1.8",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.8 Premier AWD AT",
+          "years": [
+            2017,
+            2019
+          ],
+          "engineId": "ecotec-1.8",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.2 Turbo",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "css-1.2t",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.2 Turbo LT AT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "css-1.2t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.2 Turbo LTZ AT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "css-1.2t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.2 Turbo Premier AT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "css-1.2t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.2 Turbo RS AT",
+          "years": [
+            2022,
+            null
+          ],
+          "engineId": "css-1.2t",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "captiva",
+      "name": "Captiva",
+      "body": "suv",
+      "years": [
+        2007,
+        2018
+      ],
+      "variants": [
+        {
+          "name": "2.4 LS 4x2",
+          "years": [
+            2007,
+            2018
+          ],
+          "engineId": "ecotec-2.4",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.4 LT 4x2 AT",
+          "years": [
+            2011,
+            2018
+          ],
+          "engineId": "ecotec-2.4",
+          "transmission": "automatica"
+        },
+        {
+          "name": "3.2 V6 LT AWD AT",
+          "years": [
+            2007,
+            2010
+          ],
+          "engineId": "alloytec-3.2-v6",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 VCDi LT AWD",
+          "years": [
+            2008,
+            2011
+          ],
+          "engineId": "vcdi-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.2 VCDi LTZ AWD AT",
+          "years": [
+            2012,
+            2018
+          ],
+          "engineId": "vcdi-2.2",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "equinox",
+      "name": "Equinox",
+      "body": "suv",
+      "years": [
+        2018,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.5 Turbo LT AT",
+          "engineId": "ecotec-1.5t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.5 Turbo Premier AWD AT",
+          "engineId": "ecotec-1.5t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.5 Turbo RS AT",
+          "years": [
+            2023,
+            null
+          ],
+          "engineId": "ecotec-1.5t",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "trailblazer",
+      "name": "Trailblazer",
+      "body": "suv",
+      "years": [
+        2013,
+        null
+      ],
+      "variants": [
+        {
+          "name": "2.8 CTDI LT 4x2",
+          "years": [
+            2013,
+            null
+          ],
+          "engineId": "duramax-2.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.8 CTDI LTZ 4x4 AT",
+          "years": [
+            2013,
+            null
+          ],
+          "engineId": "duramax-2.8",
+          "transmission": "automatica"
+        },
+        {
+          "name": "3.6 V6 LTZ AT",
+          "years": [
+            2013,
+            2016
+          ],
+          "engineId": "v6-3.6",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.8 CTDI Premier 4x4 AT",
+          "years": [
+            2017,
+            null
+          ],
+          "engineId": "duramax-2.8",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "s10",
+      "name": "S10",
+      "body": "pickup",
+      "years": [
+        2000,
+        null
+      ],
+      "variants": [
+        {
+          "name": "2.8 TD DLX 4x2 CS",
+          "years": [
+            2000,
+            2012
+          ],
+          "engineId": "mwm-2.8-td",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.8 TD DLX 4x4 CD",
+          "years": [
+            2000,
+            2012
+          ],
+          "engineId": "mwm-2.8-td",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.8 TD Executive 4x4 CD",
+          "years": [
+            2003,
+            2012
+          ],
+          "engineId": "mwm-2.8-td",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.8 CTDI LS 4x2 CS",
+          "years": [
+            2012,
+            null
+          ],
+          "engineId": "duramax-2.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.8 CTDI LS 4x4 CD",
+          "years": [
+            2012,
+            null
+          ],
+          "engineId": "duramax-2.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.8 CTDI LT 4x2 CD",
+          "years": [
+            2012,
+            null
+          ],
+          "engineId": "duramax-2.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.8 CTDI LTZ 4x4 CD",
+          "years": [
+            2012,
+            null
+          ],
+          "engineId": "duramax-2.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.8 CTDI LTZ 4x4 CD AT",
+          "years": [
+            2012,
+            null
+          ],
+          "engineId": "duramax-2.8",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.8 CTDI High Country 4x4 AT",
+          "years": [
+            2017,
+            null
+          ],
+          "engineId": "duramax-2.8",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.8 CTDI Z71 4x4 AT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "duramax-2.8",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "montana",
+      "name": "Montana",
+      "body": "pickup",
+      "years": [
+        2004,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.8 Conquest",
+          "years": [
+            2004,
+            2010
+          ],
+          "engineId": "fam1-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 Sport",
+          "years": [
+            2004,
+            2010
+          ],
+          "engineId": "fam1-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.2 Turbo LT",
+          "years": [
+            2023,
+            null
+          ],
+          "engineId": "css-1.2t",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.2 Turbo LTZ AT",
+          "years": [
+            2023,
+            null
+          ],
+          "engineId": "css-1.2t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.2 Turbo Premier AT",
+          "years": [
+            2023,
+            null
+          ],
+          "engineId": "css-1.2t",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "sonic",
+      "name": "Sonic",
+      "body": "hatchback",
+      "years": [
+        2012,
+        2017
+      ],
+      "variants": [
+        {
+          "name": "1.6 LT 5P",
+          "engineId": "ecotec-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 LTZ 5P",
+          "engineId": "ecotec-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 LTZ 5P AT",
+          "engineId": "ecotec-1.6",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 LT Sedán",
+          "engineId": "ecotec-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 LTZ Sedán AT",
+          "engineId": "ecotec-1.6",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "aveo",
+      "name": "Aveo",
+      "body": "sedan",
+      "years": [
+        2008,
+        2014
+      ],
+      "variants": [
+        {
+          "name": "1.6 LS",
+          "engineId": "ecotec-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 LT",
+          "engineId": "ecotec-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 LT AT",
+          "engineId": "ecotec-1.6",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "camaro",
+      "name": "Camaro",
+      "body": "coupe",
+      "years": [
+        2012,
+        2019
+      ],
+      "variants": [
+        {
+          "name": "6.2 V8 SS AT",
+          "engineId": "v8-6.2",
+          "transmission": "automatica"
+        }
+      ]
+    }
+  ]
+}

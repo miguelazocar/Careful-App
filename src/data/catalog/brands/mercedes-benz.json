@@ -1,0 +1,1257 @@
+{
+  "id": "mercedes-benz",
+  "name": "Mercedes-Benz",
+  "engines": [
+    {
+      "id": "m166-1.6",
+      "name": "1.6 8v (M166)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m166-1.9",
+      "name": "1.9 8v (M166)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m266-1.7",
+      "name": "1.7 8v (M266)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m266-2.0",
+      "name": "2.0 8v (M266)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m270-1.6t",
+      "name": "1.6 Turbo 16v (M270)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m270-2.0t",
+      "name": "2.0 Turbo 16v (M270)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m133-2.0t",
+      "name": "2.0 Turbo 16v AMG (M133)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m282-1.3t",
+      "name": "1.3 Turbo 16v (M282)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m260-2.0t",
+      "name": "2.0 Turbo 16v (M260)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m139-2.0t",
+      "name": "2.0 Turbo 16v AMG (M139)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m111-2.0k",
+      "name": "2.0 Kompressor 16v (M111)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m271-1.8k",
+      "name": "1.8 Kompressor 16v (M271)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m271-1.8-cgi",
+      "name": "1.8 CGI Turbo 16v (M271 DE)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m274-2.0t",
+      "name": "2.0 Turbo 16v (M274)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m264-1.5t",
+      "name": "1.5 Turbo 16v EQ Boost (M264)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m264-2.0t",
+      "name": "2.0 Turbo 16v (M264)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m254-1.5t",
+      "name": "1.5 Turbo 16v (M254)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m254-2.0t",
+      "name": "2.0 Turbo 16v (M254)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m112-2.6",
+      "name": "2.6 V6 18v (M112)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m112-3.2",
+      "name": "3.2 V6 18v (M112)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m272-3.0",
+      "name": "3.0 V6 24v (M272)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m272-3.5",
+      "name": "3.5 V6 24v (M272)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m276-3.5",
+      "name": "3.5 V6 24v (M276)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m276-3.0t",
+      "name": "3.0 V6 biturbo 24v (M276)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m256-3.0",
+      "name": "3.0 I6 Turbo EQ Boost (M256)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m113-5.0",
+      "name": "5.0 V8 24v (M113)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m156-6.2",
+      "name": "6.2 V8 AMG (M156)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "m177-4.0",
+      "name": "4.0 V8 biturbo AMG (M177)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "om602-2.9",
+      "name": "2.9 TD 10v (OM602)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "om611-om646-2.2",
+      "name": "2.2 CDI 16v (OM611/OM646)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "om612-2.7",
+      "name": "2.7 CDI 20v (OM612)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "om642-3.0",
+      "name": "3.0 V6 CDI 24v (OM642)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "om651-2.1",
+      "name": "2.1 CDI 16v (OM651)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "om622-1.6",
+      "name": "1.6 CDI 16v (OM622)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "om654-2.0",
+      "name": "2.0 CDI 16v (OM654)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "ys23-2.3",
+      "name": "2.3 dCi 16v (YS23)",
+      "fuel": "diesel"
+    }
+  ],
+  "models": [
+    {
+      "id": "clase-a",
+      "name": "Clase A",
+      "body": "hatchback",
+      "years": [
+        2000,
+        null
+      ],
+      "variants": [
+        {
+          "name": "A 160 Classic",
+          "years": [
+            2000,
+            2004
+          ],
+          "engineId": "m166-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "A 190 Elegance AT",
+          "years": [
+            2000,
+            2004
+          ],
+          "engineId": "m166-1.9",
+          "transmission": "automatica"
+        },
+        {
+          "name": "A 170",
+          "years": [
+            2005,
+            2012
+          ],
+          "engineId": "m266-1.7"
+        },
+        {
+          "name": "A 200",
+          "years": [
+            2005,
+            2012
+          ],
+          "engineId": "m266-2.0"
+        },
+        {
+          "name": "A 200 Urban DCT",
+          "years": [
+            2013,
+            2018
+          ],
+          "engineId": "m270-1.6t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "A 250 Sport DCT",
+          "years": [
+            2013,
+            2018
+          ],
+          "engineId": "m270-2.0t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "A 45 AMG 4Matic DCT",
+          "years": [
+            2014,
+            2018
+          ],
+          "engineId": "m133-2.0t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "A 200 Progressive DCT",
+          "years": [
+            2019,
+            null
+          ],
+          "engineId": "m282-1.3t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "A 200 Sedán DCT",
+          "years": [
+            2019,
+            null
+          ],
+          "engineId": "m282-1.3t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "A 250 AMG-Line DCT",
+          "years": [
+            2019,
+            null
+          ],
+          "engineId": "m260-2.0t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "A 35 AMG 4Matic DCT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "m260-2.0t",
+          "transmission": "dsg"
+        }
+      ]
+    },
+    {
+      "id": "clase-b",
+      "name": "Clase B",
+      "body": "minivan",
+      "years": [
+        2006,
+        2018
+      ],
+      "variants": [
+        {
+          "name": "B 170",
+          "years": [
+            2006,
+            2011
+          ],
+          "engineId": "m266-1.7"
+        },
+        {
+          "name": "B 200",
+          "years": [
+            2006,
+            2011
+          ],
+          "engineId": "m266-2.0"
+        },
+        {
+          "name": "B 200 DCT",
+          "years": [
+            2012,
+            2018
+          ],
+          "engineId": "m270-1.6t",
+          "transmission": "dsg"
+        }
+      ]
+    },
+    {
+      "id": "clase-c",
+      "name": "Clase C",
+      "body": "sedan",
+      "years": [
+        2000,
+        null
+      ],
+      "variants": [
+        {
+          "name": "C 200 Kompressor",
+          "years": [
+            2000,
+            2002
+          ],
+          "engineId": "m111-2.0k"
+        },
+        {
+          "name": "C 220 CDI",
+          "years": [
+            2000,
+            2007
+          ],
+          "engineId": "om611-om646-2.2"
+        },
+        {
+          "name": "C 240 Elegance AT",
+          "years": [
+            2001,
+            2004
+          ],
+          "engineId": "m112-2.6",
+          "transmission": "automatica"
+        },
+        {
+          "name": "C 320 Avantgarde AT",
+          "years": [
+            2001,
+            2005
+          ],
+          "engineId": "m112-3.2",
+          "transmission": "automatica"
+        },
+        {
+          "name": "C 200 Kompressor",
+          "years": [
+            2003,
+            2010
+          ],
+          "engineId": "m271-1.8k"
+        },
+        {
+          "name": "C 300 Avantgarde AT",
+          "years": [
+            2008,
+            2011
+          ],
+          "engineId": "m272-3.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "C 200 CGI AT",
+          "years": [
+            2011,
+            2014
+          ],
+          "engineId": "m271-1.8-cgi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "C 250 CGI AT",
+          "years": [
+            2011,
+            2014
+          ],
+          "engineId": "m271-1.8-cgi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "C 63 AMG",
+          "years": [
+            2008,
+            2014
+          ],
+          "engineId": "m156-6.2",
+          "transmission": "automatica"
+        },
+        {
+          "name": "C 200 Avantgarde AT",
+          "years": [
+            2015,
+            2018
+          ],
+          "engineId": "m274-2.0t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "C 250 Avantgarde AT",
+          "years": [
+            2015,
+            2018
+          ],
+          "engineId": "m274-2.0t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "C 300 AMG-Line AT",
+          "years": [
+            2016,
+            2018
+          ],
+          "engineId": "m274-2.0t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "C 43 AMG 4Matic AT",
+          "years": [
+            2017,
+            2021
+          ],
+          "engineId": "m276-3.0t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "C 63 AMG S AT",
+          "years": [
+            2016,
+            2021
+          ],
+          "engineId": "m177-4.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "C 200 EQ Boost AT",
+          "years": [
+            2019,
+            2021
+          ],
+          "engineId": "m264-1.5t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "C 300 AMG-Line AT",
+          "years": [
+            2019,
+            2021
+          ],
+          "engineId": "m264-2.0t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "C 200 Avantgarde AT",
+          "years": [
+            2022,
+            null
+          ],
+          "engineId": "m254-1.5t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "C 300 AMG-Line AT",
+          "years": [
+            2022,
+            null
+          ],
+          "engineId": "m254-2.0t",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "clase-e",
+      "name": "Clase E",
+      "body": "sedan",
+      "years": [
+        2000,
+        null
+      ],
+      "variants": [
+        {
+          "name": "E 240 Elegance AT",
+          "years": [
+            2000,
+            2005
+          ],
+          "engineId": "m112-2.6",
+          "transmission": "automatica"
+        },
+        {
+          "name": "E 320 Avantgarde AT",
+          "years": [
+            2000,
+            2005
+          ],
+          "engineId": "m112-3.2",
+          "transmission": "automatica"
+        },
+        {
+          "name": "E 500 AT",
+          "years": [
+            2003,
+            2006
+          ],
+          "engineId": "m113-5.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "E 320 CDI AT",
+          "years": [
+            2006,
+            2009
+          ],
+          "engineId": "om642-3.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "E 350 AT",
+          "years": [
+            2006,
+            2011
+          ],
+          "engineId": "m272-3.5",
+          "transmission": "automatica"
+        },
+        {
+          "name": "E 250 CGI AT",
+          "years": [
+            2010,
+            2013
+          ],
+          "engineId": "m271-1.8-cgi",
+          "transmission": "automatica"
+        },
+        {
+          "name": "E 350 Avantgarde AT",
+          "years": [
+            2012,
+            2016
+          ],
+          "engineId": "m276-3.5",
+          "transmission": "automatica"
+        },
+        {
+          "name": "E 250 AT",
+          "years": [
+            2014,
+            2016
+          ],
+          "engineId": "m274-2.0t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "E 300 Avantgarde AT",
+          "years": [
+            2017,
+            2020
+          ],
+          "engineId": "m274-2.0t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "E 53 AMG 4Matic+ AT",
+          "years": [
+            2019,
+            2023
+          ],
+          "engineId": "m256-3.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "E 300 AMG-Line AT",
+          "years": [
+            2021,
+            2023
+          ],
+          "engineId": "m264-2.0t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "E 300 AMG-Line AT",
+          "years": [
+            2024,
+            null
+          ],
+          "engineId": "m254-2.0t",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "cla",
+      "name": "CLA",
+      "body": "sedan",
+      "years": [
+        2014,
+        null
+      ],
+      "variants": [
+        {
+          "name": "CLA 200 Urban DCT",
+          "years": [
+            2014,
+            2019
+          ],
+          "engineId": "m270-1.6t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "CLA 250 Sport 4Matic DCT",
+          "years": [
+            2014,
+            2019
+          ],
+          "engineId": "m270-2.0t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "CLA 45 AMG 4Matic DCT",
+          "years": [
+            2014,
+            2019
+          ],
+          "engineId": "m133-2.0t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "CLA 200 Progressive DCT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "m282-1.3t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "CLA 250 AMG-Line DCT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "m260-2.0t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "CLA 35 AMG 4Matic DCT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "m260-2.0t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "CLA 45 S AMG 4Matic+ DCT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "m139-2.0t",
+          "transmission": "dsg"
+        }
+      ]
+    },
+    {
+      "id": "gla",
+      "name": "GLA",
+      "body": "suv",
+      "years": [
+        2015,
+        null
+      ],
+      "variants": [
+        {
+          "name": "GLA 200 Urban DCT",
+          "years": [
+            2015,
+            2020
+          ],
+          "engineId": "m270-1.6t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "GLA 250 4Matic DCT",
+          "years": [
+            2015,
+            2020
+          ],
+          "engineId": "m270-2.0t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "GLA 45 AMG 4Matic DCT",
+          "years": [
+            2015,
+            2020
+          ],
+          "engineId": "m133-2.0t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "GLA 200 Progressive DCT",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "m282-1.3t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "GLA 250 4Matic DCT",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "m260-2.0t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "GLA 35 AMG 4Matic DCT",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "m260-2.0t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "GLA 45 S AMG 4Matic+ DCT",
+          "years": [
+            2022,
+            null
+          ],
+          "engineId": "m139-2.0t",
+          "transmission": "dsg"
+        }
+      ]
+    },
+    {
+      "id": "glb",
+      "name": "GLB",
+      "body": "suv",
+      "years": [
+        2020,
+        null
+      ],
+      "variants": [
+        {
+          "name": "GLB 200 Progressive DCT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "m282-1.3t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "GLB 250 4Matic DCT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "m260-2.0t",
+          "transmission": "dsg"
+        },
+        {
+          "name": "GLB 35 AMG 4Matic DCT",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "m260-2.0t",
+          "transmission": "dsg"
+        }
+      ]
+    },
+    {
+      "id": "glc",
+      "name": "GLC",
+      "body": "suv",
+      "years": [
+        2016,
+        null
+      ],
+      "variants": [
+        {
+          "name": "GLC 250 4Matic AT",
+          "years": [
+            2016,
+            2019
+          ],
+          "engineId": "m274-2.0t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "GLC 300 4Matic AT",
+          "years": [
+            2016,
+            2019
+          ],
+          "engineId": "m274-2.0t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "GLC 43 AMG 4Matic AT",
+          "years": [
+            2017,
+            2022
+          ],
+          "engineId": "m276-3.0t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "GLC 300 4Matic AT",
+          "years": [
+            2020,
+            2022
+          ],
+          "engineId": "m264-2.0t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "GLC 300 4Matic AT",
+          "years": [
+            2023,
+            null
+          ],
+          "engineId": "m254-2.0t",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "gle",
+      "name": "GLE",
+      "body": "suv",
+      "years": [
+        2016,
+        null
+      ],
+      "variants": [
+        {
+          "name": "GLE 400 4Matic AT",
+          "years": [
+            2016,
+            2019
+          ],
+          "engineId": "m276-3.0t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "GLE 43 AMG 4Matic AT",
+          "years": [
+            2017,
+            2019
+          ],
+          "engineId": "m276-3.0t",
+          "transmission": "automatica"
+        },
+        {
+          "name": "GLE 450 4Matic AT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "m256-3.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "GLE 53 AMG 4Matic+ AT",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "m256-3.0",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "clase-ml",
+      "name": "Clase ML",
+      "body": "suv",
+      "years": [
+        2000,
+        2015
+      ],
+      "variants": [
+        {
+          "name": "ML 320 AT",
+          "years": [
+            2000,
+            2005
+          ],
+          "engineId": "m112-3.2",
+          "transmission": "automatica"
+        },
+        {
+          "name": "ML 270 CDI AT",
+          "years": [
+            2000,
+            2005
+          ],
+          "engineId": "om612-2.7",
+          "transmission": "automatica"
+        },
+        {
+          "name": "ML 350 AT",
+          "years": [
+            2006,
+            2011
+          ],
+          "engineId": "m272-3.5",
+          "transmission": "automatica"
+        },
+        {
+          "name": "ML 320 CDI AT",
+          "years": [
+            2006,
+            2011
+          ],
+          "engineId": "om642-3.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "ML 350 AT",
+          "years": [
+            2012,
+            2015
+          ],
+          "engineId": "m276-3.5",
+          "transmission": "automatica"
+        },
+        {
+          "name": "ML 350 BlueTEC 4Matic AT",
+          "years": [
+            2012,
+            2015
+          ],
+          "engineId": "om642-3.0",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "glk",
+      "name": "GLK",
+      "body": "suv",
+      "years": [
+        2009,
+        2015
+      ],
+      "variants": [
+        {
+          "name": "GLK 300 4Matic AT",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "sprinter",
+      "name": "Sprinter",
+      "body": "van",
+      "years": [
+        2000,
+        null
+      ],
+      "variants": [
+        {
+          "name": "310 D Furgón",
+          "years": [
+            2000,
+            2002
+          ],
+          "engineId": "om602-2.9",
+          "transmission": "manual"
+        },
+        {
+          "name": "311 CDI Furgón",
+          "years": [
+            2002,
+            2012
+          ],
+          "engineId": "om611-om646-2.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "313 CDI Furgón",
+          "years": [
+            2002,
+            2012
+          ],
+          "engineId": "om611-om646-2.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "313 CDI Combi",
+          "years": [
+            2002,
+            2012
+          ],
+          "engineId": "om611-om646-2.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "413 CDI Chasis",
+          "years": [
+            2002,
+            2012
+          ],
+          "engineId": "om611-om646-2.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "411 CDI Street Furgón",
+          "years": [
+            2013,
+            2019
+          ],
+          "engineId": "om611-om646-2.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "415 CDI Furgón",
+          "years": [
+            2012,
+            2023
+          ],
+          "engineId": "om651-2.1",
+          "transmission": "manual"
+        },
+        {
+          "name": "415 CDI Combi",
+          "years": [
+            2012,
+            2023
+          ],
+          "engineId": "om651-2.1",
+          "transmission": "manual"
+        },
+        {
+          "name": "515 CDI Furgón",
+          "years": [
+            2012,
+            2023
+          ],
+          "engineId": "om651-2.1",
+          "transmission": "manual"
+        },
+        {
+          "name": "515 CDI Chasis",
+          "years": [
+            2012,
+            2023
+          ],
+          "engineId": "om651-2.1",
+          "transmission": "manual"
+        },
+        {
+          "name": "417 Furgón",
+          "years": [
+            2024,
+            null
+          ],
+          "engineId": "om654-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "417 Combi",
+          "years": [
+            2024,
+            null
+          ],
+          "engineId": "om654-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "517 Furgón",
+          "years": [
+            2024,
+            null
+          ],
+          "engineId": "om654-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "517 Chasis",
+          "years": [
+            2024,
+            null
+          ],
+          "engineId": "om654-2.0",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "vito",
+      "name": "Vito",
+      "body": "van",
+      "years": [
+        2000,
+        null
+      ],
+      "variants": [
+        {
+          "name": "110 CDI Furgón",
+          "years": [
+            2000,
+            2003
+          ],
+          "engineId": "om611-om646-2.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "111 CDI Furgón",
+          "years": [
+            2005,
+            2014
+          ],
+          "engineId": "om611-om646-2.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "115 CDI Furgón",
+          "years": [
+            2005,
+            2014
+          ],
+          "engineId": "om611-om646-2.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "111 CDI Furgón",
+          "years": [
+            2016,
+            null
+          ],
+          "engineId": "om622-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "114 CDI Furgón",
+          "years": [
+            2016,
+            null
+          ],
+          "engineId": "om651-2.1",
+          "transmission": "manual"
+        },
+        {
+          "name": "116 CDI Mixto",
+          "years": [
+            2016,
+            null
+          ],
+          "engineId": "om651-2.1",
+          "transmission": "manual"
+        },
+        {
+          "name": "116 CDI Tourer AT",
+          "years": [
+            2016,
+            null
+          ],
+          "engineId": "om651-2.1",
+          "transmission": "automatica"
+        },
+        {
+          "name": "121 Tourer AT",
+          "years": [
+            2016,
+            null
+          ],
+          "engineId": "m274-2.0t",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "clase-x",
+      "name": "Clase X",
+      "body": "pickup",
+      "years": [
+        2018,
+        2020
+      ],
+      "variants": [
+        {
+          "name": "X 220d Pure 4x2",
+          "years": [
+            2018,
+            2020
+          ],
+          "engineId": "ys23-2.3",
+          "transmission": "manual"
+        },
+        {
+          "name": "X 250d Progressive 4x4",
+          "years": [
+            2018,
+            2020
+          ],
+          "engineId": "ys23-2.3",
+          "transmission": "manual"
+        },
+        {
+          "name": "X 250d Power 4x4 AT",
+          "years": [
+            2018,
+            2020
+          ],
+          "engineId": "ys23-2.3",
+          "transmission": "automatica"
+        },
+        {
+          "name": "X 350d Power 4Matic AT",
+          "years": [
+            2019,
+            2020
+          ],
+          "engineId": "om642-3.0",
+          "transmission": "automatica"
+        }
+      ]
+    }
+  ]
+}

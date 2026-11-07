@@ -1,0 +1,1670 @@
+{
+  "id": "ford",
+  "name": "Ford",
+  "engines": [
+    {
+      "id": "zetec-rocam-1.0",
+      "name": "1.0 Zetec Rocam 8v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "zetec-rocam-1.6",
+      "name": "1.6 Zetec Rocam 8v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "sigma-1.5",
+      "name": "1.5 Sigma 16v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "sigma-1.6",
+      "name": "1.6 Sigma 16v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "dragon-1.5",
+      "name": "1.5 Dragon Ti-VCT 12v 3 cil",
+      "fuel": "nafta"
+    },
+    {
+      "id": "zetec-1.8",
+      "name": "1.8 Zetec 16v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "zetec-2.0",
+      "name": "2.0 Zetec 16v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "duratec-2.0",
+      "name": "2.0 Duratec HE 16v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "duratec-gdi-2.0",
+      "name": "2.0 Duratec GDI 16v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "duratec-2.3",
+      "name": "2.3 Duratec HE 16v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "duratec-2.5",
+      "name": "2.5 Duratec 16v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "duratec-2.5-turbo",
+      "name": "2.5 Duratec Turbo 20v 5 cil",
+      "fuel": "nafta"
+    },
+    {
+      "id": "duratec-v6-3.0",
+      "name": "3.0 Duratec V6 24v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ecoboost-1.5-3c",
+      "name": "1.5 EcoBoost 12v 3 cil",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ecoboost-1.5-4c",
+      "name": "1.5 EcoBoost 16v 4 cil",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ecoboost-1.6",
+      "name": "1.6 EcoBoost 16v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ecoboost-1.8",
+      "name": "1.8 EcoBoost 16v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ecoboost-2.0",
+      "name": "2.0 EcoBoost 16v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ecoboost-2.7-v6",
+      "name": "2.7 V6 EcoBoost biturbo",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ecoboost-3.0-v6",
+      "name": "3.0 V6 EcoBoost biturbo",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ecoboost-3.5-v6",
+      "name": "3.5 V6 EcoBoost biturbo",
+      "fuel": "nafta"
+    },
+    {
+      "id": "coyote-5.0-v8",
+      "name": "5.0 V8 Coyote 32v",
+      "fuel": "nafta"
+    },
+    {
+      "id": "hybrid-2.5",
+      "name": "2.5 Duratec Hybrid (HEV)",
+      "fuel": "hibrido"
+    },
+    {
+      "id": "endura-d-1.8",
+      "name": "1.8 Endura-D",
+      "fuel": "diesel"
+    },
+    {
+      "id": "duratorq-1.4",
+      "name": "1.4 Duratorq TDCi 8v",
+      "fuel": "diesel"
+    },
+    {
+      "id": "duratorq-1.8",
+      "name": "1.8 Duratorq TDDi / TDCi",
+      "fuel": "diesel"
+    },
+    {
+      "id": "duratorq-2.0",
+      "name": "2.0 Duratorq TDCi 16v",
+      "fuel": "diesel"
+    },
+    {
+      "id": "duratorq-2.4",
+      "name": "2.4 Duratorq TDCi",
+      "fuel": "diesel"
+    },
+    {
+      "id": "puma-2.2",
+      "name": "2.2 Duratorq TDCi (Puma)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "puma-3.2",
+      "name": "3.2 Duratorq TDCi 5 cil (Puma)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "ecoblue-2.0",
+      "name": "2.0 TDCi EcoBlue 16v",
+      "fuel": "diesel"
+    },
+    {
+      "id": "lion-3.0-v6",
+      "name": "3.0 V6 TDCi (Lion)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "maxion-2.5-td",
+      "name": "2.5 TD Maxion HS",
+      "fuel": "diesel"
+    },
+    {
+      "id": "powerstroke-2.8",
+      "name": "2.8 Power Stroke TD",
+      "fuel": "diesel"
+    },
+    {
+      "id": "powerstroke-3.0",
+      "name": "3.0 Power Stroke TD",
+      "fuel": "diesel"
+    }
+  ],
+  "models": [
+    {
+      "id": "ka",
+      "name": "Ka",
+      "body": "hatchback",
+      "years": [
+        2000,
+        2021
+      ],
+      "variants": [
+        {
+          "name": "1.0 Image",
+          "years": [
+            2000,
+            2008
+          ],
+          "engineId": "zetec-rocam-1.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Image",
+          "years": [
+            2000,
+            2008
+          ],
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Action",
+          "years": [
+            2003,
+            2008
+          ],
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 Fly",
+          "years": [
+            2009,
+            2013
+          ],
+          "engineId": "zetec-rocam-1.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 Fly Viral",
+          "years": [
+            2010,
+            2013
+          ],
+          "engineId": "zetec-rocam-1.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Pulse",
+          "years": [
+            2009,
+            2013
+          ],
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Top Pulse",
+          "years": [
+            2009,
+            2013
+          ],
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 S",
+          "years": [
+            2016,
+            2018
+          ],
+          "engineId": "sigma-1.5",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 SE",
+          "years": [
+            2016,
+            2018
+          ],
+          "engineId": "sigma-1.5",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 SEL",
+          "years": [
+            2016,
+            2018
+          ],
+          "engineId": "sigma-1.5",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 S",
+          "years": [
+            2019,
+            2021
+          ],
+          "engineId": "dragon-1.5",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 SE",
+          "years": [
+            2019,
+            2021
+          ],
+          "engineId": "dragon-1.5",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 SEL",
+          "years": [
+            2019,
+            2021
+          ],
+          "engineId": "dragon-1.5",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 SEL AT",
+          "years": [
+            2019,
+            2021
+          ],
+          "engineId": "dragon-1.5",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.5 Freestyle",
+          "years": [
+            2019,
+            2021
+          ],
+          "engineId": "dragon-1.5",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 Freestyle AT",
+          "years": [
+            2019,
+            2021
+          ],
+          "engineId": "dragon-1.5",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "ka-plus",
+      "name": "Ka+",
+      "body": "sedan",
+      "years": [
+        2016,
+        2021
+      ],
+      "variants": [
+        {
+          "name": "1.5 S",
+          "years": [
+            2016,
+            2018
+          ],
+          "engineId": "sigma-1.5",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 SE",
+          "years": [
+            2016,
+            2018
+          ],
+          "engineId": "sigma-1.5",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 SEL",
+          "years": [
+            2016,
+            2018
+          ],
+          "engineId": "sigma-1.5",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 SE",
+          "years": [
+            2019,
+            2021
+          ],
+          "engineId": "dragon-1.5",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 SEL",
+          "years": [
+            2019,
+            2021
+          ],
+          "engineId": "dragon-1.5",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 SEL AT",
+          "years": [
+            2019,
+            2021
+          ],
+          "engineId": "dragon-1.5",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "fiesta",
+      "name": "Fiesta",
+      "body": "hatchback",
+      "years": [
+        2000,
+        2007
+      ],
+      "variants": [
+        {
+          "name": "1.8 D LX",
+          "years": [
+            2000,
+            2002
+          ],
+          "engineId": "endura-d-1.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Ambiente",
+          "years": [
+            2003,
+            2007
+          ],
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Edge",
+          "years": [
+            2003,
+            2007
+          ],
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Ambiente Sedán",
+          "years": [
+            2004,
+            2007
+          ],
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 TDCi Ambiente",
+          "years": [
+            2004,
+            2007
+          ],
+          "engineId": "duratorq-1.4",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 TDCi Edge",
+          "years": [
+            2004,
+            2007
+          ],
+          "engineId": "duratorq-1.4",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fiesta-max",
+      "name": "Fiesta Max",
+      "body": "hatchback",
+      "years": [
+        2007,
+        2011
+      ],
+      "variants": [
+        {
+          "name": "1.6 Ambiente",
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Edge",
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Edge Plus",
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Edge Plus Sedán",
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 TDCi Ambiente",
+          "engineId": "duratorq-1.4",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 TDCi Edge",
+          "engineId": "duratorq-1.4",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fiesta-one",
+      "name": "Fiesta One",
+      "body": "hatchback",
+      "years": [
+        2011,
+        2014
+      ],
+      "variants": [
+        {
+          "name": "1.6 Ambient",
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Ambient Plus",
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Edge",
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Ambient Sedán",
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "fiesta-kinetic",
+      "name": "Fiesta Kinetic Design",
+      "body": "hatchback",
+      "years": [
+        2011,
+        2019
+      ],
+      "variants": [
+        {
+          "name": "1.6 Trend",
+          "years": [
+            2011,
+            2013
+          ],
+          "engineId": "sigma-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Trend Plus",
+          "years": [
+            2011,
+            2013
+          ],
+          "engineId": "sigma-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Trend Sedán",
+          "years": [
+            2011,
+            2013
+          ],
+          "engineId": "sigma-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 S",
+          "years": [
+            2014,
+            2019
+          ],
+          "engineId": "sigma-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 SE",
+          "years": [
+            2014,
+            2019
+          ],
+          "engineId": "sigma-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 SE PowerShift",
+          "years": [
+            2014,
+            2019
+          ],
+          "engineId": "sigma-1.6",
+          "transmission": "dsg"
+        },
+        {
+          "name": "1.6 Titanium",
+          "years": [
+            2011,
+            2019
+          ],
+          "engineId": "sigma-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Titanium PowerShift",
+          "years": [
+            2013,
+            2019
+          ],
+          "engineId": "sigma-1.6",
+          "transmission": "dsg"
+        },
+        {
+          "name": "1.6 SE Sedán",
+          "years": [
+            2014,
+            2019
+          ],
+          "engineId": "sigma-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Titanium Sedán PowerShift",
+          "years": [
+            2014,
+            2019
+          ],
+          "engineId": "sigma-1.6",
+          "transmission": "dsg"
+        }
+      ]
+    },
+    {
+      "id": "focus",
+      "name": "Focus",
+      "body": "hatchback",
+      "years": [
+        2000,
+        2019
+      ],
+      "variants": [
+        {
+          "name": "1.8 Ambiente",
+          "years": [
+            2000,
+            2008
+          ],
+          "engineId": "zetec-1.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 Trend",
+          "years": [
+            2000,
+            2008
+          ],
+          "engineId": "zetec-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 Ghia",
+          "years": [
+            2000,
+            2008
+          ],
+          "engineId": "zetec-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 Ghia AT",
+          "years": [
+            2000,
+            2008
+          ],
+          "engineId": "zetec-2.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.8 TDDi Ambiente",
+          "years": [
+            2000,
+            2004
+          ],
+          "engineId": "duratorq-1.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 TDCi Trend",
+          "years": [
+            2005,
+            2013
+          ],
+          "engineId": "duratorq-1.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Style",
+          "years": [
+            2009,
+            2013
+          ],
+          "engineId": "sigma-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 Trend Plus",
+          "years": [
+            2009,
+            2013
+          ],
+          "engineId": "duratec-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 Ghia",
+          "years": [
+            2009,
+            2013
+          ],
+          "engineId": "duratec-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 Ghia AT",
+          "years": [
+            2009,
+            2013
+          ],
+          "engineId": "duratec-2.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 Exe Trend Plus Sedán",
+          "years": [
+            2011,
+            2013
+          ],
+          "engineId": "duratec-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 S",
+          "years": [
+            2014,
+            2019
+          ],
+          "engineId": "sigma-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 SE",
+          "years": [
+            2014,
+            2019
+          ],
+          "engineId": "sigma-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 SE Plus",
+          "years": [
+            2014,
+            2019
+          ],
+          "engineId": "duratec-gdi-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 SE Plus PowerShift",
+          "years": [
+            2014,
+            2019
+          ],
+          "engineId": "duratec-gdi-2.0",
+          "transmission": "dsg"
+        },
+        {
+          "name": "2.0 Titanium PowerShift",
+          "years": [
+            2014,
+            2019
+          ],
+          "engineId": "duratec-gdi-2.0",
+          "transmission": "dsg"
+        },
+        {
+          "name": "2.0 Titanium Sedán PowerShift",
+          "years": [
+            2014,
+            2019
+          ],
+          "engineId": "duratec-gdi-2.0",
+          "transmission": "dsg"
+        }
+      ]
+    },
+    {
+      "id": "mondeo",
+      "name": "Mondeo",
+      "body": "sedan",
+      "years": [
+        2000,
+        2020
+      ],
+      "variants": [
+        {
+          "name": "2.0 Ghia",
+          "years": [
+            2000,
+            2000
+          ],
+          "engineId": "zetec-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 Ghia",
+          "years": [
+            2001,
+            2007
+          ],
+          "engineId": "duratec-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 Ghia AT",
+          "years": [
+            2001,
+            2007
+          ],
+          "engineId": "duratec-2.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 TDCi Ghia",
+          "years": [
+            2002,
+            2007
+          ],
+          "engineId": "duratorq-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.3 Titanium AT",
+          "years": [
+            2008,
+            2014
+          ],
+          "engineId": "duratec-2.3",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 TDCi Titanium",
+          "years": [
+            2008,
+            2014
+          ],
+          "engineId": "duratorq-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 EcoBoost Titanium PowerShift",
+          "years": [
+            2011,
+            2014
+          ],
+          "engineId": "ecoboost-2.0",
+          "transmission": "dsg"
+        },
+        {
+          "name": "2.0 EcoBoost SE AT",
+          "years": [
+            2015,
+            2020
+          ],
+          "engineId": "ecoboost-2.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 EcoBoost Titanium AT",
+          "years": [
+            2015,
+            2020
+          ],
+          "engineId": "ecoboost-2.0",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "ecosport",
+      "name": "EcoSport",
+      "body": "suv",
+      "years": [
+        2004,
+        2022
+      ],
+      "variants": [
+        {
+          "name": "1.6 XL",
+          "years": [
+            2004,
+            2012
+          ],
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 XLS",
+          "years": [
+            2004,
+            2012
+          ],
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Freestyle",
+          "years": [
+            2008,
+            2012
+          ],
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 TDCi XL",
+          "years": [
+            2004,
+            2012
+          ],
+          "engineId": "duratorq-1.4",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 TDCi XLS",
+          "years": [
+            2004,
+            2012
+          ],
+          "engineId": "duratorq-1.4",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 XLT 4x4",
+          "years": [
+            2004,
+            2012
+          ],
+          "engineId": "duratec-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 XLT AT",
+          "years": [
+            2007,
+            2012
+          ],
+          "engineId": "duratec-2.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 S",
+          "years": [
+            2013,
+            2017
+          ],
+          "engineId": "sigma-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 SE",
+          "years": [
+            2013,
+            2017
+          ],
+          "engineId": "sigma-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Freestyle",
+          "years": [
+            2013,
+            2017
+          ],
+          "engineId": "sigma-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 Titanium PowerShift",
+          "years": [
+            2013,
+            2017
+          ],
+          "engineId": "duratec-2.0",
+          "transmission": "dsg"
+        },
+        {
+          "name": "2.0 Freestyle 4WD",
+          "years": [
+            2013,
+            2017
+          ],
+          "engineId": "duratec-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 S",
+          "years": [
+            2018,
+            2022
+          ],
+          "engineId": "dragon-1.5",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 SE",
+          "years": [
+            2018,
+            2022
+          ],
+          "engineId": "dragon-1.5",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 SE AT",
+          "years": [
+            2018,
+            2022
+          ],
+          "engineId": "dragon-1.5",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.5 Freestyle",
+          "years": [
+            2018,
+            2022
+          ],
+          "engineId": "dragon-1.5",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 Freestyle AT",
+          "years": [
+            2018,
+            2022
+          ],
+          "engineId": "dragon-1.5",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.5 Titanium AT",
+          "years": [
+            2018,
+            2022
+          ],
+          "engineId": "dragon-1.5",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 Titanium 4WD AT",
+          "years": [
+            2018,
+            2022
+          ],
+          "engineId": "duratec-gdi-2.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 Storm 4WD AT",
+          "years": [
+            2019,
+            2022
+          ],
+          "engineId": "duratec-gdi-2.0",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "courier",
+      "name": "Courier",
+      "body": "pickup",
+      "years": [
+        2000,
+        2013
+      ],
+      "variants": [
+        {
+          "name": "1.6 Base",
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Plus",
+          "engineId": "zetec-rocam-1.6",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 D",
+          "years": [
+            2000,
+            2004
+          ],
+          "engineId": "endura-d-1.8",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "ranger",
+      "name": "Ranger",
+      "body": "pickup",
+      "years": [
+        2000,
+        null
+      ],
+      "variants": [
+        {
+          "name": "2.5 TD XL 4x2 CS",
+          "years": [
+            2000,
+            2002
+          ],
+          "engineId": "maxion-2.5-td",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.5 TD XLT 4x4 CD",
+          "years": [
+            2000,
+            2002
+          ],
+          "engineId": "maxion-2.5-td",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.8 TD XL 4x2 CS",
+          "years": [
+            2002,
+            2007
+          ],
+          "engineId": "powerstroke-2.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.8 TD XLT 4x4 CD",
+          "years": [
+            2002,
+            2007
+          ],
+          "engineId": "powerstroke-2.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.3 XL 4x2 CS",
+          "years": [
+            2006,
+            2012
+          ],
+          "engineId": "duratec-2.3",
+          "transmission": "manual"
+        },
+        {
+          "name": "3.0 TD XL Plus 4x2 CD",
+          "years": [
+            2006,
+            2012
+          ],
+          "engineId": "powerstroke-3.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "3.0 TD XLT 4x4 CD",
+          "years": [
+            2006,
+            2012
+          ],
+          "engineId": "powerstroke-3.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "3.0 TD Limited 4x4 CD",
+          "years": [
+            2009,
+            2012
+          ],
+          "engineId": "powerstroke-3.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.5 XL 4x2 CS",
+          "years": [
+            2012,
+            2019
+          ],
+          "engineId": "duratec-2.5",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.2 TDCi XL 4x2 CS",
+          "years": [
+            2012,
+            2023
+          ],
+          "engineId": "puma-2.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.2 TDCi XL 4x4 CD",
+          "years": [
+            2012,
+            2023
+          ],
+          "engineId": "puma-2.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.2 TDCi XLS 4x2 CD",
+          "years": [
+            2012,
+            2023
+          ],
+          "engineId": "puma-2.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "3.2 TDCi XLS 4x4 CD",
+          "years": [
+            2012,
+            2023
+          ],
+          "engineId": "puma-3.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "3.2 TDCi XLT 4x4 CD",
+          "years": [
+            2012,
+            2023
+          ],
+          "engineId": "puma-3.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "3.2 TDCi XLT 4x4 CD AT",
+          "years": [
+            2012,
+            2023
+          ],
+          "engineId": "puma-3.2",
+          "transmission": "automatica"
+        },
+        {
+          "name": "3.2 TDCi Limited 4x4 CD AT",
+          "years": [
+            2012,
+            2023
+          ],
+          "engineId": "puma-3.2",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 TDCi XL 4x2 CS",
+          "years": [
+            2024,
+            null
+          ],
+          "engineId": "ecoblue-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 TDCi XLS 4x4 CD",
+          "years": [
+            2024,
+            null
+          ],
+          "engineId": "ecoblue-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 TDCi XLS 4x4 CD AT",
+          "years": [
+            2024,
+            null
+          ],
+          "engineId": "ecoblue-2.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 TDCi XLT 4x4 CD AT",
+          "years": [
+            2024,
+            null
+          ],
+          "engineId": "ecoblue-2.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "3.0 V6 TDCi Limited 4x4 CD AT",
+          "years": [
+            2024,
+            null
+          ],
+          "engineId": "lion-3.0-v6",
+          "transmission": "automatica"
+        },
+        {
+          "name": "3.0 V6 EcoBoost Raptor AT",
+          "years": [
+            2024,
+            null
+          ],
+          "engineId": "ecoboost-3.0-v6",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "kuga",
+      "name": "Kuga",
+      "body": "suv",
+      "years": [
+        2010,
+        null
+      ],
+      "variants": [
+        {
+          "name": "2.5 T Titanium AWD AT",
+          "years": [
+            2010,
+            2012
+          ],
+          "engineId": "duratec-2.5-turbo",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 EcoBoost SE AT",
+          "years": [
+            2013,
+            2017
+          ],
+          "engineId": "ecoboost-1.6",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 EcoBoost Titanium AWD AT",
+          "years": [
+            2013,
+            2017
+          ],
+          "engineId": "ecoboost-1.6",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.5 Hybrid Titanium",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "hybrid-2.5",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "territory",
+      "name": "Territory",
+      "body": "suv",
+      "years": [
+        2021,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.5 EcoBoost SEL CVT",
+          "years": [
+            2021,
+            2023
+          ],
+          "engineId": "ecoboost-1.5-4c",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.5 EcoBoost Titanium CVT",
+          "years": [
+            2021,
+            2023
+          ],
+          "engineId": "ecoboost-1.5-4c",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.8 EcoBoost SEL AT",
+          "years": [
+            2023,
+            null
+          ],
+          "engineId": "ecoboost-1.8"
+        },
+        {
+          "name": "1.8 EcoBoost Titanium AT",
+          "years": [
+            2023,
+            null
+          ],
+          "engineId": "ecoboost-1.8"
+        }
+      ]
+    },
+    {
+      "id": "maverick",
+      "name": "Maverick",
+      "body": "pickup",
+      "years": [
+        2022,
+        null
+      ],
+      "variants": [
+        {
+          "name": "2.0 EcoBoost Lariat AWD AT",
+          "years": [
+            2022,
+            null
+          ],
+          "engineId": "ecoboost-2.0",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.5 Hybrid XLT",
+          "years": [
+            2023,
+            null
+          ],
+          "engineId": "hybrid-2.5",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "bronco-sport",
+      "name": "Bronco Sport",
+      "body": "suv",
+      "years": [
+        2021,
+        null
+      ],
+      "variants": [
+        {
+          "name": "1.5 EcoBoost Big Bend AT",
+          "years": [
+            2022,
+            null
+          ],
+          "engineId": "ecoboost-1.5-3c",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 EcoBoost Wildtrak AT",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "ecoboost-2.0",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "bronco",
+      "name": "Bronco",
+      "body": "suv",
+      "years": [
+        2022,
+        null
+      ],
+      "variants": [
+        {
+          "name": "2.7 V6 EcoBoost Wildtrak AT",
+          "engineId": "ecoboost-2.7-v6",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "transit",
+      "name": "Transit",
+      "body": "van",
+      "years": [
+        2007,
+        null
+      ],
+      "variants": [
+        {
+          "name": "2.4 TDCi Furgón",
+          "years": [
+            2007,
+            2013
+          ],
+          "engineId": "duratorq-2.4",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.4 TDCi Minibus",
+          "years": [
+            2007,
+            2013
+          ],
+          "engineId": "duratorq-2.4",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.2 TDCi Furgón Mediano",
+          "years": [
+            2014,
+            null
+          ],
+          "engineId": "puma-2.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.2 TDCi Furgón Largo",
+          "years": [
+            2014,
+            null
+          ],
+          "engineId": "puma-2.2",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.2 TDCi Minibus",
+          "years": [
+            2014,
+            null
+          ],
+          "engineId": "puma-2.2",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "f-150",
+      "name": "F-150",
+      "body": "pickup",
+      "years": [
+        2020,
+        null
+      ],
+      "variants": [
+        {
+          "name": "3.5 V6 EcoBoost Raptor AT",
+          "years": [
+            2020,
+            null
+          ],
+          "engineId": "ecoboost-3.5-v6",
+          "transmission": "automatica"
+        },
+        {
+          "name": "5.0 V8 Lariat AT",
+          "years": [
+            2021,
+            null
+          ],
+          "engineId": "coyote-5.0-v8",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "mustang",
+      "name": "Mustang",
+      "body": "coupe",
+      "years": [
+        2018,
+        null
+      ],
+      "variants": [
+        {
+          "name": "5.0 V8 GT AT",
+          "years": [
+            2018,
+            null
+          ],
+          "engineId": "coyote-5.0-v8",
+          "transmission": "automatica"
+        },
+        {
+          "name": "5.0 V8 Mach 1",
+          "years": [
+            2021,
+            2023
+          ],
+          "engineId": "coyote-5.0-v8"
+        }
+      ]
+    },
+    {
+      "id": "escape",
+      "name": "Escape",
+      "body": "suv",
+      "years": [
+        2001,
+        2008
+      ],
+      "variants": [
+        {
+          "name": "2.0 XLS 4x2",
+          "years": [
+            2001,
+            2004
+          ],
+          "engineId": "zetec-2.0",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.3 XLS 4x4 AT",
+          "years": [
+            2005,
+            2008
+          ],
+          "engineId": "duratec-2.3",
+          "transmission": "automatica"
+        },
+        {
+          "name": "3.0 V6 XLT 4x4 AT",
+          "years": [
+            2001,
+            2008
+          ],
+          "engineId": "duratec-v6-3.0",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "escort",
+      "name": "Escort",
+      "body": "hatchback",
+      "years": [
+        2000,
+        2002
+      ],
+      "variants": [
+        {
+          "name": "1.8 LX",
+          "engineId": "zetec-1.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 Ghia",
+          "engineId": "zetec-1.8",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 D LX",
+          "engineId": "endura-d-1.8",
+          "transmission": "manual"
+        }
+      ]
+    }
+  ]
+}

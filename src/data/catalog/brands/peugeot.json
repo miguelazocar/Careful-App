@@ -1,0 +1,1041 @@
+{
+  "id": "peugeot",
+  "name": "Peugeot",
+  "engines": [
+    {
+      "id": "tu3-1.4-8v",
+      "name": "1.4 8v 75 CV (TU3)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "tu5-1.6-8v",
+      "name": "1.6 8v 90 CV (TU5)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "tu5-1.6-16v",
+      "name": "1.6 16v 110 CV (TU5JP4)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "psa-1.5-8v",
+      "name": "1.5 8v 90 CV",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ec5-1.6-vti",
+      "name": "1.6 VTi 16v 115 CV (EC5)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "eb2-1.2-puretech",
+      "name": "1.2 PureTech 82 CV (EB2)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "t200-1.0",
+      "name": "1.0 T200 Turbo 120 CV",
+      "fuel": "nafta"
+    },
+    {
+      "id": "xu7-1.8-8v",
+      "name": "1.8 8v 100 CV (XU7)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ew10-2.0-16v",
+      "name": "2.0 16v 132–143 CV (EW10/XU10)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "es9-3.0-v6",
+      "name": "3.0 V6 24v 207–211 CV (ES9)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ep6-1.6-thp",
+      "name": "1.6 THP 150–173 CV (EP6 Turbo)",
+      "fuel": "nafta",
+      "oil": {
+        "viscosity": "5W-30",
+        "spec": "PSA B71 2290",
+        "liters": 4.25
+      }
+    },
+    {
+      "id": "ep6-1.6-thp-200",
+      "name": "1.6 THP 200 CV (EP6 Turbo)",
+      "fuel": "nafta",
+      "oil": {
+        "viscosity": "5W-30",
+        "spec": "PSA B71 2290",
+        "liters": 4.25
+      }
+    },
+    {
+      "id": "ep6fdt-1.6-thp",
+      "name": "1.6 THP 165–180 CV (EP6FDT)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "tud5-1.5d",
+      "name": "1.5 D 57 CV (TUD5)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "xud9-1.9d",
+      "name": "1.9 D 70 CV (XUD9)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "dw8-1.9d",
+      "name": "1.9 D 70 CV (DW8)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "dw10-2.0-hdi",
+      "name": "2.0 HDi 90–110 CV (DW10)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "dw10bted4-2.0-hdi",
+      "name": "2.0 HDi 136 CV (DW10BTED4)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "dw12-2.2-hdi",
+      "name": "2.2 HDi 204 CV (DW12)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "dv4-1.4-hdi",
+      "name": "1.4 HDi 70 CV (DV4)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "dv6-1.6-hdi",
+      "name": "1.6 HDi 90–115 CV (DV6)",
+      "fuel": "diesel",
+      "oil": {
+        "viscosity": "5W-30",
+        "spec": "PSA B71 2290",
+        "liters": 3.75
+      }
+    },
+    {
+      "id": "dv6-1.6-bluehdi",
+      "name": "1.6 BlueHDi 115 CV (DV6)",
+      "fuel": "diesel",
+      "oil": {
+        "viscosity": "5W-30",
+        "spec": "PSA B71 2290",
+        "liters": 3.75
+      }
+    },
+    {
+      "id": "dv5-1.5-bluehdi",
+      "name": "1.5 BlueHDi 120 CV (DV5)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "sofim-2.8-hdi",
+      "name": "2.8 HDi 127 CV (Sofim)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "f1a-2.3-hdi",
+      "name": "2.3 HDi 127–130 CV (F1A)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "landtrek-1.9-td",
+      "name": "1.9 Turbodiésel 150 CV",
+      "fuel": "diesel"
+    }
+  ],
+  "models": [
+    {
+      "id": "106",
+      "name": "106",
+      "body": "hatchback",
+      "years": [2000, 2003],
+      "variants": [
+        {
+          "name": "1.4 XR",
+          "engineId": "tu3-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 XS",
+          "engineId": "tu5-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 D XND",
+          "engineId": "tud5-1.5d",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "206",
+      "name": "206",
+      "body": "hatchback",
+      "years": [2000, 2009],
+      "variants": [
+        {
+          "name": "1.4 XR",
+          "engineId": "tu3-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 XS",
+          "years": [2000, 2004],
+          "engineId": "tu5-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v XS",
+          "years": [2004, 2009],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v XS AT",
+          "years": [2004, 2009],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 16v XT Premium",
+          "years": [2005, 2009],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v GTi",
+          "years": [2002, 2005],
+          "engineId": "ew10-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 D XRD",
+          "years": [2000, 2006],
+          "engineId": "dw8-1.9d",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 HDi XTD",
+          "years": [2001, 2006],
+          "engineId": "dw10-2.0-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 HDi XR",
+          "years": [2006, 2009],
+          "engineId": "dv4-1.4-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "SW 1.6 16v XS",
+          "years": [2004, 2009],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "CC 1.6 16v",
+          "years": [2002, 2008],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "207",
+      "name": "207",
+      "body": "hatchback",
+      "years": [2008, 2012],
+      "variants": [
+        {
+          "name": "GTi 1.6 THP",
+          "engineId": "ep6-1.6-thp",
+          "transmission": "manual"
+        },
+        {
+          "name": "CC 1.6 THP",
+          "years": [2008, 2011],
+          "engineId": "ep6-1.6-thp",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "207-compact",
+      "name": "207 Compact",
+      "body": "hatchback",
+      "years": [2008, 2016],
+      "variants": [
+        {
+          "name": "1.4 XR",
+          "engineId": "tu3-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 XS",
+          "engineId": "tu3-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v XS",
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v XT",
+          "years": [2008, 2014],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 HDi XR",
+          "years": [2008, 2013],
+          "engineId": "dv4-1.4-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "Sedán 1.4 XR",
+          "engineId": "tu3-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "Sedán 1.6 16v XS",
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "Sedán 1.4 HDi XS",
+          "years": [2008, 2013],
+          "engineId": "dv4-1.4-hdi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "208",
+      "name": "208",
+      "body": "hatchback",
+      "years": [2013, null],
+      "variants": [
+        {
+          "name": "1.5 Active",
+          "years": [2013, 2016],
+          "engineId": "psa-1.5-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Allure",
+          "years": [2013, 2020],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Allure AT",
+          "years": [2013, 2020],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 Feline",
+          "years": [2013, 2020],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Feline AT",
+          "years": [2016, 2020],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP GT",
+          "years": [2014, 2019],
+          "engineId": "ep6-1.6-thp",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.2 PureTech Like",
+          "years": [2017, 2020],
+          "engineId": "eb2-1.2-puretech",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.2 PureTech Active",
+          "years": [2017, 2020],
+          "engineId": "eb2-1.2-puretech",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Like",
+          "years": [2021, 2024],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Active",
+          "years": [2021, null],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Allure",
+          "years": [2021, null],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Allure AT",
+          "years": [2021, null],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 Feline AT",
+          "years": [2021, 2024],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.0 T200 Allure Pack CVT",
+          "years": [2025, null],
+          "engineId": "t200-1.0",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.0 T200 GT CVT",
+          "years": [2024, null],
+          "engineId": "t200-1.0",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "2008",
+      "name": "2008",
+      "body": "suv",
+      "years": [2016, null],
+      "variants": [
+        {
+          "name": "1.6 Active",
+          "years": [2016, 2024],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Allure",
+          "years": [2016, 2024],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Allure AT",
+          "years": [2016, 2024],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 Feline AT",
+          "years": [2016, 2024],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP Sport",
+          "years": [2016, 2019],
+          "engineId": "ep6-1.6-thp",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 T200 Active CVT",
+          "years": [2025, null],
+          "engineId": "t200-1.0",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.0 T200 Allure CVT",
+          "years": [2025, null],
+          "engineId": "t200-1.0",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.0 T200 GT CVT",
+          "years": [2025, null],
+          "engineId": "t200-1.0",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "3008",
+      "name": "3008",
+      "body": "suv",
+      "years": [2010, null],
+      "variants": [
+        {
+          "name": "1.6 THP Allure",
+          "years": [2010, 2016],
+          "engineId": "ep6-1.6-thp",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 THP Premium AT",
+          "years": [2010, 2016],
+          "engineId": "ep6-1.6-thp",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP Allure AT",
+          "years": [2017, null],
+          "engineId": "ep6fdt-1.6-thp",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP Allure Plus AT",
+          "years": [2017, null],
+          "engineId": "ep6fdt-1.6-thp",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP GT Line AT",
+          "years": [2018, null],
+          "engineId": "ep6fdt-1.6-thp",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "5008",
+      "name": "5008",
+      "body": "suv",
+      "years": [2018, null],
+      "variants": [
+        {
+          "name": "1.6 THP Allure AT",
+          "engineId": "ep6fdt-1.6-thp",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP Allure Plus AT",
+          "engineId": "ep6fdt-1.6-thp",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP GT Line AT",
+          "engineId": "ep6fdt-1.6-thp",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "301",
+      "name": "301",
+      "body": "sedan",
+      "years": [2013, 2019],
+      "variants": [
+        {
+          "name": "1.6 VTi Active",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Allure",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Allure AT",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 HDi Allure",
+          "engineId": "dv6-1.6-hdi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "306",
+      "name": "306",
+      "body": "hatchback",
+      "years": [2000, 2002],
+      "variants": [
+        {
+          "name": "1.8 XR",
+          "engineId": "xu7-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.8 XR Sedán",
+          "engineId": "xu7-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 D XRD",
+          "engineId": "xud9-1.9d",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 D XRD Sedán",
+          "engineId": "xud9-1.9d",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "307",
+      "name": "307",
+      "body": "hatchback",
+      "years": [2002, 2012],
+      "variants": [
+        {
+          "name": "1.6 16v XS",
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v XS",
+          "engineId": "ew10-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v XT AT",
+          "years": [2003, 2012],
+          "engineId": "ew10-2.0-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 HDi XS",
+          "engineId": "dw10-2.0-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 HDi XT",
+          "engineId": "dw10-2.0-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "Sedán 2.0 16v XT",
+          "years": [2007, 2012],
+          "engineId": "ew10-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "Sedán 2.0 HDi XS",
+          "years": [2007, 2012],
+          "engineId": "dw10-2.0-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "SW 2.0 HDi",
+          "years": [2003, 2008],
+          "engineId": "dw10-2.0-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "CC 2.0 16v",
+          "years": [2004, 2008],
+          "engineId": "ew10-2.0-16v",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "308",
+      "name": "308",
+      "body": "hatchback",
+      "years": [2012, 2020],
+      "variants": [
+        {
+          "name": "1.6 Active",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 Allure",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Allure",
+          "years": [2012, 2014],
+          "engineId": "ew10-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Feline AT",
+          "years": [2012, 2014],
+          "engineId": "ew10-2.0-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP Feline",
+          "engineId": "ep6-1.6-thp",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 HDi Allure",
+          "years": [2013, 2020],
+          "engineId": "dv6-1.6-hdi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "405",
+      "name": "405",
+      "body": "sedan",
+      "years": [2000, 2001],
+      "variants": [
+        {
+          "name": "1.8 GR",
+          "engineId": "xu7-1.8-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 D GLD",
+          "engineId": "xud9-1.9d",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "406",
+      "name": "406",
+      "body": "sedan",
+      "years": [2000, 2004],
+      "variants": [
+        {
+          "name": "2.0 16v ST",
+          "engineId": "ew10-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v SV AT",
+          "engineId": "ew10-2.0-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "3.0 V6 SV AT",
+          "engineId": "es9-3.0-v6",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 HDi ST",
+          "engineId": "dw10-2.0-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "Coupé 3.0 V6",
+          "engineId": "es9-3.0-v6",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "407",
+      "name": "407",
+      "body": "sedan",
+      "years": [2005, 2011],
+      "variants": [
+        {
+          "name": "2.0 16v ST",
+          "engineId": "ew10-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v SV AT",
+          "engineId": "ew10-2.0-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "3.0 V6 SV AT",
+          "engineId": "es9-3.0-v6",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 HDi ST",
+          "engineId": "dw10bted4-2.0-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "SW 2.0 16v",
+          "engineId": "ew10-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "Coupé 3.0 V6 AT",
+          "years": [2006, 2011],
+          "engineId": "es9-3.0-v6",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "408",
+      "name": "408",
+      "body": "sedan",
+      "years": [2011, 2021],
+      "variants": [
+        {
+          "name": "1.6 16v Allure",
+          "years": [2011, 2013],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Allure",
+          "years": [2014, 2021],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Allure",
+          "years": [2011, 2014],
+          "engineId": "ew10-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Feline AT",
+          "years": [2011, 2014],
+          "engineId": "ew10-2.0-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP Feline",
+          "years": [2012, 2021],
+          "engineId": "ep6-1.6-thp",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 THP Feline AT",
+          "years": [2016, 2021],
+          "engineId": "ep6-1.6-thp",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 HDi Allure",
+          "years": [2013, 2021],
+          "engineId": "dv6-1.6-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 HDi Feline",
+          "years": [2013, 2021],
+          "engineId": "dv6-1.6-hdi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "408-fastback",
+      "name": "408",
+      "body": "hatchback",
+      "years": [2025, null],
+      "variants": [
+        {
+          "name": "1.6 THP GT AT",
+          "engineId": "ep6fdt-1.6-thp",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "508",
+      "name": "508",
+      "body": "sedan",
+      "years": [2011, 2018],
+      "variants": [
+        {
+          "name": "1.6 THP Allure AT",
+          "engineId": "ep6-1.6-thp",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP Feline AT",
+          "engineId": "ep6-1.6-thp",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.2 HDi GT AT",
+          "years": [2012, 2015],
+          "engineId": "dw12-2.2-hdi",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "rcz",
+      "name": "RCZ",
+      "body": "coupe",
+      "years": [2011, 2015],
+      "variants": [
+        {
+          "name": "1.6 THP",
+          "engineId": "ep6-1.6-thp",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 THP AT",
+          "engineId": "ep6-1.6-thp",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP 200",
+          "engineId": "ep6-1.6-thp-200",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "partner",
+      "name": "Partner",
+      "body": "van",
+      "years": [2000, null],
+      "variants": [
+        {
+          "name": "1.4 Furgón",
+          "years": [2000, 2010],
+          "engineId": "tu3-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Furgón",
+          "years": [2003, 2018],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Furgón",
+          "years": [2019, 2026],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 D Furgón",
+          "years": [2000, 2011],
+          "engineId": "dw8-1.9d",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 HDi Furgón",
+          "years": [2010, 2026],
+          "engineId": "dv6-1.6-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "Patagónica 1.6 16v",
+          "years": [2003, 2018],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "Patagónica 1.6 VTi",
+          "years": [2019, 2024],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "Patagónica 1.6 HDi",
+          "years": [2010, 2024],
+          "engineId": "dv6-1.6-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "Furgón (nueva generación)",
+          "years": [2026, null]
+        }
+      ]
+    },
+    {
+      "id": "expert",
+      "name": "Expert",
+      "body": "van",
+      "years": [2018, null],
+      "variants": [
+        {
+          "name": "1.6 BlueHDi Furgón",
+          "years": [2018, 2024],
+          "engineId": "dv6-1.6-bluehdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 BlueHDi Mixto",
+          "years": [2018, 2024],
+          "engineId": "dv6-1.6-bluehdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 BlueHDi Furgón",
+          "years": [2025, null],
+          "engineId": "dv5-1.5-bluehdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 BlueHDi Mixto",
+          "years": [2025, null],
+          "engineId": "dv5-1.5-bluehdi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "boxer",
+      "name": "Boxer",
+      "body": "van",
+      "years": [2002, null],
+      "variants": [
+        {
+          "name": "2.8 HDi Furgón",
+          "years": [2002, 2010],
+          "engineId": "sofim-2.8-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.3 HDi Furgón",
+          "years": [2011, null],
+          "engineId": "f1a-2.3-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.3 HDi Minibus",
+          "years": [2011, null],
+          "engineId": "f1a-2.3-hdi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "landtrek",
+      "name": "Landtrek",
+      "body": "pickup",
+      "years": [2022, null],
+      "variants": [
+        {
+          "name": "1.9 TD 4x2",
+          "engineId": "landtrek-1.9-td",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 TD 4x4",
+          "engineId": "landtrek-1.9-td",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 TD 4x4 AT",
+          "engineId": "landtrek-1.9-td",
+          "transmission": "automatica"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,896 @@
+{
+  "id": "citroen",
+  "name": "Citroën",
+  "engines": [
+    {
+      "id": "tu3-1.4-8v",
+      "name": "1.4 8v 75 CV (TU3)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "tu5-1.6-8v",
+      "name": "1.6 8v 90 CV (TU5)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "tu5-1.6-16v",
+      "name": "1.6 16v 110 CV (TU5JP4)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "psa-1.5-8v",
+      "name": "1.5 8v 90 CV",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ec5-1.6-vti",
+      "name": "1.6 VTi 16v 115 CV (EC5)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "eb2-1.2-puretech",
+      "name": "1.2 PureTech 82 CV (EB2)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ew10-2.0-16v",
+      "name": "2.0 16v 132–143 CV (EW10/XU10)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "es9-3.0-v6",
+      "name": "3.0 V6 24v 207 CV (ES9)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "ep6-1.6-thp",
+      "name": "1.6 THP 150–173 CV (EP6 Turbo)",
+      "fuel": "nafta",
+      "oil": {
+        "viscosity": "5W-30",
+        "spec": "PSA B71 2290",
+        "liters": 4.25
+      }
+    },
+    {
+      "id": "ep6fdt-1.6-thp",
+      "name": "1.6 THP 165 CV (EP6FDT)",
+      "fuel": "nafta"
+    },
+    {
+      "id": "t200-1.0",
+      "name": "1.0 T200 Turbo 120 CV",
+      "fuel": "nafta"
+    },
+    {
+      "id": "tud5-1.5d",
+      "name": "1.5 D 57 CV (TUD5)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "dw8-1.9d",
+      "name": "1.9 D 70 CV (DW8)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "dw10-2.0-hdi",
+      "name": "2.0 HDi 90–110 CV (DW10)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "dw10bted4-2.0-hdi",
+      "name": "2.0 HDi 136–138 CV (DW10BTED4)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "dv4-1.4-hdi",
+      "name": "1.4 HDi 70 CV (DV4)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "dv6-1.6-hdi",
+      "name": "1.6 HDi 90–115 CV (DV6)",
+      "fuel": "diesel",
+      "oil": {
+        "viscosity": "5W-30",
+        "spec": "PSA B71 2290",
+        "liters": 3.75
+      }
+    },
+    {
+      "id": "dv6-1.6-bluehdi",
+      "name": "1.6 BlueHDi 115 CV (DV6)",
+      "fuel": "diesel",
+      "oil": {
+        "viscosity": "5W-30",
+        "spec": "PSA B71 2290",
+        "liters": 3.75
+      }
+    },
+    {
+      "id": "dv5-1.5-bluehdi",
+      "name": "1.5 BlueHDi 120 CV (DV5)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "sofim-2.8-hdi",
+      "name": "2.8 HDi 127 CV (Sofim)",
+      "fuel": "diesel"
+    },
+    {
+      "id": "f1a-2.3-hdi",
+      "name": "2.3 HDi 127–130 CV (F1A)",
+      "fuel": "diesel"
+    }
+  ],
+  "models": [
+    {
+      "id": "saxo",
+      "name": "Saxo",
+      "body": "hatchback",
+      "years": [2000, 2003],
+      "variants": [
+        {
+          "name": "1.4 SX",
+          "engineId": "tu3-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTR",
+          "engineId": "tu5-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 D SX",
+          "engineId": "tud5-1.5d",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "xsara",
+      "name": "Xsara",
+      "body": "hatchback",
+      "years": [2000, 2006],
+      "variants": [
+        {
+          "name": "1.6 SX",
+          "years": [2000, 2002],
+          "engineId": "tu5-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v SX",
+          "years": [2002, 2006],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Exclusive",
+          "years": [2000, 2006],
+          "engineId": "ew10-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 D SX",
+          "engineId": "dw8-1.9d",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 HDi SX",
+          "engineId": "dw10-2.0-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "Break 2.0 HDi",
+          "years": [2000, 2005],
+          "engineId": "dw10-2.0-hdi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "xsara-picasso",
+      "name": "Xsara Picasso",
+      "body": "minivan",
+      "years": [2000, 2012],
+      "variants": [
+        {
+          "name": "1.6 8v GLX",
+          "years": [2000, 2005],
+          "engineId": "tu5-1.6-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v GLX",
+          "years": [2006, 2012],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Exclusive",
+          "years": [2006, 2012],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Exclusive",
+          "years": [2001, 2012],
+          "engineId": "ew10-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Exclusive AT",
+          "years": [2002, 2012],
+          "engineId": "ew10-2.0-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 HDi Exclusive",
+          "years": [2002, 2012],
+          "engineId": "dw10-2.0-hdi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "c3",
+      "name": "C3",
+      "body": "hatchback",
+      "years": [2003, null],
+      "variants": [
+        {
+          "name": "1.4 SX",
+          "years": [2003, 2012],
+          "engineId": "tu3-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.4 HDi SX",
+          "years": [2004, 2010],
+          "engineId": "dv4-1.4-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Exclusive",
+          "years": [2003, 2012],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Exclusive AT",
+          "years": [2004, 2012],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 16v XTR",
+          "years": [2005, 2012],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 Origine",
+          "years": [2013, 2016],
+          "engineId": "psa-1.5-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 Tendance",
+          "years": [2013, 2016],
+          "engineId": "psa-1.5-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Exclusive",
+          "years": [2013, 2016],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Exclusive AT",
+          "years": [2013, 2016],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.2 PureTech Live",
+          "years": [2017, 2022],
+          "engineId": "eb2-1.2-puretech",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.2 PureTech Feel",
+          "years": [2017, 2022],
+          "engineId": "eb2-1.2-puretech",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Feel",
+          "years": [2017, 2022],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Shine AT",
+          "years": [2017, 2022],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.2 PureTech Live Pack",
+          "years": [2023, null],
+          "engineId": "eb2-1.2-puretech",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.2 PureTech Feel",
+          "years": [2023, null],
+          "engineId": "eb2-1.2-puretech",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Feel Pack",
+          "years": [2023, null],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Feel Pack AT",
+          "years": [2023, null],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.0 T200 You! CVT",
+          "years": [2025, null],
+          "engineId": "t200-1.0",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "c3-picasso",
+      "name": "C3 Picasso",
+      "body": "minivan",
+      "years": [2011, 2016],
+      "variants": [
+        {
+          "name": "1.5i Origine",
+          "engineId": "psa-1.5-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v GLX",
+          "years": [2011, 2012],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Exclusive",
+          "years": [2013, 2016],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Exclusive AT",
+          "years": [2013, 2016],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 HDi Exclusive",
+          "engineId": "dv6-1.6-hdi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "c3-aircross",
+      "name": "C3 Aircross",
+      "body": "suv",
+      "years": [2011, 2015],
+      "variants": [
+        {
+          "name": "1.6 16v GLX",
+          "years": [2011, 2012],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Exclusive",
+          "years": [2011, 2012],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Tendance",
+          "years": [2013, 2015],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Exclusive",
+          "years": [2013, 2015],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Exclusive AT",
+          "years": [2013, 2015],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 HDi Exclusive",
+          "engineId": "dv6-1.6-hdi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "aircross",
+      "name": "Aircross",
+      "body": "suv",
+      "years": [2016, 2021],
+      "variants": [
+        {
+          "name": "1.6 VTi Feel",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Shine",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Feel AT",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 VTi Shine AT",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "c3-aircross-2024",
+      "name": "C3 Aircross",
+      "body": "suv",
+      "years": [2024, null],
+      "variants": [
+        {
+          "name": "1.6 VTi Feel",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 T200 Feel CVT",
+          "engineId": "t200-1.0",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.0 T200 Shine CVT",
+          "engineId": "t200-1.0",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "basalt",
+      "name": "Basalt",
+      "body": "suv",
+      "years": [2025, null],
+      "variants": [
+        {
+          "name": "1.6 VTi Live Pack",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Feel",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.0 T200 Feel CVT",
+          "engineId": "t200-1.0",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.0 T200 Shine CVT",
+          "engineId": "t200-1.0",
+          "transmission": "cvt"
+        },
+        {
+          "name": "1.0 T200 Dark Edition CVT",
+          "engineId": "t200-1.0",
+          "transmission": "cvt"
+        }
+      ]
+    },
+    {
+      "id": "c4",
+      "name": "C4",
+      "body": "hatchback",
+      "years": [2007, 2014],
+      "variants": [
+        {
+          "name": "1.6 16v X",
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v SX",
+          "engineId": "ew10-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Exclusive AT",
+          "engineId": "ew10-2.0-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 HDi SX",
+          "years": [2008, 2014],
+          "engineId": "dv6-1.6-hdi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "c4-pallas",
+      "name": "C4 Pallas",
+      "body": "sedan",
+      "years": [2008, 2013],
+      "variants": [
+        {
+          "name": "2.0 16v SX",
+          "engineId": "ew10-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Exclusive",
+          "engineId": "ew10-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Exclusive AT",
+          "engineId": "ew10-2.0-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 HDi SX",
+          "engineId": "dw10bted4-2.0-hdi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "c4-lounge",
+      "name": "C4 Lounge",
+      "body": "sedan",
+      "years": [2013, 2022],
+      "variants": [
+        {
+          "name": "2.0 16v Tendance",
+          "years": [2013, 2017],
+          "engineId": "ew10-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Exclusive AT",
+          "years": [2013, 2017],
+          "engineId": "ew10-2.0-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP Exclusive",
+          "years": [2013, 2017],
+          "engineId": "ep6-1.6-thp",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 THP Exclusive AT",
+          "years": [2013, 2017],
+          "engineId": "ep6-1.6-thp",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 HDi Feel",
+          "years": [2014, 2022],
+          "engineId": "dv6-1.6-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 THP Feel AT",
+          "years": [2018, 2022],
+          "engineId": "ep6-1.6-thp",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP Shine AT",
+          "years": [2018, 2022],
+          "engineId": "ep6-1.6-thp",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "c4-cactus",
+      "name": "C4 Cactus",
+      "body": "suv",
+      "years": [2018, 2024],
+      "variants": [
+        {
+          "name": "1.6 VTi Live",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Feel",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Feel AT",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 VTi Feel Pack AT",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP Shine AT",
+          "years": [2018, 2022],
+          "engineId": "ep6-1.6-thp",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "c4-picasso",
+      "name": "C4 Picasso",
+      "body": "minivan",
+      "years": [2007, 2018],
+      "variants": [
+        {
+          "name": "2.0 16v Exclusive AT",
+          "years": [2007, 2013],
+          "engineId": "ew10-2.0-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 HDi Exclusive",
+          "years": [2008, 2013],
+          "engineId": "dv6-1.6-hdi"
+        },
+        {
+          "name": "Grand C4 Picasso 2.0 16v Exclusive AT",
+          "years": [2008, 2013],
+          "engineId": "ew10-2.0-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP Exclusive AT",
+          "years": [2014, 2018],
+          "engineId": "ep6-1.6-thp",
+          "transmission": "automatica"
+        },
+        {
+          "name": "Grand C4 Picasso 1.6 THP Exclusive AT",
+          "years": [2014, 2018],
+          "engineId": "ep6-1.6-thp",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "c5",
+      "name": "C5",
+      "body": "sedan",
+      "years": [2002, 2016],
+      "variants": [
+        {
+          "name": "2.0 16v Exclusive",
+          "years": [2002, 2008],
+          "engineId": "ew10-2.0-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.0 16v Exclusive AT",
+          "years": [2002, 2014],
+          "engineId": "ew10-2.0-16v",
+          "transmission": "automatica"
+        },
+        {
+          "name": "3.0 V6 Exclusive AT",
+          "years": [2002, 2010],
+          "engineId": "es9-3.0-v6",
+          "transmission": "automatica"
+        },
+        {
+          "name": "2.0 HDi Exclusive",
+          "years": [2002, 2008],
+          "engineId": "dw10-2.0-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 THP Exclusive AT",
+          "years": [2011, 2016],
+          "engineId": "ep6-1.6-thp",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "c5-aircross",
+      "name": "C5 Aircross",
+      "body": "suv",
+      "years": [2019, null],
+      "variants": [
+        {
+          "name": "1.6 THP Feel AT",
+          "engineId": "ep6fdt-1.6-thp",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 THP Shine AT",
+          "engineId": "ep6fdt-1.6-thp",
+          "transmission": "automatica"
+        }
+      ]
+    },
+    {
+      "id": "c-elysee",
+      "name": "C-Elysée",
+      "body": "sedan",
+      "years": [2013, 2018],
+      "variants": [
+        {
+          "name": "1.6 VTi Tendance",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Exclusive",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Exclusive AT",
+          "engineId": "ec5-1.6-vti",
+          "transmission": "automatica"
+        },
+        {
+          "name": "1.6 HDi Tendance",
+          "engineId": "dv6-1.6-hdi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "berlingo",
+      "name": "Berlingo",
+      "body": "van",
+      "years": [2000, null],
+      "variants": [
+        {
+          "name": "1.4 Furgón",
+          "years": [2000, 2010],
+          "engineId": "tu3-1.4-8v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 16v Furgón",
+          "years": [2003, 2018],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 VTi Furgón",
+          "years": [2019, 2026],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.9 D Furgón",
+          "years": [2000, 2011],
+          "engineId": "dw8-1.9d",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 HDi Furgón",
+          "years": [2010, 2026],
+          "engineId": "dv6-1.6-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "Multispace 1.6 16v",
+          "years": [2003, 2018],
+          "engineId": "tu5-1.6-16v",
+          "transmission": "manual"
+        },
+        {
+          "name": "Multispace 1.6 VTi",
+          "years": [2019, 2025],
+          "engineId": "ec5-1.6-vti",
+          "transmission": "manual"
+        },
+        {
+          "name": "Multispace 1.6 HDi",
+          "years": [2010, 2025],
+          "engineId": "dv6-1.6-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "Furgón (nueva generación)",
+          "years": [2026, null]
+        }
+      ]
+    },
+    {
+      "id": "jumpy",
+      "name": "Jumpy",
+      "body": "van",
+      "years": [2018, null],
+      "variants": [
+        {
+          "name": "1.6 BlueHDi Furgón",
+          "years": [2018, 2024],
+          "engineId": "dv6-1.6-bluehdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.6 BlueHDi Mixto",
+          "years": [2018, 2024],
+          "engineId": "dv6-1.6-bluehdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 BlueHDi Furgón",
+          "years": [2025, null],
+          "engineId": "dv5-1.5-bluehdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "1.5 BlueHDi Mixto",
+          "years": [2025, null],
+          "engineId": "dv5-1.5-bluehdi",
+          "transmission": "manual"
+        }
+      ]
+    },
+    {
+      "id": "jumper",
+      "name": "Jumper",
+      "body": "van",
+      "years": [2002, null],
+      "variants": [
+        {
+          "name": "2.8 HDi Furgón",
+          "years": [2002, 2010],
+          "engineId": "sofim-2.8-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.3 HDi Furgón",
+          "years": [2011, null],
+          "engineId": "f1a-2.3-hdi",
+          "transmission": "manual"
+        },
+        {
+          "name": "2.3 HDi Minibus",
+          "years": [2011, null],
+          "engineId": "f1a-2.3-hdi",
+          "transmission": "manual"
+        }
+      ]
+    }
+  ]
+}
