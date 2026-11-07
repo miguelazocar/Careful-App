@@ -1,0 +1,102 @@
+{
+  "expo": {
+    "name": "Careful",
+    "slug": "careful",
+    "version": "1.0.0",
+    "description": "Tu auto, toda su historia en un solo lugar. Bitácora de mantenimientos, reparaciones, accesorios y kilometraje.",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "careful",
+    "userInterfaceStyle": "automatic",
+    "githubUrl": "https://github.com/miguelazocar/Careful-App",
+    "ios": {
+      "bundleIdentifier": "com.miguelazocar.careful",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "com.miguelazocar.careful",
+      "versionCode": 1,
+      "allowBackup": true,
+      "adaptiveIcon": {
+        "backgroundColor": "#0B63F6",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_MEDIA_AUDIO",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.SYSTEM_ALERT_WINDOW"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/icon-rounded.png",
+          "imageWidth": 120,
+          "backgroundColor": "#F3F6FB",
+          "dark": {
+            "image": "./assets/images/icon-rounded.png",
+            "backgroundColor": "#070B14"
+          }
+        }
+      ],
+      "expo-sqlite",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#0B63F6",
+          "defaultChannel": "service-reminders"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Careful usa tus fotos para guardar imágenes de tu auto y de los trabajos realizados.",
+          "cameraPermission": "Careful usa la cámara para fotografiar tu auto, la cédula y los comprobantes.",
+          "microphonePermission": false
+        }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Careful usa Face ID para proteger tus datos."
+        }
+      ],
+      [
+        "expo-secure-store",
+        {
+          "configureAndroidBackup": false
+        }
+      ],
+      "expo-localization",
+      "expo-background-task",
+      "expo-font",
+      "@react-native-community/datetimepicker",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26,
+            "extraProguardRules": "# WorkManager (expo-background-task) creates its Room database reflectively\n-keep class * extends androidx.room.RoomDatabase { <init>(); }\n-keep class androidx.work.impl.WorkDatabase_Impl { *; }"
+          }
+        }
+      ],
+      "./plugins/with-android-backup-rules.js",
+      "./plugins/with-release-signing.js",
+      "./plugins/with-windows-cmake.js"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {}
+    }
+  }
+}
