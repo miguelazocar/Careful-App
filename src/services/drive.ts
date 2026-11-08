@@ -36,7 +36,7 @@ export function isDriveAvailable(): boolean {
 
 const AUTH_MESSAGES: Record<string, string> = {
   ERR_CANCELED: 'Conexión cancelada.',
-  ERR_CONSENT_REQUIRED: 'Google pide autorizar de nuevo. Entrá a Ajustes › Respaldo y tocá «Reconectar».',
+  ERR_CONSENT_REQUIRED: 'Google pide autorizar de nuevo. Entrá a Ajustes › Respaldo y tocá «Subir ahora».',
   ERR_DEVELOPER:
     'Google no reconoce esta versión de la app. Revisá en Google Cloud que el cliente Android tenga el paquete com.miguelazocar.careful y la huella SHA-1 del certificado con que se firmó el APK.',
   ERR_NETWORK: 'Sin conexión a internet.',

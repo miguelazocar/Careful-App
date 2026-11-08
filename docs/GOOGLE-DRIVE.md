@@ -18,7 +18,7 @@ Careful sube respaldos `.zip` (datos + fotos) a una carpeta **«Careful Respaldo
 - Si está activado, unos segundos después de cada registro.
 - Si la subida quedó pendiente, porque no había Wi-Fi, no había conexión o falló, se reintenta cuando vuelve la red, cuando se abre la app o en la próxima ejecución periódica.
 
-En el uso diario no aparece ninguna pantalla: si Google pide autorizar de nuevo, la app lo muestra como error en *Ajustes › Respaldo* y el usuario toca «Reconectar».
+En el uso diario no aparece ninguna pantalla: si Google pide autorizar de nuevo, la subida queda pendiente, la app lo muestra como error en *Ajustes › Respaldo* y el usuario toca «Subir ahora» para autorizar.
 
 **Retención**: se conservan los últimos 10 respaldos en la carpeta. Una base vacía (instalación nueva o "Borrar todos los datos") **nunca** se sube automáticamente, para no desplazar respaldos buenos.
 
@@ -35,7 +35,9 @@ Google identifica a la app por **nombre de paquete + huella SHA-1 del certificad
 
    No subas logo: si lo subís, Google pide verificación de marca.
 4. **Acceso a los datos**: agregá el permiso `https://www.googleapis.com/auth/drive.file`.
-5. **Público**: **Publicar app** (*En producción*). En modo de prueba solo pueden usarla los usuarios de prueba, y Google puede pedir el permiso otra vez cada 7 días.
+5. **Público** (dos opciones):
+   - **Para empezar: modo «Prueba»**. En *Usuarios de prueba › Add users*, agregá las cuentas de Google que van a usar la app. Funciona en el acto. Limitaciones: solo esas cuentas pueden conectarse, y Google puede pedir la autorización de nuevo cada 7 días. La app lo avisa y se resuelve con «Subir ahora».
+   - **Para todos: «Publicar app»** (*En producción*). Google exige completar antes *Información de la marca* con la **página principal** de la app y el **vínculo a la política de privacidad**, alojadas en un **dominio autorizado**. Con el permiso `drive.file`, que es no sensible, no hace falta la verificación de Google.
 6. **Clientes › Crear cliente › Android**:
    - Nombre del paquete: `com.miguelazocar.careful`
    - SHA-1 de la keystore de release: `C1:8F:39:D3:64:3C:7D:16:73:9A:F1:DB:04:DF:DE:BD:55:EF:4A:AF`
@@ -60,7 +62,7 @@ Si publicás tu propia variante, cambiá `android.package` en `app.json`, firmal
 |---|---|---|
 | «Google no reconoce esta versión de la app» | El paquete o la SHA-1 del cliente Android no coinciden con el APK instalado (`DEVELOPER_ERROR`). | Revisá el cliente en *Clientes*. Un APK de debug necesita su propio cliente. |
 | «La Google Drive API no está habilitada…» | Falta el paso 2. | Habilitala y esperá unos minutos. |
-| «Google pide autorizar de nuevo» | El permiso se revocó desde la cuenta de Google o la app sigue en modo de prueba. | *Ajustes › Respaldo › Desconectar* y volver a conectar. |
+| «Google pide autorizar de nuevo» | El permiso se revocó desde la cuenta de Google o venció la autorización del modo de prueba. | *Ajustes › Respaldo › Subir ahora* (vuelve a pedir el permiso). Si sigue, *Desconectar* y conectar de nuevo. |
 | «Tu Google Drive no tiene espacio libre» | Cuota llena. | Liberar espacio en Drive. |
 
 El usuario puede quitarle el acceso a Careful en cualquier momento desde [myaccount.google.com/connections](https://myaccount.google.com/connections).
