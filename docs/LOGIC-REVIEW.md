@@ -49,15 +49,21 @@ Este documento compara la idea original ([App-Idea-Raw.md](App-Idea-Raw.md)) con
 
 ## 5. Respaldo y Google Drive
 
-La sincronización **directa** con la API de Google Drive requiere un proyecto de Google Cloud con una credencial OAuth registrada para la firma de la app. Eso no se puede crear sin la cuenta del desarrollador, así que la v1 cubre el objetivo (no perder datos y tenerlos en Drive) así:
+Tres capas, de la más automática a la más manual:
 
-1. **Copia de seguridad de Android (Google One / Drive)**: reglas propias que incluyen la base de datos y excluyen secretos y fotos (límite de 25 MB). Se restaura sola al reinstalar.
-2. **Respaldo automático** `.zip` (datos + fotos) a una carpeta elegida, cada **1 hora a 1 semana**, y opcionalmente **tras cada registro**. Conserva los últimos 10.
-3. **Enviar a Drive** con un toque (menú compartir) y **restaurar** desde cualquier `.zip`.
+1. **Sincronización directa con Google Drive** (desde la 1.1): respaldos `.zip` (datos + fotos) en la carpeta «Careful Respaldos» del Drive del usuario, cada **1 hora a 1 semana** y opcionalmente **tras cada registro**, con **"Solo con Wi-Fi"** (por defecto) o Wi-Fi + datos móviles. Restauración desde la lista de respaldos de Drive. Detalle técnico y configuración en [GOOGLE-DRIVE.md](GOOGLE-DRIVE.md).
+2. **Copia de seguridad de Android (Google One)**: reglas propias que incluyen la base de datos y excluyen secretos y fotos (límite de 25 MB). Se restaura sola al reinstalar.
+3. **Carpeta del teléfono** (por ejemplo, una carpeta sincronizada por otra app) con la misma frecuencia, y **compartir / restaurar** cualquier `.zip` a mano.
 
-La opción "solo Wi-Fi / Wi-Fi + datos" aplica a la sincronización directa, que queda en el [roadmap](ROADMAP.md) con los pasos para activarla.
+Decisiones:
+- **Permiso `drive.file`** en vez de acceso completo al Drive: la app solo ve lo que crea. Es un permiso "no sensible" y no requiere la verificación de Google.
+- **Carpeta visible** en vez de la carpeta oculta `appDataFolder`: el usuario ve sus respaldos, puede descargarlos y no depende de la app para recuperarlos.
+- **Nombre «Careful Respaldos»** y no «Careful», para no mezclarse con una carpeta que el usuario ya tenga con ese nombre (la app no puede ver carpetas ajenas).
+- **Sin pantallas en segundo plano**: si Google pide reautorizar, la subida queda pendiente y la app lo informa en Ajustes en lugar de interrumpir.
+- **Una base vacía nunca se sube automáticamente**, así una instalación nueva o "Borrar todos los datos" no desplaza respaldos buenos de los 10 que se conservan. En una instalación nueva, al conectar Drive se ofrece directamente restaurar.
+- "Solo con Wi-Fi" trata como "no Wi-Fi" a las conexiones desconocidas (VPN, Bluetooth), así nunca gasta datos móviles por error.
 
-Los respaldos **no incluyen** ajustes ligados al dispositivo (bloqueo, carpeta, clave de IA).
+Los respaldos **no incluyen** ajustes ligados al dispositivo (bloqueo, carpeta, cuenta de Drive, clave de IA).
 
 ## 6. Inteligencia artificial
 

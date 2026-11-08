@@ -78,6 +78,18 @@ export function formatMonthShort(month: string): string {
   return format(parseDay(`${month}-01`), 'MMM', { locale: es }).replace('.', '');
 }
 
+/** A past instant (ISO timestamp) in local time: "hoy 21:36", "ayer 09:05", "7 nov 2026, 21:36". */
+export function formatMoment(iso: string, now: Date = new Date()): string {
+  const d = new Date(iso);
+  if (!isValid(d)) return '';
+  const day = toDay(d);
+  const time = format(d, 'HH:mm');
+  const diff = daysBetween(today(now), day);
+  if (diff === 0) return `hoy ${time}`;
+  if (diff === -1) return `ayer ${time}`;
+  return `${formatDay(day)}, ${time}`;
+}
+
 export function relativeDays(day: string, now: Date = new Date()): string {
   const diff = daysBetween(today(now), day);
   if (diff === 0) return 'hoy';

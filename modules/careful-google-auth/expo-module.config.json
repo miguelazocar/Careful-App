@@ -1,0 +1,7 @@
+{
+  "name": "careful-google-auth",
+  "platforms": ["android"],
+  "android": {
+    "modules": ["expo.modules.carefulgoogleauth.CarefulGoogleAuthModule"]
+  }
+}

@@ -22,6 +22,7 @@
   <img alt="React Native" src="https://img.shields.io/badge/React%20Native-0.88-61DAFB?logo=react&logoColor=black" />
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" />
   <img alt="Offline first" src="https://img.shields.io/badge/datos-100%25%20locales-2EE8B6" />
+  <a href="LICENSE"><img alt="Licencia MIT" src="https://img.shields.io/badge/licencia-MIT-1D2633" /></a>
 </p>
 
 ---
@@ -71,10 +72,12 @@ IA en el alta: **escanear la cédula verde** completa los datos, y la **foto del
 - Se bloquea al salir y al volver pide desbloqueo directo, sin diálogos previos.
 - **Sin cuentas ni servidores**: los datos viven en tu teléfono.
 
-### ☁️ Respaldo
-- **Copia de seguridad de Android** (Google One / Drive) con reglas propias.
-- **Respaldo automático** `.zip` (datos + fotos) a la carpeta que elijas, **cada 1 hora a 1 semana** y opcionalmente tras cada registro.
-- **Enviar a Google Drive** con un toque y **restaurar** desde archivo.
+### ☁️ Respaldo y sincronización
+- **Google Drive**: respaldos automáticos `.zip` (datos + fotos) en la carpeta «Careful Respaldos», **cada 1 hora a 1 semana** y opcionalmente tras cada registro, **solo con Wi-Fi** o también con datos móviles. Restauración desde la lista de respaldos.
+- Permiso mínimo `drive.file`: Careful solo ve los archivos que crea.
+- **Copia de seguridad de Android** (Google One) con reglas propias.
+- **Carpeta del teléfono**, **compartir** un respaldo por cualquier app y **restaurar** desde archivo.
+- 👉 Cómo funciona y cómo configurarlo: [docs/GOOGLE-DRIVE.md](docs/GOOGLE-DRIVE.md).
 
 ### 🤖 Inteligencia artificial — dos motores, una interfaz
 | | En el teléfono | Gemini (nube) |
@@ -107,8 +110,10 @@ src/
 ├── data/        Catálogo de vehículos (JSON por marca)
 ├── db/          SQLite: migraciones, repositorios, snapshot de respaldo
 ├── domain/      Lógica pura: agenda, notificaciones, VIN, patentes, parser de cédula
-├── services/    Fotos, notificaciones, respaldo, IA, PDF, seguridad
+├── services/    Fotos, notificaciones, respaldo y Google Drive, IA, PDF, seguridad
 └── theme/       Tokens de diseño (claro/oscuro)
+modules/
+└── careful-google-auth/   Módulo nativo (Kotlin): autorización de Google para Drive
 ```
 
 - **Offline-first** con SQLite y migraciones versionadas.
@@ -139,7 +144,7 @@ APK de release firmado (Windows):
 
 ## 🗺️ Roadmap
 
-Sincronización directa con Google Drive (con opción solo Wi-Fi), IA on-device con Gemini Nano, cargas de combustible, vencimientos de documentación, transferencia del historial a un nuevo dueño, widgets e iOS.
+IA on-device con Gemini Nano, cargas de combustible, vencimientos de documentación, transferencia del historial a un nuevo dueño, widgets e iOS.
 👉 [docs/ROADMAP.md](docs/ROADMAP.md)
 
 ## 🎨 Identidad
@@ -149,6 +154,10 @@ Sincronización directa con Google Drive (con opción solo Wi-Fi), IA on-device 
 | Azul Careful | Menta | Tinta |
 |---|---|---|
 | `#0B63F6` | `#2EE8B6` | `#1D2633` |
+
+## 📄 Licencia
+
+[MIT](LICENSE) © 2026 Miguel Angel Azocar. Podés usar, modificar y distribuir el código libremente, manteniendo el aviso de copyright.
 
 ## 👤 Autor
 

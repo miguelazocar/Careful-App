@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { AppIcon, Wordmark } from '@/components/brand';
@@ -131,6 +131,16 @@ function Welcome() {
           </AppText>
         </View>
         <Button label="Agregar mi primer auto" icon="car-2-plus" variant="mint" size="lg" onPress={() => router.push('/vehicle/form')} />
+        <Pressable
+          onPress={() => router.push('/settings/backup')}
+          accessibilityRole="button"
+          hitSlop={8}
+          style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, opacity: pressed ? 0.6 : 1 })}>
+          <Icon name="cloud-download" size={18} color="rgba(255,255,255,0.85)" />
+          <AppText variant="captionStrong" color="rgba(255,255,255,0.85)">
+            ¿Ya usabas Careful? Restaurá tu respaldo
+          </AppText>
+        </Pressable>
       </LinearGradient>
       <View style={{ gap: spacing.sm, marginTop: spacing.lg }}>
         {[

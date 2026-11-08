@@ -9,7 +9,7 @@ import * as TaskManager from 'expo-task-manager';
 import { initDatabase } from '@/db/open';
 import { useSettings } from '@/stores/settings';
 
-import { isBackupDue, runAutomaticBackup } from './backup';
+import { hasAutomaticBackups, isBackupDue, runAutomaticBackup } from './backup';
 import { syncNotifications } from './notifications';
 
 export const BACKUP_TASK = 'careful-auto-backup';
@@ -29,12 +29,12 @@ TaskManager.defineTask(BACKUP_TASK, async () => {
 
 /** (Re)registers the periodic worker according to the backup settings. */
 export async function configureBackgroundTask(): Promise<void> {
-  const { enabled, intervalHours, folderUri } = useSettings.getState().backup;
+  const { intervalHours } = useSettings.getState().backup;
   const status = await BackgroundTask.getStatusAsync();
   if (status !== BackgroundTask.BackgroundTaskStatus.Available) return;
   const registered = await TaskManager.isTaskRegisteredAsync(BACKUP_TASK);
-  // Run at least daily for notification refresh; faster when backups require it.
-  const minutes = enabled && folderUri ? Math.max(15, Math.min(intervalHours * 60, 24 * 60)) : 24 * 60;
+  // Run at least daily for notification refresh; faster when backups (folder or Drive) require it.
+  const minutes = hasAutomaticBackups() ? Math.max(15, Math.min(intervalHours * 60, 24 * 60)) : 24 * 60;
   if (registered) await BackgroundTask.unregisterTaskAsync(BACKUP_TASK);
   await BackgroundTask.registerTaskAsync(BACKUP_TASK, { minimumInterval: minutes });
 }

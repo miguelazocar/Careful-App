@@ -20,5 +20,6 @@ Usar siempre `npx expo install <paquete>` para dependencias nativas.
 - Las claves de ítems (`motor.aceite`, …) se persisten: **no renombrarlas**, agregar nuevas.
 - Migraciones: solo agregar al final de `MIGRATIONS` en `src/db/migrations.ts`.
 - `android/` e `ios/` se generan (CNG): configurar en `app.json` o en `plugins/`.
+- Código nativo propio: módulos Expo locales en `modules/` (autolinking). Hoy: `careful-google-auth` (autorización de Google para Drive, ver `docs/GOOGLE-DRIVE.md`).
 - Textos de la UI en español rioplatense.
 - Las APIs de Expo cambian entre SDKs: verificar en `node_modules/<paquete>/build/*.d.ts` o en https://docs.expo.dev/versions/v58.0.0/.

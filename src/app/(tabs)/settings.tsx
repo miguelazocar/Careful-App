@@ -9,9 +9,9 @@ import { getDb, notifyDataChanged } from '@/db/connection';
 import { TABLES } from '@/db/migrations';
 import { listVehicles, setVehicleArchived } from '@/db/vehicles';
 import { useQuery } from '@/hooks/useQuery';
-import { relativeDays } from '@/lib/dates';
+import { formatMoment } from '@/lib/dates';
 import { listPhotoFiles } from '@/services/photos';
-import { useSettings, type ThemePreference } from '@/stores/settings';
+import { useSettings, type BackupPrefs, type DrivePrefs, type ThemePreference } from '@/stores/settings';
 import { toast } from '@/stores/ui';
 import { spacing } from '@/theme/tokens';
 
@@ -19,6 +19,7 @@ export default function SettingsScreen() {
   const theme = useSettings((s) => s.theme);
   const securityMode = useSettings((s) => s.securityMode);
   const backup = useSettings((s) => s.backup);
+  const drive = useSettings((s) => s.drive);
   const notifications = useSettings((s) => s.notifications);
   const ai = useSettings((s) => s.ai);
   const { data: archived } = useQuery(async () => (await listVehicles({ includeArchived: true })).filter((v) => v.archivedAt), []);
@@ -69,7 +70,7 @@ export default function SettingsScreen() {
           icon="cloud-upload"
           iconColor="#14C895"
           title="Respaldo y sincronización"
-          subtitle={backup.enabled ? `Automático · último ${backup.lastBackupAt ? relativeDays(backup.lastBackupAt.slice(0, 10)) : 'pendiente'}` : 'Manual'}
+          subtitle={backupSummary(backup, drive)}
           onPress={() => router.push('/settings/backup')}
         />
         <ListRow
@@ -125,4 +126,12 @@ export default function SettingsScreen() {
       </View>
     </Screen>
   );
+}
+
+function backupSummary(backup: BackupPrefs, drive: DrivePrefs): string {
+  const last = (iso: string | null) => (iso ? `último ${formatMoment(iso)}` : 'pendiente');
+  if (drive.email && drive.enabled) return `Google Drive · ${drive.pending ? 'cambios pendientes' : last(drive.lastAt)}`;
+  if (backup.enabled && backup.folderUri) return `Carpeta · ${last(backup.lastBackupAt)}`;
+  if (drive.email) return 'Google Drive conectado · manual';
+  return 'Manual';
 }

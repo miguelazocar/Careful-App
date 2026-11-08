@@ -33,11 +33,12 @@ src/
 ├── db/                  Conexión, migraciones, repositorios, snapshot de respaldo
 ├── domain/              Lógica pura y testeable (agenda, notificaciones, VIN, patentes…)
 ├── hooks/               useQuery
-├── lib/                 Fechas y formato numérico
-├── services/            Efectos: fotos, notificaciones, respaldo, IA, PDF, seguridad
+├── lib/                 Fechas, formato numérico y cliente REST de Google Drive
+├── services/            Efectos: fotos, notificaciones, respaldo y Drive, IA, PDF, seguridad
 ├── stores/              Zustand (ajustes persistidos, UI)
 └── theme/               Tokens de diseño y ThemeProvider
-plugins/                 Config plugins (Auto Backup de Android, firma de release)
+modules/                 Módulos nativos locales (careful-google-auth: autorización de Google en Kotlin)
+plugins/                 Config plugins (Auto Backup de Android, firma de release, CMake en Windows)
 scripts/                 Generación de assets de marca y build del APK
 ```
 
@@ -125,7 +126,8 @@ runAi(task)          → usa el preferido y cae al local si la nube no está con
 
 - Formato: `.zip` con `careful-backup.json` (todas las tablas, columnas crudas) + `photos/*.jpg`.
 - La restauración valida formato y versión, reemplaza los datos en **una transacción** y cambia la carpeta de fotos solo si la importación salió bien.
-- Ajustes ligados al dispositivo (`securityMode`, `backup`, `ai`) nunca viajan.
+- Ajustes ligados al dispositivo (`securityMode`, `backup`, `drive`, `ai`) nunca viajan.
+- Destinos automáticos: **Google Drive** (carpeta «Careful Respaldos», permiso `drive.file`) y **carpeta del teléfono** (SAF). El zip se arma una sola vez por ejecución; "Solo con Wi-Fi" deja la subida pendiente hasta que haya red permitida. Ver [GOOGLE-DRIVE.md](GOOGLE-DRIVE.md).
 - Auto Backup de Android: `plugins/with-android-backup-rules.js` incluye `files/SQLite/` y excluye SecureStore y fotos.
 
 ## Seguridad

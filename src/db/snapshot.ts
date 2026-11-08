@@ -10,7 +10,7 @@ export const BACKUP_FORMAT = 'careful-backup';
 export const BACKUP_VERSION = 1;
 
 /** Settings that must never travel between devices (they depend on device-bound secrets/paths). */
-export const DEVICE_BOUND_SETTINGS = ['securityMode', 'backup', 'ai'];
+export const DEVICE_BOUND_SETTINGS = ['securityMode', 'backup', 'drive', 'ai'];
 
 export interface BackupPayload {
   format: typeof BACKUP_FORMAT;

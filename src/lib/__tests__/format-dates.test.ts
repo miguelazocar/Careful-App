@@ -1,6 +1,6 @@
 /// <reference types="jest" />
 /// <reference types="node" />
-import { addMonthsTo, daysBetween, formatDay, minDay, monthStart, relativeDays, weekStart } from '../dates';
+import { addMonthsTo, daysBetween, formatDay, formatMoment, minDay, monthStart, relativeDays, weekStart } from '../dates';
 import { formatAmount, formatAmountCompact, formatAmountInput, formatInt, formatIntInput, formatKm, parseAmountInput, parseIntInput } from '../format';
 
 describe('numbers', () => {
@@ -54,5 +54,15 @@ describe('dates', () => {
     expect(relativeDays('2026-01-20', now)).toBe('en 10 días');
     expect(relativeDays('2026-01-05', now)).toBe('hace 5 días');
     expect(relativeDays('2026-07-10', now)).toBe('en 6 meses');
+  });
+});
+
+describe('formatMoment', () => {
+  it('shows past instants in local time, relative when recent', () => {
+    const now = new Date(2026, 10, 7, 23, 30);
+    expect(formatMoment(new Date(2026, 10, 7, 21, 36).toISOString(), now)).toBe('hoy 21:36');
+    expect(formatMoment(new Date(2026, 10, 6, 9, 5).toISOString(), now)).toBe('ayer 09:05');
+    expect(formatMoment(new Date(2026, 10, 1, 8, 0).toISOString(), now)).toBe('1 nov 2026, 08:00');
+    expect(formatMoment('nope', now)).toBe('');
   });
 });

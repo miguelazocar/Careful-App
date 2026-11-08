@@ -20,6 +20,8 @@ npx expo run:android            # compila e instala en un emulador/dispositivo
 npx expo start --dev-client     # luego, solo el bundler
 ```
 
+> Google Drive en un development build necesita un cliente OAuth Android con la SHA-1 de la keystore de debug: ver [GOOGLE-DRIVE.md](GOOGLE-DRIVE.md#development-builds).
+
 ## APK de release (local, Windows)
 
 ```powershell

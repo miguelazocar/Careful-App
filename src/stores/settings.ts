@@ -8,7 +8,7 @@ export type SecurityMode = 'none' | 'pin' | 'device';
 export type AiProviderPreference = 'auto' | 'gemini' | 'local';
 
 export interface BackupPrefs {
-  /** Automatic periodic backups to the chosen folder. */
+  /** Automatic periodic backups to the chosen folder (interval and triggers also apply to Drive). */
   enabled: boolean;
   /** Between 1 hour and 1 week (spec). */
   intervalHours: number;
@@ -23,6 +23,21 @@ export interface BackupPrefs {
   lastError: string | null;
 }
 
+/** Direct sync with the user's Google Drive (folder "Careful Respaldos", scope drive.file). */
+export interface DrivePrefs {
+  /** Authorized Google account; null = not connected. */
+  email: string | null;
+  name: string | null;
+  /** Automatic uploads, on the schedule and triggers of BackupPrefs. */
+  enabled: boolean;
+  /** Never spend mobile data on automatic uploads. */
+  wifiOnly: boolean;
+  lastAt: string | null;
+  lastError: string | null;
+  /** Data changed while uploads were blocked (no Wi-Fi, offline, error): upload at the next chance. */
+  pending: boolean;
+}
+
 export interface AiPrefs {
   provider: AiProviderPreference;
   model: string;
@@ -35,6 +50,7 @@ export interface SettingsData {
   securityMode: SecurityMode;
   notifications: NotificationPrefs;
   backup: BackupPrefs;
+  drive: DrivePrefs;
   ai: AiPrefs;
   lastVehicleId: string | null;
 }
@@ -55,6 +71,7 @@ export const DEFAULT_SETTINGS: SettingsData = {
     lastBackupAt: null,
     lastError: null,
   },
+  drive: { email: null, name: null, enabled: false, wifiOnly: true, lastAt: null, lastError: null, pending: false },
   ai: { provider: 'auto', model: 'gemini-flash-latest', hasKey: false },
   lastVehicleId: null,
 };
@@ -63,7 +80,7 @@ interface SettingsStore extends SettingsData {
   loaded: boolean;
   load(): Promise<void>;
   set<K extends keyof SettingsData>(key: K, value: SettingsData[K]): Promise<void>;
-  patch<K extends 'notifications' | 'backup' | 'ai'>(key: K, value: Partial<SettingsData[K]>): Promise<void>;
+  patch<K extends 'notifications' | 'backup' | 'drive' | 'ai'>(key: K, value: Partial<SettingsData[K]>): Promise<void>;
 }
 
 export const useSettings = create<SettingsStore>((set, get) => ({

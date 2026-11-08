@@ -52,3 +52,8 @@ coverage/
 signing.env
 *.keystore
 !android/app/debug.keystore
+
+# Local native modules: Gradle output
+modules/*/android/build/
+modules/*/android/.cxx/
+modules/*/android/.gradle/

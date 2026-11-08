@@ -3,23 +3,21 @@ import { Directory, File, Paths } from 'expo-file-system';
 import * as Network from 'expo-network';
 import * as Sharing from 'expo-sharing';
 import { strFromU8, strToU8, unzipSync, zipSync, type Zippable } from 'fflate';
+import { AppState } from 'react-native';
 
 import { onDataChanged } from '@/db/connection';
 import { exportSnapshot, importSnapshot, referencedPhotos, validatePayload, type BackupPayload } from '@/db/snapshot';
+import { listVehicles } from '@/db/vehicles';
+import { backupFileName, backupsToPrune, connectionAllowsUpload, isDue, type ConnectionKind } from '@/domain/backup-policy';
 import { getSettings, useSettings } from '@/stores/settings';
 import { withExternalActivity } from '@/stores/ui';
 
+import { downloadDriveFile, uploadBackupToDrive } from './drive';
 import { PHOTO_DIR } from './photos';
 
 const DATA_ENTRY = 'careful-backup.json';
-const FILE_PREFIX = 'careful-respaldo-';
 
 const appVersion = () => Constants.expoConfig?.version ?? 'dev';
-
-function timestampName(d = new Date()): string {
-  const p = (n: number) => n.toString().padStart(2, '0');
-  return `${FILE_PREFIX}${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}.zip`;
-}
 
 /** Zip = data JSON + every referenced photo (already-compressed JPEGs are stored, not deflated). */
 export async function buildBackupZip(): Promise<{ bytes: Uint8Array; payload: BackupPayload }> {
@@ -39,13 +37,23 @@ export interface BackupResult {
   size: number;
 }
 
+/** True when the snapshot has no vehicles (nothing worth backing up). */
+export function isEmptyBackup(payload: BackupPayload): boolean {
+  return (payload.tables.vehicles?.length ?? 0) === 0;
+}
+
+/** Whether the local database has anything worth backing up. */
+export async function hasLocalData(): Promise<boolean> {
+  return (await listVehicles({ includeArchived: true })).length > 0;
+}
+
 /** Writes a backup into the user-chosen folder (Android Storage Access Framework). */
-export async function backupToFolder(): Promise<BackupResult> {
+export async function backupToFolder(zip?: Uint8Array): Promise<BackupResult> {
   const { folderUri, keep } = getSettings().backup;
   if (!folderUri) throw new Error('Elegí una carpeta para los respaldos automáticos.');
-  const { bytes } = await buildBackupZip();
+  const bytes = zip ?? (await buildBackupZip()).bytes;
   const dir = new Directory(folderUri);
-  const name = timestampName();
+  const name = backupFileName();
   const file = dir.createFile(name, 'application/zip');
   await file.write(bytes);
   pruneOldBackups(dir, keep);
@@ -55,14 +63,22 @@ export async function backupToFolder(): Promise<BackupResult> {
 
 function pruneOldBackups(dir: Directory, keep: number): void {
   try {
-    const backups = dir
+    const files = dir
       .list()
-      .filter((e): e is File => e instanceof File && decodeURIComponent(e.name).startsWith(FILE_PREFIX))
-      .sort((a, b) => (decodeURIComponent(a.name) < decodeURIComponent(b.name) ? 1 : -1));
-    for (const old of backups.slice(Math.max(1, keep))) old.delete();
+      .filter((e): e is File => e instanceof File)
+      .map((file) => ({ file, name: decodeURIComponent(file.name).split('/').pop() ?? '' }));
+    for (const old of backupsToPrune(files, keep)) old.file.delete();
   } catch {
     // listing SAF folders can fail on some providers — pruning is best effort
   }
+}
+
+/** Manual "Subir ahora" to Google Drive (may show Google's consent screen). */
+export async function backupToDriveNow(): Promise<BackupResult> {
+  const { bytes, payload } = await buildBackupZip();
+  if (isEmptyBackup(payload)) throw new Error('Todavía no hay datos para respaldar: agregá un vehículo primero.');
+  const file = await uploadBackupToDrive(bytes, { interactive: true });
+  return { name: file.name, size: bytes.length };
 }
 
 export async function pickBackupFolder(): Promise<{ uri: string; label: string } | null> {
@@ -82,7 +98,7 @@ export async function pickBackupFolder(): Promise<{ uri: string; label: string }
 /** Creates a backup in cache and opens the share sheet (Drive, Gmail, WhatsApp…). */
 export async function shareBackup(): Promise<void> {
   const { bytes } = await buildBackupZip();
-  const file = new File(Paths.cache, timestampName());
+  const file = new File(Paths.cache, backupFileName());
   if (file.exists) file.delete();
   file.create();
   await file.write(bytes);
@@ -105,6 +121,10 @@ export async function readBackupFile(): Promise<RestorePreview | null> {
   );
   if (!picked || picked.canceled || !picked.result) return null;
   return parseBackup(await picked.result.bytes());
+}
+
+export async function readDriveBackup(fileId: string): Promise<RestorePreview> {
+  return parseBackup(await downloadDriveFile(fileId));
 }
 
 export function parseBackup(bytes: Uint8Array): RestorePreview {
@@ -151,41 +171,130 @@ export async function restoreBackup(preview: RestorePreview): Promise<void> {
 
 /* --------------------------- Automatic backups --------------------------- */
 
-export function isBackupDue(now = new Date()): boolean {
-  const { enabled, folderUri, lastBackupAt, intervalHours } = getSettings().backup;
-  if (!enabled || !folderUri) return false;
-  if (!lastBackupAt) return true;
-  return now.getTime() - new Date(lastBackupAt).getTime() >= intervalHours * 3600_000 - 60_000;
+const folderAuto = () => {
+  const b = getSettings().backup;
+  return b.enabled && !!b.folderUri;
+};
+
+const driveAuto = () => {
+  const d = getSettings().drive;
+  return d.enabled && !!d.email;
+};
+
+export function isFolderBackupDue(now = new Date()): boolean {
+  const b = getSettings().backup;
+  return folderAuto() && isDue(b.lastBackupAt, b.intervalHours, now);
 }
 
-export async function runAutomaticBackup(reason: 'schedule' | 'change' | 'launch'): Promise<boolean> {
-  const { enabled, folderUri } = getSettings().backup;
-  if (!enabled || !folderUri) return false;
-  if (reason !== 'change' && !isBackupDue()) return false;
+export function isDriveBackupDue(now = new Date()): boolean {
+  const d = getSettings().drive;
+  return driveAuto() && (d.pending || isDue(d.lastAt, getSettings().backup.intervalHours, now));
+}
+
+export function isBackupDue(now = new Date()): boolean {
+  return isFolderBackupDue(now) || isDriveBackupDue(now);
+}
+
+/** Any automatic destination enabled (folder or Drive). */
+export function hasAutomaticBackups(): boolean {
+  return folderAuto() || driveAuto();
+}
+
+export async function connectionKind(): Promise<ConnectionKind> {
   try {
-    await backupToFolder();
-    return true;
-  } catch (e) {
-    await useSettings.getState().patch('backup', { lastError: e instanceof Error ? e.message : String(e) });
-    return false;
+    const s = await Network.getNetworkStateAsync();
+    if (s.isConnected === false || s.type === Network.NetworkStateType.NONE) return 'none';
+    if (s.type === Network.NetworkStateType.WIFI || s.type === Network.NetworkStateType.ETHERNET) return 'wifi';
+    if (s.type === Network.NetworkStateType.CELLULAR) return 'cellular';
+    return 'other';
+  } catch {
+    return 'other';
   }
 }
 
-let changeTimer: ReturnType<typeof setTimeout> | null = null;
-let changeSubscription: (() => void) | null = null;
+type Trigger = 'schedule' | 'change' | 'launch' | 'network';
 
-/** "Sincronización adicional por cada acción registrada": debounced backup after data changes. */
+let running: Promise<boolean> | null = null;
+
+/**
+ * Periodic / after-change / launch backups to every enabled destination (folder and Drive).
+ * The zip is built once. Drive respects "Solo con Wi-Fi": when blocked, the upload stays
+ * pending and runs at the next chance (Wi-Fi connects, the app opens, or the periodic worker).
+ */
+export function runAutomaticBackup(reason: Trigger): Promise<boolean> {
+  // never overlap: a change during an upload is covered by the next trigger
+  running ??= doAutomaticBackup(reason).finally(() => {
+    running = null;
+  });
+  return running;
+}
+
+async function doAutomaticBackup(reason: Trigger): Promise<boolean> {
+  const toFolder = folderAuto() && (reason === 'change' || isFolderBackupDue());
+  let toDrive = driveAuto() && (reason === 'change' || isDriveBackupDue());
+  if (toDrive && !connectionAllowsUpload(await connectionKind(), getSettings().drive.wifiOnly)) {
+    toDrive = false;
+    if (!getSettings().drive.pending) await useSettings.getState().patch('drive', { pending: true });
+  }
+  if (!toFolder && !toDrive) return false;
+
+  let bytes: Uint8Array;
+  try {
+    const zip = await buildBackupZip();
+    // An empty garage (fresh install, "Borrar todos los datos") must never push real backups out of rotation.
+    if (isEmptyBackup(zip.payload)) {
+      if (toDrive && getSettings().drive.pending) await useSettings.getState().patch('drive', { pending: false });
+      return false;
+    }
+    bytes = zip.bytes;
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (toFolder) await useSettings.getState().patch('backup', { lastError: msg });
+    if (toDrive) await useSettings.getState().patch('drive', { lastError: msg, pending: true });
+    return false;
+  }
+
+  let ok = true;
+  if (toFolder) {
+    try {
+      await backupToFolder(bytes);
+    } catch (e) {
+      ok = false;
+      await useSettings.getState().patch('backup', { lastError: e instanceof Error ? e.message : String(e) });
+    }
+  }
+  if (toDrive) {
+    try {
+      await uploadBackupToDrive(bytes, { interactive: false });
+    } catch (e) {
+      ok = false;
+      await useSettings.getState().patch('drive', { lastError: e instanceof Error ? e.message : String(e), pending: true });
+    }
+  }
+  return ok;
+}
+
+let changeTimer: ReturnType<typeof setTimeout> | null = null;
+let started = false;
+
+/**
+ * Triggers while the app runs:
+ * - "Además, tras cada registro": debounced backup a few seconds after data changes;
+ * - a pending Drive upload runs when the network comes back or the app returns to the foreground.
+ */
 export function startChangeBackups(): void {
-  if (changeSubscription) return;
-  changeSubscription = onDataChanged(() => {
-    const { enabled, onEveryChange } = getSettings().backup;
-    if (!enabled || !onEveryChange) return;
+  if (started) return;
+  started = true;
+  onDataChanged(() => {
+    if (!getSettings().backup.onEveryChange || !hasAutomaticBackups()) return;
     if (changeTimer) clearTimeout(changeTimer);
     changeTimer = setTimeout(() => void runAutomaticBackup('change'), 8000);
   });
-}
-
-export async function isOnWifi(): Promise<boolean> {
-  const s = await Network.getNetworkStateAsync();
-  return s.type === Network.NetworkStateType.WIFI || s.type === Network.NetworkStateType.ETHERNET;
+  Network.addNetworkStateListener((s) => {
+    if (s.isConnected === false || !getSettings().drive.pending || !driveAuto()) return;
+    void runAutomaticBackup('network');
+  });
+  AppState.addEventListener('change', (state) => {
+    if (state === 'active' && getSettings().drive.pending && driveAuto()) void runAutomaticBackup('launch');
+  });
 }
