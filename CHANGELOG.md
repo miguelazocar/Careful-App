@@ -19,6 +19,11 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
 - Una base vacía ya no se respalda automáticamente, así no desplaza respaldos buenos.
 - Con "Desbloqueo del teléfono", al volver a la app podía quedar en "Tocá para desbloquear" sin abrir nunca la huella o el PIN del equipo. La solicitud se lanzaba con la app todavía en segundo plano y quedaba colgada. Ahora se pide al volver a primer plano, y tocar el botón descarta cualquier solicitud trabada.
 - Los avisos internos (por ejemplo, "Respaldo guardado") ya no rebotan: entran deslizándose suavemente, quedan unos 3 segundos y salen.
+- "Investigar automáticamente" con Gemini terminaba en "sin datos confirmados":
+  - solo se consultaba a Gemini si el catálogo no tenía ningún litraje;
+  - la búsqueda web de Gemini no está disponible con todas las claves, por ejemplo con algunas gratuitas, y ese error se descartaba sin avisar.
+
+  Ahora Gemini completa cualquier dato que le falte al catálogo, sin pisar los valores del catálogo. Si la búsqueda web no está disponible, responde con lo que sabe del motor, y si falla se muestra el motivo.
 
 ## [1.0.0] — 2026-11-07
 

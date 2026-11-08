@@ -65,16 +65,58 @@ async function generate(parts: Part[], opts: { json?: boolean; search?: boolean 
   });
   if (!res.ok) {
     const detail = await res.text().catch(() => '');
-    if (res.status === 429) throw new Error('Se alcanzó el límite de uso de Gemini. Probá en unos minutos.');
     if (res.status === 400 && detail.includes('API key')) throw new AiUnavailableError('La clave de Gemini no es válida.');
-    throw new Error(`Gemini no pudo procesar la solicitud (${res.status}).`);
+    throw new GeminiHttpError(res.status, apiErrorMessage(detail));
   }
   const data = (await res.json()) as {
-    candidates?: { content?: { parts?: { text?: string }[] } }[];
+    candidates?: { finishReason?: string; content?: { parts?: { text?: string; thought?: boolean }[] } }[];
   };
-  const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? '';
-  if (!text.trim()) throw new Error('Gemini no devolvió resultados.');
+  const candidate = data.candidates?.[0];
+  const text = candidate?.content?.parts?.filter((p) => !p.thought).map((p) => p.text ?? '').join('') ?? '';
+  if (!text.trim()) throw new Error(`Gemini no devolvió resultados${candidate?.finishReason ? ` (${candidate.finishReason})` : ''}.`);
   return text;
+}
+
+/** HTTP failure from the Gemini API, with a readable message. */
+export class GeminiHttpError extends Error {
+  constructor(
+    readonly status: number,
+    detail: string,
+  ) {
+    super(
+      status === 429
+        ? 'Se alcanzó el límite de uso de Gemini. Probá en unos minutos.'
+        : `Gemini no pudo procesar la solicitud (${status}${detail ? `: ${detail}` : ''}).`,
+    );
+    this.name = 'GeminiHttpError';
+  }
+}
+
+function apiErrorMessage(body: string): string {
+  try {
+    const msg = (JSON.parse(body) as { error?: { message?: string } }).error?.message ?? '';
+    return msg.length > 140 ? `${msg.slice(0, 137)}…` : msg;
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Google Search grounding is not included in every plan (e.g. some free keys). Once it fails,
+ * the rest of the session answers from the model's own knowledge instead.
+ */
+let searchUnavailable = false;
+
+function fluidsPrompt(vehicle: string, fuel: string | null, withSearch: boolean): string {
+  return (
+    `Necesito los fluidos de servicio que recomienda el fabricante para un ${vehicle} (mercado argentino${fuel ? `, motor ${fuel}` : ''}). ` +
+    (withSearch ? 'Buscá en el manual del propietario o en fuentes oficiales o confiables. ' : 'Respondé con lo que sepas de este motor. ') +
+    'Si no encontrás la versión exacta, usá los valores del mismo motor en otros mercados o años cercanos y aclaralo en "notes". ' +
+    'Usá null solo si de verdad no tenés un dato razonable; no inventes. ' +
+    'Respondé SOLO JSON: {"oilType": string|null (viscosidad SAE y norma, ej "5W-30 · ACEA C2"), ' +
+    '"oilLiters": number|null (capacidad con filtro, en litros), "coolantType": string|null (tipo y color, ej "Orgánico OAT · rosa"), ' +
+    '"coolantLiters": number|null (capacidad total del sistema, en litros), "notes": string (máximo 140 caracteres: fuente o aclaración)}'
+  );
 }
 
 export function extractJson<T>(text: string): T {
@@ -174,19 +216,18 @@ export const geminiProvider: AiProvider = {
   async researchFluids(q): Promise<FluidSuggestion | null> {
     const brand = getBrand(q.brandId)?.name ?? q.brand;
     const vehicle = [brand, q.model, q.variant, q.year].filter(Boolean).join(' ');
-    const text = await generate(
-      [
-        {
-          text:
-            `Buscá en el manual del propietario o fuentes oficiales del fabricante los fluidos del ${vehicle} ` +
-            `(mercado argentino${q.fuel ? `, motor ${q.fuel}` : ''}). Respondé SOLO JSON: ` +
-            '{"oilType": string (viscosidad SAE y norma, ej "5W-30 · ACEA C2"), "oilLiters": number (capacidad con filtro), ' +
-            '"coolantType": string (tipo/color), "coolantLiters": number, "notes": string (breve, fuente)}. ' +
-            'Si un dato no está confirmado, usá null en vez de inventarlo.',
-        },
-      ],
-      { search: true },
-    );
+    const ask = (withSearch: boolean) => generate([{ text: fluidsPrompt(vehicle, q.fuel, withSearch) }], withSearch ? { search: true } : { json: true });
+    let viaSearch = !searchUnavailable;
+    let text: string;
+    try {
+      text = await ask(viaSearch);
+    } catch (e) {
+      // Only the web search is optional: a bad key or no connection must surface as-is.
+      if (!viaSearch || !(e instanceof GeminiHttpError)) throw e;
+      searchUnavailable = true;
+      viaSearch = false;
+      text = await ask(false);
+    }
     const raw = extractJson<{
       oilType?: string | null;
       oilLiters?: number | string | null;
@@ -203,10 +244,10 @@ export const geminiProvider: AiProvider = {
       oilLiters: num(raw.oilLiters),
       coolantType: raw.coolantType ?? undefined,
       coolantLiters: num(raw.coolantLiters),
-      source: 'Gemini + búsqueda web',
-      notes: raw.notes ?? 'Verificá siempre en el manual del vehículo.',
+      source: viaSearch ? 'Gemini + búsqueda web' : 'Gemini',
+      notes: raw.notes?.trim() || 'Verificá siempre en el manual del vehículo.',
     };
-    return out.oilType || out.coolantType ? out : null;
+    return out.oilType || out.coolantType || out.oilLiters || out.coolantLiters ? out : null;
   },
 
   async improveText(text, context) {

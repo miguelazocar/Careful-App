@@ -26,11 +26,12 @@ import { createRecord } from '@/db/records';
 import { createVehicle, getVehicle, updateVehicle, type VehicleInput } from '@/db/vehicles';
 import { colorHexFor, isLightColor, VEHICLE_COLORS } from '@/domain/colors';
 import { COUNTRIES, flagEmoji } from '@/domain/countries';
+import { describeMissing, mergeFluids, missingFluidFields } from '@/domain/fluids';
 import { formatPlate, normalizePlate } from '@/domain/plate';
 import { isValidVin, normalizeVin, vinBrandId, vinModelYear } from '@/domain/vin';
 import { today } from '@/lib/dates';
 import { formatInt, parseIntInput } from '@/lib/format';
-import { fluidsFromCatalog, runAi, type VehicleGuess } from '@/services/ai';
+import { fluidsFromCatalog, primaryProvider, runAi, type FluidSuggestion, type VehicleGuess } from '@/services/ai';
 import { ensurePermission } from '@/services/notifications';
 import { deletePhotoFiles, pickPhoto, photoUri } from '@/services/photos';
 import { useSettings } from '@/stores/settings';
@@ -873,17 +874,30 @@ function FluidsStep({ draft, set, editing }: { draft: Draft; set: (p: Partial<Dr
     setSource(null);
     try {
       const q = { brand: draft.brand, brandId: draft.brandId, model: draft.model, year: draft.year, variant: draft.variant, engineId: draft.engineId, fuel: draft.fuel };
-      let result = fluidsFromCatalog(q);
-      if (!result || (!result.oilLiters && !result.coolantLiters)) {
+      const catalog = fluidsFromCatalog(q);
+      const cloud = primaryProvider().id === 'gemini';
+      let fromAi: FluidSuggestion | null = null;
+      let aiProblem: string | null = null;
+      // The catalog has fluid data for few engines: ask the AI for whatever is still missing.
+      if (cloud && missingFluidFields(catalog).length) {
         try {
           const ai = await runAi((p) => p.researchFluids(q));
-          if (ai.result) result = { ...(result ?? {}), ...Object.fromEntries(Object.entries(ai.result).filter(([, v]) => v !== undefined)), source: ai.result.source } as typeof result;
+          if (ai.provider.id === 'gemini') fromAi = ai.result;
+          else aiProblem = 'sin conexión, no se pudo consultar Gemini';
         } catch (e) {
-          if (!result) throw e;
+          aiProblem = e instanceof Error ? e.message : String(e);
         }
       }
+      const result = mergeFluids(catalog, fromAi);
       if (!result) {
-        toast('No encontramos datos confirmados para esta versión. Configurá Gemini en Ajustes para buscar en la web.', 'info');
+        toast(
+          aiProblem
+            ? `No se pudo investigar: ${aiProblem}`
+            : cloud
+              ? 'Gemini no encontró datos confiables para esta versión. Completalos desde el manual.'
+              : 'El catálogo no tiene datos de esta versión. Configurá Gemini en Ajustes › Inteligencia artificial para buscarlos.',
+          aiProblem ? 'error' : 'info',
+        );
         return;
       }
       set({
@@ -892,12 +906,15 @@ function FluidsStep({ draft, set, editing }: { draft: Draft; set: (p: Partial<Dr
         coolantType: result.coolantType ?? draft.coolantType,
         coolantLiters: result.coolantLiters ? String(result.coolantLiters).replace('.', ',') : draft.coolantLiters,
       });
-      const missing = [!result.oilType ? 'aceite' : null, !result.coolantType ? 'refrigerante' : null].filter(Boolean);
-      setSource(
-        `${result.source}${result.notes ? ` — ${result.notes}` : ''}` +
-          (missing.length ? `
-Sin datos confirmados de ${missing.join(' ni ')} para esta versión${result.source.startsWith('Gemini') ? '' : ': conectá Gemini en Ajustes › IA para buscarlos en la web'}.` : ''),
-      );
+      const missing = missingFluidFields(result);
+      const gap = missing.length
+        ? aiProblem
+          ? `\nFalta ${describeMissing(missing)}: ${aiProblem}`
+          : cloud
+            ? `\nNo se encontró ${describeMissing(missing)}: completalo desde el manual.`
+            : `\nFalta ${describeMissing(missing)}: conectá Gemini en Ajustes › Inteligencia artificial para buscarlo.`
+        : '';
+      setSource(`${result.source}${result.notes ? ` — ${result.notes}` : ''}${gap}`);
     } catch (e) {
       toast(e instanceof Error ? e.message : 'No se pudo investigar', 'error');
     } finally {
