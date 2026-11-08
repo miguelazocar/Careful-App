@@ -1,11 +1,11 @@
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { AppState, Pressable, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { authenticateWithDevice, getDeviceAuthSupport, getPinLength, verifyPin } from '@/services/security';
+import { authenticateWithDevice, cancelDeviceAuth, getDeviceAuthSupport, getPinLength, verifyPin } from '@/services/security';
 import { useSettings } from '@/stores/settings';
 import { useLock } from '@/stores/ui';
 import { brand, radius, spacing } from '@/theme/tokens';
@@ -120,24 +120,53 @@ export function LockScreen() {
   const [pinLength, setPinLength] = useState<number | null>(null);
   const [error, setError] = useState(0);
   const [bioIcon, setBioIcon] = useState('fingerprint');
-  const prompting = useRef(false);
+  /** Id of the system prompt in flight (0 = none). */
+  const pending = useRef(0);
+  const attempts = useRef(0);
 
-  const tryDevice = useCallback(async () => {
-    if (prompting.current) return;
-    prompting.current = true;
-    try {
-      if (await authenticateWithDevice()) unlock();
-    } finally {
-      prompting.current = false;
-    }
-  }, [unlock]);
+  /**
+   * Opens the system prompt (biometrics with device PIN/pattern fallback).
+   * The lock engages while the app is going to background, and Android cannot show the prompt
+   * from there (the request just hangs). So it only runs while the app is active, and a tap
+   * (`force`) discards a stuck request: if the user can tap this screen, no prompt is visible.
+   */
+  const tryDevice = useCallback(
+    async (force = false) => {
+      if (AppState.currentState !== 'active') return;
+      if (pending.current && !force) return;
+      if (force) {
+        // Clears a request stuck in the native module too (it answers "app_cancel" to every new
+        // call while one is pending), then gives the old prompt fragment time to detach.
+        await cancelDeviceAuth();
+        await new Promise((r) => setTimeout(r, 300));
+      }
+      const id = ++attempts.current;
+      pending.current = id;
+      try {
+        if (await authenticateWithDevice()) unlock();
+      } finally {
+        if (pending.current === id) pending.current = 0;
+      }
+    },
+    [unlock],
+  );
 
   useEffect(() => {
     if (mode === 'pin') void getPinLength().then(setPinLength);
-    if (mode === 'device') {
-      void getDeviceAuthSupport().then((s) => setBioIcon(s.label.includes('facial') ? 'face-recognition' : s.biometric ? 'fingerprint' : 'lock'));
-      void tryDevice();
-    }
+    if (mode !== 'device') return;
+    void getDeviceAuthSupport().then((s) => setBioIcon(s.label.includes('facial') ? 'face-recognition' : s.biometric ? 'fingerprint' : 'lock'));
+    void tryDevice();
+    // "al entrar pide desbloqueo directo": prompt as soon as the user comes back to the app
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') return;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => void tryDevice(), 250);
+    });
+    return () => {
+      sub.remove();
+      if (timer) clearTimeout(timer);
+    };
   }, [mode, tryDevice]);
 
   return (
@@ -164,7 +193,7 @@ export function LockScreen() {
             }}
           />
         ) : mode === 'device' ? (
-          <Pressable onPress={tryDevice} style={{ alignItems: 'center', gap: spacing.md }} accessibilityLabel="Desbloquear">
+          <Pressable onPress={() => void tryDevice(true)} style={{ alignItems: 'center', gap: spacing.md }} accessibilityLabel="Desbloquear">
             <View style={{ width: 110, height: 110, borderRadius: 55, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center' }}>
               <Icon name={bioIcon} size={56} color={brand.mint} />
             </View>

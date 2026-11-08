@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { BackHandler, Modal, Pressable, View } from 'react-native';
-import Animated, { FadeIn, FadeOut, SlideInDown, SlideInUp, SlideOutDown, SlideOutUp } from 'react-native-reanimated';
+import Animated, { Easing, FadeIn, FadeOut, SlideInDown, SlideInUp, SlideOutDown, SlideOutUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useToast } from '@/stores/ui';
@@ -71,6 +71,12 @@ function SheetUnmounter({ onDone }: { onDone: () => void }) {
   return null;
 }
 
+/** How long a toast stays on screen once it has slid in. */
+const TOAST_VISIBLE_MS = 3000;
+// Smooth glide in and out (no spring, so it never bounces).
+const toastEnter = SlideInUp.duration(380).easing(Easing.out(Easing.cubic));
+const toastExit = SlideOutUp.duration(300).easing(Easing.in(Easing.cubic));
+
 /** Global toast host — rendered once at the root. */
 export function ToastHost() {
   const { message, tone, key, hide } = useToast();
@@ -79,7 +85,7 @@ export function ToastHost() {
 
   useEffect(() => {
     if (!message) return;
-    const t = setTimeout(hide, 2600);
+    const t = setTimeout(hide, TOAST_VISIBLE_MS);
     return () => clearTimeout(t);
   }, [message, key, hide]);
 
@@ -90,8 +96,8 @@ export function ToastHost() {
   return (
     <Animated.View
       key={key}
-      entering={SlideInUp.springify().damping(18)}
-      exiting={SlideOutUp.duration(160)}
+      entering={toastEnter}
+      exiting={toastExit}
       pointerEvents="box-none"
       style={{ position: 'absolute', top: insets.top + 8, left: spacing.lg, right: spacing.lg, zIndex: 1000 }}>
       <Pressable

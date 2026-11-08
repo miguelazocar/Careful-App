@@ -69,6 +69,11 @@ export async function getDeviceAuthSupport(): Promise<DeviceAuthSupport> {
   return { available, biometric, label };
 }
 
+/** Cancels a pending system prompt (Android); used to recover a request that got stuck. */
+export async function cancelDeviceAuth(): Promise<void> {
+  await LocalAuthentication.cancelAuthenticate().catch(() => undefined);
+}
+
 /** Prompts biometrics, falling back to the device PIN/pattern. */
 export async function authenticateWithDevice(prompt = 'Desbloquear Careful'): Promise<boolean> {
   const result = await withExternalActivity(() =>
