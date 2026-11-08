@@ -57,3 +57,8 @@ signing.env
 modules/*/android/build/
 modules/*/android/.cxx/
 modules/*/android/.gradle/
+
+# Google Cloud OAuth client downloads (not needed by the app: Android clients are matched by package + SHA-1)
+client_secret_*.json
+*.apps.googleusercontent.com.json
+google-services.json
