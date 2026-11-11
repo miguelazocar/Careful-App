@@ -5,9 +5,6 @@
 
 export const BACKUP_FILE_PREFIX = 'careful-respaldo-';
 
-/** Grace so a worker that fires a little early still counts as "on time". */
-const EARLY_TOLERANCE_MS = 60_000;
-
 const pad = (n: number) => n.toString().padStart(2, '0');
 
 /** `careful-respaldo-2026-11-07_2136.zip` (local time, sortable). */
@@ -28,12 +25,19 @@ export function backupDateFromName(name: string): Date | null {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-/** True when `intervalHours` have passed since `lastAt` (or there was never a backup). */
-export function isDue(lastAt: string | null, intervalHours: number, now = new Date()): boolean {
+/** Quiet time after the last change before backing up, so a burst of edits produces one backup. */
+export const CHANGE_DEBOUNCE_MS = 10_000;
+
+/**
+ * Daily backup "at midnight": due when there was no backup since the last local midnight.
+ * The periodic worker checks hourly, so it runs at the first chance after 00:00.
+ */
+export function isDailyBackupDue(lastAt: string | null, now = new Date()): boolean {
   if (!lastAt) return true;
   const last = new Date(lastAt).getTime();
   if (Number.isNaN(last)) return true;
-  return now.getTime() - last >= intervalHours * 3_600_000 - EARLY_TOLERANCE_MS;
+  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  return last < midnight;
 }
 
 export type ConnectionKind = 'wifi' | 'cellular' | 'other' | 'none';
@@ -44,10 +48,37 @@ export function connectionAllowsUpload(kind: ConnectionKind, wifiOnly: boolean):
   return wifiOnly ? kind === 'wifi' : true;
 }
 
-/** Oldest backups beyond `keep` (at least one is always kept). Newest is decided by name, then creation time. */
-export function backupsToPrune<T extends { name: string; createdTime?: string }>(files: T[], keep: number): T[] {
-  const key = (f: T) => backupDateFromName(f.name)?.getTime() ?? (f.createdTime ? new Date(f.createdTime).getTime() : 0);
+export interface RetentionPolicy {
+  /** Most recent backups always kept (one per change can pile up quickly). */
+  recent: number;
+  /** Besides those, the newest backup of each of the last N days, so history survives many edits. */
+  days: number;
+}
+
+export const DEFAULT_RETENTION: RetentionPolicy = { recent: 5, days: 14 };
+
+const dayOf = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+/**
+ * Backups to delete under the retention policy. Only our own files are considered; the newest
+ * one is never deleted. Newest is decided by the name's timestamp, then creation time.
+ */
+export function backupsToPrune<T extends { name: string; createdTime?: string }>(files: T[], policy: RetentionPolicy = DEFAULT_RETENTION, now = new Date()): T[] {
+  const dateOf = (f: T) => backupDateFromName(f.name) ?? (f.createdTime ? new Date(f.createdTime) : new Date(0));
   const ours = files.filter((f) => isBackupFileName(f.name));
-  const sorted = [...ours].sort((a, b) => key(b) - key(a) || (b.createdTime ?? '').localeCompare(a.createdTime ?? ''));
-  return sorted.slice(Math.max(1, Math.floor(keep)));
+  const sorted = [...ours].sort((a, b) => dateOf(b).getTime() - dateOf(a).getTime() || (b.createdTime ?? '').localeCompare(a.createdTime ?? ''));
+  const oldestDay = dayOf(new Date(now.getFullYear(), now.getMonth(), now.getDate() - (policy.days - 1)));
+  const keptDays = new Set<string>();
+  return sorted.filter((f, i) => {
+    const day = dayOf(dateOf(f));
+    if (i < Math.max(1, policy.recent)) {
+      keptDays.add(day); // a recent copy already represents its day
+      return false;
+    }
+    if (day >= oldestDay && !keptDays.has(day)) {
+      keptDays.add(day);
+      return false;
+    }
+    return true;
+  });
 }

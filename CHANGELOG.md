@@ -10,7 +10,17 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
 - **Los avisos de service están siempre activos**: se quitó el interruptor en Ajustes › Notificaciones. Solo dependen del permiso de notificaciones del teléfono.
 - **El service se agenda desde el primer día**: si un auto no tiene ningún cambio de aceite registrado, se estima el primero. Es el próximo múltiplo del intervalo de km (por ejemplo, 50.000 km) o un año desde el alta, lo que ocurra primero. Se muestra como "Estimado" y se ajusta solo al registrar el service real.
 
+- **Respaldo siempre automático**: se quitaron la frecuencia y "Además, tras cada registro".
+  - Ahora se guarda una copia después de cada cambio. Si se hacen varios cambios seguidos, se espera al último y se guarda una sola.
+  - Además, se guarda una copia por día, después de la medianoche.
+  - Al conectar Drive o elegir una carpeta, ese destino queda activo sin más interruptores.
+- **Respaldo**: la pantalla tiene dos secciones, **Nube** y **Local**, y arriba una explicación breve de qué hace y cómo.
+- **Respaldo**: se conservan las 5 copias más recientes y una por día de las últimas 2 semanas, en lugar de las últimas 10. Así, muchos cambios seguidos no borran el historial.
+- **Seguridad**: "PIN de Careful" pasa a llamarse "PIN de App".
+- **Apariencia**: la opción "Sistema" pasa a llamarse "Automático" y es la predeterminada.
+
 ### Corregido
+- Un cambio hecho mientras se subía una copia podía quedar sin respaldar hasta el día siguiente. Ahora se guarda otra copia al terminar.
 - Si el teléfono deja de tener bloqueo de pantalla, el modo "Desbloqueo del teléfono" ya no deja la app trabada en la pantalla de bloqueo: se desactiva y avisa, igual que cuando se pierde el PIN.
 
 ## [1.1.0] — 2026-11-07

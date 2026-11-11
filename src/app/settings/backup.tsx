@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, View } from 'react-native';
+import { ActivityIndicator, Alert, View } from 'react-native';
 
 import { Header, Screen } from '@/components/ui/layout';
 import { Sheet } from '@/components/ui/overlays';
@@ -20,14 +20,12 @@ import {
 import { configureBackgroundTask } from '@/services/background';
 import { connectDrive, disconnectDrive, DRIVE_FOLDER_NAME, isDriveAvailable, listDriveBackups, type DriveFile } from '@/services/drive';
 import { syncNotifications } from '@/services/notifications';
-import { BACKUP_INTERVALS_HOURS, useSettings, type BackupPrefs, type DrivePrefs } from '@/stores/settings';
+import { useSettings, type BackupPrefs, type DrivePrefs } from '@/stores/settings';
 import { toast } from '@/stores/ui';
 import { useTheme } from '@/theme/ThemeProvider';
-import { radius, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
 
 const DRIVE_GREEN = '#1FA463';
-
-const intervalLabel = (h: number) => (h < 24 ? `${h} h` : h === 24 ? '1 día' : h === 168 ? '1 semana' : `${h / 24} días`);
 
 const sizeLabel = (bytes: number) => (bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1).replace('.', ',')} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`);
 
@@ -38,9 +36,8 @@ const errorText = (e: unknown, fallback: string) => (e instanceof Error ? e.mess
 type Busy = null | 'now' | 'share' | 'restore' | 'connect' | 'drive-now' | 'drive-list' | 'drive-restore';
 
 function driveStatus(drive: DrivePrefs): string {
-  if (!drive.enabled) return 'Desactivada: solo se sube cuando tocás «Subir ahora»';
-  if (drive.pending) return drive.wifiOnly ? 'Hay cambios pendientes: se suben cuando haya Wi-Fi' : 'Hay cambios pendientes de subir';
-  return drive.lastAt ? `Último: ${formatMoment(drive.lastAt)}` : 'Todavía no se subió ningún respaldo';
+  if (drive.pending) return drive.wifiOnly ? 'Cambios pendientes: se suben cuando haya Wi-Fi' : 'Cambios pendientes de subir';
+  return drive.lastAt ? `Última copia: ${formatMoment(drive.lastAt)}` : 'Todavía no se subió ninguna copia';
 }
 
 export default function BackupScreen() {
@@ -52,18 +49,28 @@ export default function BackupScreen() {
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const connected = !!drive.email;
-  const autoActive = (backup.enabled && !!backup.folderUri) || (drive.enabled && connected);
+  const folderLabel = backup.folderLabel?.replace(/\/+$/, '') ?? null;
 
   const patchBackup = async (p: Partial<BackupPrefs>) => {
     await useSettings.getState().patch('backup', p);
     void configureBackgroundTask().catch(() => undefined);
   };
-  const patchDrive = async (p: Partial<DrivePrefs>) => {
-    await useSettings.getState().patch('drive', p);
-    void configureBackgroundTask().catch(() => undefined);
-  };
 
-  /* ------------------------------ Google Drive ----------------------------- */
+  /* ---------------------------------- Nube --------------------------------- */
+
+  const openDriveBackups = async () => {
+    setDriveFiles(null);
+    setSheetOpen(true);
+    setBusy('drive-list');
+    try {
+      setDriveFiles(await listDriveBackups());
+    } catch (e) {
+      setSheetOpen(false);
+      toast(errorText(e, 'No se pudo leer Google Drive'), 'error');
+    } finally {
+      setBusy(null);
+    }
+  };
 
   const connect = async () => {
     setBusy('connect');
@@ -75,7 +82,7 @@ export default function BackupScreen() {
         // first upload right away, so the user sees it working
         setBusy('drive-now');
         await backupToDriveNow();
-        toast(`Respaldo subido a «${DRIVE_FOLDER_NAME}»`);
+        toast(`Copia subida a «${DRIVE_FOLDER_NAME}»`);
       } else {
         // new phone / fresh install: offer the backups already in Drive
         setBusy(null);
@@ -98,25 +105,11 @@ export default function BackupScreen() {
     setBusy('drive-now');
     try {
       const r = await backupToDriveNow();
-      toast(`Respaldo subido (${sizeLabel(r.size)})`);
+      toast(`Copia subida (${sizeLabel(r.size)})`);
     } catch (e) {
-      const msg = errorText(e, 'No se pudo subir el respaldo');
+      const msg = errorText(e, 'No se pudo subir la copia');
       await useSettings.getState().patch('drive', { lastError: msg });
       toast(msg, 'error');
-    } finally {
-      setBusy(null);
-    }
-  };
-
-  const openDriveBackups = async () => {
-    setDriveFiles(null);
-    setSheetOpen(true);
-    setBusy('drive-list');
-    try {
-      setDriveFiles(await listDriveBackups());
-    } catch (e) {
-      setSheetOpen(false);
-      toast(errorText(e, 'No se pudo leer Google Drive'), 'error');
     } finally {
       setBusy(null);
     }
@@ -128,7 +121,7 @@ export default function BackupScreen() {
     try {
       preview = await readDriveBackup(file.id);
     } catch (e) {
-      toast(errorText(e, 'No se pudo descargar el respaldo'), 'error');
+      toast(errorText(e, 'No se pudo descargar la copia'), 'error');
     } finally {
       setBusy(null);
     }
@@ -140,7 +133,7 @@ export default function BackupScreen() {
   const disconnect = () => {
     Alert.alert(
       'Desconectar Google Drive',
-      `Careful deja de subir respaldos y pierde el acceso a tu Drive. Los respaldos que ya están en «${DRIVE_FOLDER_NAME}» no se borran.`,
+      `Careful deja de subir copias y pierde el acceso a tu Drive. Las copias que ya están en «${DRIVE_FOLDER_NAME}» no se borran.`,
       [
         { text: 'Cancelar', style: 'cancel' },
         {
@@ -156,26 +149,35 @@ export default function BackupScreen() {
     );
   };
 
-  /* --------------------------------- Folder -------------------------------- */
+  /* --------------------------------- Local --------------------------------- */
 
   const chooseFolder = async () => {
     try {
       const folder = await pickBackupFolder();
       if (!folder) return;
-      await patchBackup({ folderUri: folder.uri, folderLabel: folder.label, enabled: true, lastError: null });
+      await patchBackup({ folderUri: folder.uri, folderLabel: folder.label, lastError: null });
       toast('Carpeta configurada');
+      void runFolderNow(true);
     } catch (e) {
       toast(errorText(e, 'No se pudo elegir la carpeta'), 'error');
     }
   };
 
-  const runNow = async () => {
+  const removeFolder = () => {
+    Alert.alert('Dejar de usar la carpeta', 'Careful deja de guardar copias en esta carpeta. Las copias que ya están ahí no se borran.', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Quitar', style: 'destructive', onPress: () => void patchBackup({ folderUri: null, folderLabel: null, lastBackupAt: null, lastError: null }) },
+    ]);
+  };
+
+  const runFolderNow = async (quiet = false) => {
     setBusy('now');
     try {
+      if (quiet && !(await hasLocalData())) return;
       const r = await backupToFolder();
-      toast(`Respaldo guardado (${sizeLabel(r.size)})`);
+      toast(`Copia guardada (${sizeLabel(r.size)})`);
     } catch (e) {
-      const msg = errorText(e, 'No se pudo guardar el respaldo');
+      const msg = errorText(e, 'No se pudo guardar la copia');
       await useSettings.getState().patch('backup', { lastError: msg });
       toast(msg, 'error');
     } finally {
@@ -183,14 +185,12 @@ export default function BackupScreen() {
     }
   };
 
-  /* --------------------------------- Others -------------------------------- */
-
   const share = async () => {
     setBusy('share');
     try {
       await shareBackup();
     } catch (e) {
-      toast(errorText(e, 'No se pudo crear el respaldo'), 'error');
+      toast(errorText(e, 'No se pudo crear la copia'), 'error');
     } finally {
       setBusy(null);
     }
@@ -211,8 +211,8 @@ export default function BackupScreen() {
 
   const confirmRestore = (p: RestorePreview) => {
     Alert.alert(
-      'Restaurar respaldo',
-      `Respaldo del ${formatDay(p.exportedAt.slice(0, 10))}: ${p.vehicles} vehículos y ${p.records} registros.\n\nReemplaza TODOS los datos actuales de este teléfono.`,
+      'Restaurar copia',
+      `Copia del ${formatDay(p.exportedAt.slice(0, 10))}: ${p.vehicles} vehículos y ${p.records} registros.\n\nReemplaza TODOS los datos actuales de este teléfono.`,
       [
         { text: 'Cancelar', style: 'cancel' },
         {
@@ -235,44 +235,37 @@ export default function BackupScreen() {
     );
   };
 
+  const spinner = (on: boolean) => (on ? <ActivityIndicator color={colors.primary} /> : undefined);
+
   return (
     <Screen header={<Header back title="Respaldo y sincronización" />}>
-      <Card style={{ gap: spacing.sm }}>
-        <View style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'center' }}>
-          <Icon name="shield-check" size={26} color={colors.success} />
-          <AppText variant="bodyStrong" style={{ flex: 1 }}>
-            Tus datos viven en tu teléfono
-          </AppText>
-        </View>
-        <AppText variant="caption" tone="muted">
-          Careful no usa servidores propios. Los respaldos van a tu Google Drive o a una carpeta que elijas, y Android además incluye la base de datos en la copia de seguridad de tu cuenta de Google.
+      {/* What it does and how, in one quick read */}
+      <View style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start' }}>
+        <Icon name="shield-sync" size={24} color={colors.success} />
+        <AppText variant="body" tone="muted" style={{ flex: 1 }}>
+          Careful guarda una copia de tus autos, registros y fotos <AppText variant="bodyStrong">cada vez que hacés un cambio</AppText> y{' '}
+          <AppText variant="bodyStrong">todas las noches</AppText>, sin que tengas que hacer nada. Elegí dónde: en la nube, en tu Google Drive, o en el teléfono. Si cambiás de
+          celular, recuperás todo con «Restaurar».
         </AppText>
-      </Card>
+      </View>
 
       {isDriveAvailable() ? (
         <View style={{ gap: spacing.sm }}>
           <AppText variant="overline" tone="muted">
-            Google Drive
+            Nube
           </AppText>
           {connected ? (
             <Card padded={false}>
-              <ListRow icon="google-drive" iconColor={DRIVE_GREEN} title={drive.name ?? 'Cuenta de Google'} subtitle={`${drive.email} · carpeta «${DRIVE_FOLDER_NAME}»`} />
-              <SwitchRow icon="cloud-sync" title="Sincronizar automáticamente" subtitle={driveStatus(drive)} value={drive.enabled} onChange={(v) => void patchDrive({ enabled: v })} />
+              <ListRow icon="google-drive" iconColor={DRIVE_GREEN} title={drive.name ?? drive.email ?? 'Google Drive'} subtitle={`${drive.email} · ${driveStatus(drive)}`} />
               <SwitchRow
                 icon="wifi"
                 title="Solo con Wi-Fi"
                 subtitle={drive.wifiOnly ? 'No usa datos móviles' : 'Usa Wi-Fi o datos móviles'}
                 value={drive.wifiOnly}
-                onChange={(v) => void patchDrive({ wifiOnly: v })}
+                onChange={(v) => void useSettings.getState().patch('drive', { wifiOnly: v })}
               />
-              <ListRow
-                icon="cloud-upload"
-                title="Subir ahora"
-                subtitle="Crea un respaldo y lo sube a tu Drive"
-                onPress={busy ? undefined : () => void uploadNow()}
-                right={busy === 'drive-now' ? <ActivityIndicator color={colors.primary} /> : undefined}
-              />
-              <ListRow icon="cloud-download" title="Restaurar desde Drive" subtitle="Elegí uno de tus respaldos" onPress={busy ? undefined : () => void openDriveBackups()} />
+              <ListRow icon="cloud-upload" title="Subir ahora" onPress={busy ? undefined : () => void uploadNow()} right={spinner(busy === 'drive-now')} />
+              <ListRow icon="cloud-download" title="Restaurar desde Drive" onPress={busy ? undefined : () => void openDriveBackups()} />
               <ListRow icon="logout" title="Desconectar" danger onPress={disconnect} last />
             </Card>
           ) : (
@@ -281,16 +274,10 @@ export default function BackupScreen() {
                 <View style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: DRIVE_GREEN + '1F', alignItems: 'center', justifyContent: 'center' }}>
                   <Icon name="google-drive" size={26} color={DRIVE_GREEN} />
                 </View>
-                <View style={{ flex: 1 }}>
-                  <AppText variant="bodyStrong">Sincronizar con Google Drive</AppText>
-                  <AppText variant="caption" tone="muted">
-                    Respaldos automáticos en la carpeta «{DRIVE_FOLDER_NAME}» de tu Drive.
-                  </AppText>
-                </View>
+                <AppText variant="caption" tone="muted" style={{ flex: 1 }}>
+                  Las copias se guardan en la carpeta «{DRIVE_FOLDER_NAME}» de tu Drive. Careful solo ve los archivos que crea.
+                </AppText>
               </View>
-              <AppText variant="caption" tone="subtle">
-                Careful solo puede ver los archivos que crea; el resto de tu Drive sigue siendo privado.
-              </AppText>
               <Button label="Conectar Google Drive" icon="google-drive" loading={busy === 'connect' || busy === 'drive-now'} onPress={() => void connect()} />
             </Card>
           )}
@@ -304,108 +291,58 @@ export default function BackupScreen() {
 
       <View style={{ gap: spacing.sm }}>
         <AppText variant="overline" tone="muted">
-          Carpeta del teléfono
+          Local
         </AppText>
         <Card padded={false}>
           <ListRow
             icon="folder"
-            title="Carpeta de respaldos"
-            subtitle={backup.folderLabel?.replace(/\/+$/, '') ?? 'Elegí una carpeta (por ejemplo, Documentos/Careful)'}
+            title={folderLabel ?? 'Elegir carpeta del teléfono'}
+            subtitle={
+              backup.folderUri
+                ? backup.lastBackupAt
+                  ? `Última copia: ${formatMoment(backup.lastBackupAt)}`
+                  : 'Todavía no se guardó ninguna copia'
+                : 'Por ejemplo, Documentos/Careful'
+            }
             onPress={() => void chooseFolder()}
           />
-          <SwitchRow
-            icon="backup-restore"
-            title="Respaldar automáticamente"
-            subtitle={backup.lastBackupAt ? `Último: ${formatMoment(backup.lastBackupAt)}` : 'Todavía no se hizo ninguno'}
-            value={backup.enabled && !!backup.folderUri}
-            onChange={(v) => (v && !backup.folderUri ? void chooseFolder() : void patchBackup({ enabled: v }))}
-          />
+          {backup.folderUri ? (
+            <ListRow icon="content-save" title="Guardar copia ahora" onPress={busy ? undefined : () => void runFolderNow()} right={spinner(busy === 'now')} />
+          ) : null}
+          <ListRow icon="share-variant" title="Compartir copia" subtitle="Enviala por Gmail, WhatsApp u otra app" onPress={busy ? undefined : () => void share()} right={spinner(busy === 'share')} />
           <ListRow
-            icon="content-save"
-            title="Respaldar ahora"
-            onPress={backup.folderUri && !busy ? () => void runNow() : undefined}
-            right={busy === 'now' ? <ActivityIndicator color={colors.primary} /> : undefined}
-            last
+            icon="database-import"
+            title="Restaurar desde archivo"
+            subtitle="Elegí un .zip de Careful"
+            onPress={busy ? undefined : () => void restoreFromFile()}
+            right={spinner(busy === 'restore')}
+            last={!backup.folderUri}
           />
+          {backup.folderUri ? <ListRow icon="folder-remove" title="Dejar de usar la carpeta" danger onPress={removeFolder} last /> : null}
         </Card>
         {backup.lastError ? (
           <AppText variant="caption" tone="danger">
             Último error: {backup.lastError}
           </AppText>
         ) : null}
-      </View>
-
-      <View style={{ gap: spacing.sm, opacity: autoActive ? 1 : 0.5 }}>
-        <AppText variant="overline" tone="muted">
-          Frecuencia automática
-        </AppText>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-          {BACKUP_INTERVALS_HOURS.map((h) => (
-            <Pressable
-              key={h}
-              disabled={!autoActive}
-              onPress={() => void patchBackup({ intervalHours: h })}
-              accessibilityRole="button"
-              accessibilityState={{ selected: backup.intervalHours === h }}
-              style={{
-                paddingHorizontal: 14,
-                height: 36,
-                borderRadius: radius.pill,
-                justifyContent: 'center',
-                backgroundColor: backup.intervalHours === h ? colors.primary : colors.surface,
-                borderWidth: 1,
-                borderColor: backup.intervalHours === h ? colors.primary : colors.border,
-              }}>
-              <AppText variant="captionStrong" color={backup.intervalHours === h ? '#fff' : colors.text}>
-                {intervalLabel(h)}
-              </AppText>
-            </Pressable>
-          ))}
-        </View>
-        <Card padded={false}>
-          <SwitchRow
-            icon="lightning-bolt"
-            title="Además, tras cada registro"
-            subtitle="Respalda unos segundos después de cada cambio"
-            value={backup.onEveryChange}
-            disabled={!autoActive}
-            onChange={(v) => void patchBackup({ onEveryChange: v })}
-            last
-          />
-        </Card>
         <AppText variant="caption" tone="subtle">
-          Vale para Google Drive y para la carpeta. Android puede demorar la ejecución para cuidar la batería. Se conservan los últimos {backup.keep} respaldos en cada destino.
+          Se conservan las 5 copias más recientes y una por día de las últimas 2 semanas.
         </AppText>
       </View>
 
-      <View style={{ gap: spacing.sm }}>
-        <AppText variant="overline" tone="muted">
-          Otros
-        </AppText>
-        <Card padded={false}>
-          <ListRow icon="share-variant" title="Compartir respaldo" subtitle="Enviá un .zip por Gmail, WhatsApp u otra app" onPress={busy ? undefined : () => void share()} />
-          <ListRow icon="database-import" title="Restaurar desde archivo" subtitle="Elegí un .zip de Careful" onPress={busy ? undefined : () => void restoreFromFile()} last />
-        </Card>
-        {busy === 'share' || busy === 'restore' ? (
-          <AppText variant="caption" tone="muted">
-            Procesando…
-          </AppText>
-        ) : null}
-      </View>
-
-      <Sheet visible={sheetOpen} onClose={() => setSheetOpen(false)} title="Respaldos en Google Drive">
+      <Sheet visible={sheetOpen} onClose={() => setSheetOpen(false)} title="Copias en Google Drive">
         {driveFiles === null ? (
           <View style={{ paddingVertical: spacing.xl, alignItems: 'center', gap: spacing.sm }}>
             <ActivityIndicator color={colors.primary} />
             <AppText variant="caption" tone="muted">
-              Buscando respaldos…
+              Buscando copias…
             </AppText>
           </View>
         ) : driveFiles.length === 0 ? (
           <View style={{ paddingVertical: spacing.xl, alignItems: 'center', gap: spacing.sm }}>
             <Icon name="cloud-alert" size={32} color={colors.textSubtle} />
             <AppText variant="body" tone="muted" align="center">
-              Todavía no hay respaldos en «{DRIVE_FOLDER_NAME}».
+              Todavía no hay copias en «{DRIVE_FOLDER_NAME}».
             </AppText>
           </View>
         ) : (
@@ -423,7 +360,7 @@ export default function BackupScreen() {
                     key={f.id}
                     icon="zip-box"
                     title={when ? capitalize(formatMoment(when)) : f.name}
-                    subtitle={`${sizeLabel(f.size)}${i === 0 ? ' · el más reciente' : ''}`}
+                    subtitle={`${sizeLabel(f.size)}${i === 0 ? ' · la más reciente' : ''}`}
                     onPress={busy ? undefined : () => void restoreFromDrive(f)}
                     last={i === driveFiles.length - 1}
                   />

@@ -52,7 +52,7 @@ export default function SettingsScreen() {
           value={theme}
           onChange={(v) => void useSettings.getState().set('theme', v)}
           options={[
-            { value: 'system', label: 'Sistema', icon: 'cellphone' },
+            { value: 'system', label: 'Automático', icon: 'brightness-auto' },
             { value: 'light', label: 'Claro', icon: 'white-balance-sunny' },
             { value: 'dark', label: 'Oscuro', icon: 'weather-night' },
           ]}
@@ -63,7 +63,7 @@ export default function SettingsScreen() {
         <ListRow
           icon="shield-lock"
           title="Seguridad"
-          subtitle={securityMode === 'none' ? 'Sin bloqueo' : securityMode === 'pin' ? 'PIN de Careful' : 'Desbloqueo del teléfono'}
+          subtitle={securityMode === 'none' ? 'Sin bloqueo' : securityMode === 'pin' ? 'PIN de App' : 'Desbloqueo del teléfono'}
           onPress={() => router.push('/settings/security')}
         />
         <ListRow
@@ -130,8 +130,7 @@ export default function SettingsScreen() {
 
 function backupSummary(backup: BackupPrefs, drive: DrivePrefs): string {
   const last = (iso: string | null) => (iso ? `último ${formatMoment(iso)}` : 'pendiente');
-  if (drive.email && drive.enabled) return `Google Drive · ${drive.pending ? 'cambios pendientes' : last(drive.lastAt)}`;
-  if (backup.enabled && backup.folderUri) return `Carpeta · ${last(backup.lastBackupAt)}`;
-  if (drive.email) return 'Google Drive conectado · manual';
-  return 'Manual';
+  if (drive.email) return `Nube · ${drive.pending ? 'cambios pendientes' : last(drive.lastAt)}`;
+  if (backup.folderUri) return `Local · ${last(backup.lastBackupAt)}`;
+  return 'Sin configurar';
 }

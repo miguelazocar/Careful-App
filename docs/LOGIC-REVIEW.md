@@ -51,9 +51,11 @@ Este documento compara la idea original ([App-Idea-Raw.md](App-Idea-Raw.md)) con
 
 Tres capas, de la más automática a la más manual:
 
-1. **Sincronización directa con Google Drive** (desde la 1.1): respaldos `.zip` (datos + fotos) en la carpeta «Careful Respaldos» del Drive del usuario, cada **1 hora a 1 semana** y opcionalmente **tras cada registro**, con **"Solo con Wi-Fi"** (por defecto) o Wi-Fi + datos móviles. Restauración desde la lista de respaldos de Drive. Detalle técnico y configuración en [GOOGLE-DRIVE.md](GOOGLE-DRIVE.md).
+1. **Sincronización directa con Google Drive** (desde la 1.1): respaldos `.zip` (datos + fotos) en la carpeta «Careful Respaldos» del Drive del usuario, **siempre automáticos**: después de cada cambio (agrupando los cambios seguidos en una sola copia) y una vez por día después de la medianoche. Con **"Solo con Wi-Fi"** (por defecto) o Wi-Fi + datos móviles. Restauración desde la lista de respaldos de Drive. Detalle técnico y configuración en [GOOGLE-DRIVE.md](GOOGLE-DRIVE.md).
 2. **Copia de seguridad de Android (Google One)**: reglas propias que incluyen la base de datos y excluyen secretos y fotos (límite de 25 MB). Se restaura sola al reinstalar.
-3. **Carpeta del teléfono** (por ejemplo, una carpeta sincronizada por otra app) con la misma frecuencia, y **compartir / restaurar** cualquier `.zip` a mano.
+3. **Carpeta del teléfono** (por ejemplo, una carpeta sincronizada por otra app) con el mismo comportamiento, y **compartir / restaurar** cualquier `.zip` a mano.
+
+La frecuencia no se configura: el spec pedía elegir entre 1 hora y 1 semana, pero respaldar después de cada cambio, más una copia diaria, cubre todos los casos sin decisiones para el usuario. Como eso genera muchas copias, la retención combina las 5 más recientes con una por día de las 2 últimas semanas: muchos cambios seguidos no borran el historial.
 
 Decisiones:
 - **Permiso `drive.file`** en vez de acceso completo al Drive: la app solo ve lo que crea. Es un permiso "no sensible" y no requiere la verificación de Google.

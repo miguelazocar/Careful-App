@@ -60,7 +60,7 @@ export default function SecurityScreen() {
           onPress={() => void choose('device')}
           right={mode === 'device' ? <Icon name="check-circle" size={22} color={colors.primary} /> : <View />}
         />
-        <ListRow icon="dialpad" title="PIN de Careful" subtitle="Un código propio de 4 o 6 dígitos" onPress={() => void choose('pin')} right={mode === 'pin' ? <Icon name="check-circle" size={22} color={colors.primary} /> : <View />} last />
+        <ListRow icon="dialpad" title="PIN de App" subtitle="Un código propio de 4 o 6 dígitos" onPress={() => void choose('pin')} right={mode === 'pin' ? <Icon name="check-circle" size={22} color={colors.primary} /> : <View />} last />
       </Card>
       {mode === 'pin' ? (
         <Card padded={false}>

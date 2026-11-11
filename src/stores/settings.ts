@@ -7,29 +7,23 @@ export type ThemePreference = 'system' | 'light' | 'dark';
 export type SecurityMode = 'none' | 'pin' | 'device';
 export type AiProviderPreference = 'auto' | 'gemini' | 'local';
 
+/**
+ * Backups are always automatic for every configured destination: after each change (debounced)
+ * and once a day after midnight. Local destination = this folder; cloud = DrivePrefs.
+ */
 export interface BackupPrefs {
-  /** Automatic periodic backups to the chosen folder (interval and triggers also apply to Drive). */
-  enabled: boolean;
-  /** Between 1 hour and 1 week (spec). */
-  intervalHours: number;
-  /** Also back up a few seconds after every change. */
-  onEveryChange: boolean;
-  /** Android SAF directory URI chosen by the user. */
+  /** Android SAF directory URI chosen by the user (null = no local backups). */
   folderUri: string | null;
   folderLabel: string | null;
-  /** Backup files kept in the folder (older ones are pruned). */
-  keep: number;
   lastBackupAt: string | null;
   lastError: string | null;
 }
 
 /** Direct sync with the user's Google Drive (folder "Careful Respaldos", scope drive.file). */
 export interface DrivePrefs {
-  /** Authorized Google account; null = not connected. */
+  /** Authorized Google account; null = not connected. Connected means automatic uploads. */
   email: string | null;
   name: string | null;
-  /** Automatic uploads, on the schedule and triggers of BackupPrefs. */
-  enabled: boolean;
   /** Never spend mobile data on automatic uploads. */
   wifiOnly: boolean;
   lastAt: string | null;
@@ -55,23 +49,12 @@ export interface SettingsData {
   lastVehicleId: string | null;
 }
 
-export const BACKUP_INTERVALS_HOURS = [1, 3, 6, 12, 24, 72, 168] as const;
-
 export const DEFAULT_SETTINGS: SettingsData = {
   theme: 'system',
   securityMode: 'none',
   notifications: DEFAULT_NOTIFICATION_PREFS,
-  backup: {
-    enabled: false,
-    intervalHours: 24,
-    onEveryChange: false,
-    folderUri: null,
-    folderLabel: null,
-    keep: 10,
-    lastBackupAt: null,
-    lastError: null,
-  },
-  drive: { email: null, name: null, enabled: false, wifiOnly: true, lastAt: null, lastError: null, pending: false },
+  backup: { folderUri: null, folderLabel: null, lastBackupAt: null, lastError: null },
+  drive: { email: null, name: null, wifiOnly: true, lastAt: null, lastError: null, pending: false },
   ai: { provider: 'auto', model: 'gemini-flash-latest', hasKey: false },
   lastVehicleId: null,
 };

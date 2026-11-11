@@ -8,7 +8,7 @@ import { AppState } from 'react-native';
 import { onDataChanged } from '@/db/connection';
 import { exportSnapshot, importSnapshot, referencedPhotos, validatePayload, type BackupPayload } from '@/db/snapshot';
 import { listVehicles } from '@/db/vehicles';
-import { backupFileName, backupsToPrune, connectionAllowsUpload, isDue, type ConnectionKind } from '@/domain/backup-policy';
+import { backupFileName, backupsToPrune, CHANGE_DEBOUNCE_MS, connectionAllowsUpload, isDailyBackupDue, type ConnectionKind } from '@/domain/backup-policy';
 import { getSettings, useSettings } from '@/stores/settings';
 import { withExternalActivity } from '@/stores/ui';
 
@@ -49,25 +49,25 @@ export async function hasLocalData(): Promise<boolean> {
 
 /** Writes a backup into the user-chosen folder (Android Storage Access Framework). */
 export async function backupToFolder(zip?: Uint8Array): Promise<BackupResult> {
-  const { folderUri, keep } = getSettings().backup;
+  const { folderUri } = getSettings().backup;
   if (!folderUri) throw new Error('Elegí una carpeta para los respaldos automáticos.');
   const bytes = zip ?? (await buildBackupZip()).bytes;
   const dir = new Directory(folderUri);
   const name = backupFileName();
   const file = dir.createFile(name, 'application/zip');
   await file.write(bytes);
-  pruneOldBackups(dir, keep);
+  pruneOldBackups(dir);
   await useSettings.getState().patch('backup', { lastBackupAt: new Date().toISOString(), lastError: null });
   return { name, size: bytes.length };
 }
 
-function pruneOldBackups(dir: Directory, keep: number): void {
+function pruneOldBackups(dir: Directory): void {
   try {
     const files = dir
       .list()
       .filter((e): e is File => e instanceof File)
       .map((file) => ({ file, name: decodeURIComponent(file.name).split('/').pop() ?? '' }));
-    for (const old of backupsToPrune(files, keep)) old.file.delete();
+    for (const old of backupsToPrune(files)) old.file.delete();
   } catch {
     // listing SAF folders can fail on some providers — pruning is best effort
   }
@@ -171,24 +171,17 @@ export async function restoreBackup(preview: RestorePreview): Promise<void> {
 
 /* --------------------------- Automatic backups --------------------------- */
 
-const folderAuto = () => {
-  const b = getSettings().backup;
-  return b.enabled && !!b.folderUri;
-};
-
-const driveAuto = () => {
-  const d = getSettings().drive;
-  return d.enabled && !!d.email;
-};
+/** Every configured destination is automatic: after each change and once a day after midnight. */
+const folderAuto = () => !!getSettings().backup.folderUri;
+const driveAuto = () => !!getSettings().drive.email;
 
 export function isFolderBackupDue(now = new Date()): boolean {
-  const b = getSettings().backup;
-  return folderAuto() && isDue(b.lastBackupAt, b.intervalHours, now);
+  return folderAuto() && isDailyBackupDue(getSettings().backup.lastBackupAt, now);
 }
 
 export function isDriveBackupDue(now = new Date()): boolean {
   const d = getSettings().drive;
-  return driveAuto() && (d.pending || isDue(d.lastAt, getSettings().backup.intervalHours, now));
+  return driveAuto() && (d.pending || isDailyBackupDue(d.lastAt, now));
 }
 
 export function isBackupDue(now = new Date()): boolean {
@@ -215,16 +208,26 @@ export async function connectionKind(): Promise<ConnectionKind> {
 type Trigger = 'schedule' | 'change' | 'launch' | 'network';
 
 let running: Promise<boolean> | null = null;
+/** A change arrived while a backup was running: back up again once it finishes. */
+let changedWhileRunning = false;
 
 /**
- * Periodic / after-change / launch backups to every enabled destination (folder and Drive).
+ * Daily / after-change / launch backups to every configured destination (folder and Drive).
  * The zip is built once. Drive respects "Solo con Wi-Fi": when blocked, the upload stays
  * pending and runs at the next chance (Wi-Fi connects, the app opens, or the periodic worker).
  */
 export function runAutomaticBackup(reason: Trigger): Promise<boolean> {
-  // never overlap: a change during an upload is covered by the next trigger
-  running ??= doAutomaticBackup(reason).finally(() => {
+  if (running) {
+    // never overlap; but a change made during the backup must not be lost
+    if (reason === 'change') changedWhileRunning = true;
+    return running;
+  }
+  running = doAutomaticBackup(reason).finally(() => {
     running = null;
+    if (changedWhileRunning) {
+      changedWhileRunning = false;
+      scheduleChangeBackup();
+    }
   });
   return running;
 }
@@ -277,19 +280,25 @@ async function doAutomaticBackup(reason: Trigger): Promise<boolean> {
 let changeTimer: ReturnType<typeof setTimeout> | null = null;
 let started = false;
 
+/** Debounced: many changes in a row produce a single backup, after the last one. */
+function scheduleChangeBackup(): void {
+  if (!hasAutomaticBackups()) return;
+  if (changeTimer) clearTimeout(changeTimer);
+  changeTimer = setTimeout(() => {
+    changeTimer = null;
+    void runAutomaticBackup('change');
+  }, CHANGE_DEBOUNCE_MS);
+}
+
 /**
  * Triggers while the app runs:
- * - "Además, tras cada registro": debounced backup a few seconds after data changes;
+ * - every data change schedules a backup, CHANGE_DEBOUNCE_MS after the last one;
  * - a pending Drive upload runs when the network comes back or the app returns to the foreground.
  */
 export function startChangeBackups(): void {
   if (started) return;
   started = true;
-  onDataChanged(() => {
-    if (!getSettings().backup.onEveryChange || !hasAutomaticBackups()) return;
-    if (changeTimer) clearTimeout(changeTimer);
-    changeTimer = setTimeout(() => void runAutomaticBackup('change'), 8000);
-  });
+  onDataChanged(scheduleChangeBackup);
   Network.addNetworkStateListener((s) => {
     if (s.isConnected === false || !getSettings().drive.pending || !driveAuto()) return;
     void runAutomaticBackup('network');

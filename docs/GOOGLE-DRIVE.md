@@ -13,14 +13,14 @@ Careful sube respaldos `.zip` (datos + fotos) a una carpeta **«Careful Respaldo
 
 **Permiso `drive.file`**: la app solo ve los archivos que creó ella; el resto del Drive del usuario es invisible para Careful. Google lo clasifica como permiso **no sensible**, así que no requiere verificación de la app.
 
-**Cuándo se sube**
-- Cada 1 h a 1 semana, según la frecuencia elegida (WorkManager, también con la app cerrada).
-- Si está activado, unos segundos después de cada registro.
+**Cuándo se sube** (siempre automático, no se configura)
+- **Después de cada cambio**: la app espera 10 segundos sin cambios nuevos y sube una sola copia, aunque se hayan hecho muchos cambios seguidos.
+- **Una vez por día, después de la medianoche**: WorkManager revisa cada hora, también con la app cerrada, y sube la copia diaria en la primera oportunidad después de las 00:00.
 - Si la subida quedó pendiente, porque no había Wi-Fi, no había conexión o falló, se reintenta cuando vuelve la red, cuando se abre la app o en la próxima ejecución periódica.
 
 En el uso diario no aparece ninguna pantalla: si Google pide autorizar de nuevo, la subida queda pendiente, la app lo muestra como error en *Ajustes › Respaldo* y el usuario toca «Subir ahora» para autorizar.
 
-**Retención**: se conservan los últimos 10 respaldos en la carpeta. Una base vacía (instalación nueva o "Borrar todos los datos") **nunca** se sube automáticamente, para no desplazar respaldos buenos.
+**Retención**: se conservan las **5 copias más recientes** y, además, **la última de cada día de las 2 últimas semanas**. Así, muchos cambios seguidos no borran el historial de días anteriores. Una base vacía (instalación nueva o "Borrar todos los datos") **nunca** se sube automáticamente, para no desplazar respaldos buenos.
 
 ## Configurar Google Cloud (una sola vez)
 

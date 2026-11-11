@@ -73,10 +73,11 @@ IA en el alta: **escanear la cédula verde** completa los datos, y la **foto del
 - **Sin cuentas ni servidores**: los datos viven en tu teléfono.
 
 ### ☁️ Respaldo y sincronización
-- **Google Drive**: respaldos automáticos `.zip` (datos + fotos) en la carpeta «Careful Respaldos», **cada 1 hora a 1 semana** y opcionalmente tras cada registro, **solo con Wi-Fi** o también con datos móviles. Restauración desde la lista de respaldos.
+- **Siempre automático**: una copia `.zip` (datos + fotos) **después de cada cambio** (una sola aunque hagas varios seguidos) y **una por día después de la medianoche**. Se conservan las 5 más recientes y una por día de las últimas 2 semanas.
+- **Nube (Google Drive)**: carpeta «Careful Respaldos», **solo con Wi-Fi** o también con datos móviles, y restauración desde la lista de copias.
 - Permiso mínimo `drive.file`: Careful solo ve los archivos que crea.
 - **Copia de seguridad de Android** (Google One) con reglas propias.
-- **Carpeta del teléfono**, **compartir** un respaldo por cualquier app y **restaurar** desde archivo.
+- **Local**: carpeta del teléfono, **compartir** una copia por cualquier app y **restaurar** desde archivo.
 - 👉 Cómo funciona y cómo configurarlo: [docs/GOOGLE-DRIVE.md](docs/GOOGLE-DRIVE.md).
 
 ### 🤖 Inteligencia artificial — dos motores, una interfaz
@@ -94,7 +95,7 @@ En modo **Automático** usa Gemini si está configurado y cae a la IA local si n
 - Historial agrupado por mes, filtros por auto y tipo, y **gráfico de gastos**.
 - **Exportar historial en PDF** (ideal para la venta del auto).
 - Archivar vehículos vendidos sin perder su historia.
-- Tema **sistema / claro / oscuro**.
+- Tema **automático / claro / oscuro** (automático por defecto).
 
 ## 🧠 Decisiones de producto
 

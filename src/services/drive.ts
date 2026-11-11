@@ -95,7 +95,7 @@ export async function connectDrive(): Promise<{ email: string | null }> {
     throw new Error(describeDriveError(e));
   }
   const email = user.email ?? auth.email;
-  await useSettings.getState().patch('drive', { email, name: user.name, enabled: true, lastError: null, pending: false });
+  await useSettings.getState().patch('drive', { email, name: user.name, lastError: null, pending: false });
   return { email };
 }
 
@@ -103,7 +103,7 @@ export async function connectDrive(): Promise<{ email: string | null }> {
 export async function disconnectDrive(): Promise<void> {
   const { email } = getSettings().drive;
   if (GoogleAuth && email) await GoogleAuth.revokeAccess(email, SCOPES).catch(() => undefined);
-  await useSettings.getState().patch('drive', { email: null, name: null, enabled: false, lastAt: null, lastError: null, pending: false });
+  await useSettings.getState().patch('drive', { email: null, name: null, lastAt: null, lastError: null, pending: false });
 }
 
 /** Uploads a backup zip to "Careful Respaldos" and prunes old copies. */
@@ -113,7 +113,7 @@ export async function uploadBackupToDrive(bytes: Uint8Array, opts: { interactive
     const folderId = await drive.ensureFolder(DRIVE_FOLDER_NAME);
     const file = await drive.upload(folderId, backupFileName(), bytes, 'application/zip');
     try {
-      const old = backupsToPrune(await drive.listFiles(folderId), getSettings().backup.keep);
+      const old = backupsToPrune(await drive.listFiles(folderId));
       for (const f of old) await drive.remove(f.id);
     } catch {
       // pruning is best effort
