@@ -10,7 +10,7 @@ import { getGeminiKey } from './ai/gemini';
 import { runAutomaticBackup, startChangeBackups } from './backup';
 import { configureBackgroundTask } from './background';
 import { configureNotifications, syncNotifications } from './notifications';
-import { getPinLength } from './security';
+import { getDeviceAuthSupport, getPinLength } from './security';
 
 let started = false;
 let notifTimer: ReturnType<typeof setTimeout> | null = null;
@@ -25,6 +25,8 @@ export async function bootstrap(): Promise<void> {
   // the PIN in the Keystore does not travel — never lock the user out).
   const s = useSettings.getState();
   if (s.securityMode === 'pin' && (await getPinLength()) === null) await s.set('securityMode', 'none');
+  // same if the phone's own screen lock was removed: "Desbloqueo del teléfono" could never succeed
+  if (s.securityMode === 'device' && !(await getDeviceAuthSupport().catch(() => ({ available: true }))).available) await s.set('securityMode', 'none');
   const hasKey = !!(await getGeminiKey());
   if (s.ai.hasKey !== hasKey) await s.patch('ai', { hasKey });
 

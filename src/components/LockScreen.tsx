@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { authenticateWithDevice, cancelDeviceAuth, getDeviceAuthSupport, getPinLength, verifyPin } from '@/services/security';
 import { useSettings } from '@/stores/settings';
-import { useLock } from '@/stores/ui';
+import { toast, useLock } from '@/stores/ui';
 import { brand, radius, spacing } from '@/theme/tokens';
 
 import { Wordmark } from './brand';
@@ -144,6 +144,12 @@ export function LockScreen() {
       pending.current = id;
       try {
         if (await authenticateWithDevice()) unlock();
+        else if (!(await getDeviceAuthSupport()).available) {
+          // The phone no longer has a screen lock: this mode can't succeed (nor protect anything).
+          await useSettings.getState().set('securityMode', 'none');
+          unlock();
+          toast('El teléfono ya no tiene bloqueo de pantalla: se desactivó el bloqueo de Careful.', 'info');
+        }
       } finally {
         if (pending.current === id) pending.current = 0;
       }
