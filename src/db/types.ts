@@ -68,6 +68,9 @@ export interface RecordItem {
   category: string;
   item: string;
   label: string;
+  /** Next service after this one: every N km / N months (null = the vehicle's plan). */
+  intervalKm: number | null;
+  intervalMonths: number | null;
 }
 
 export interface RecordPhoto {

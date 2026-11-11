@@ -141,6 +141,9 @@ export interface Occurrence {
   date: string;
   odometer: number | null;
   recordId: string;
+  /** Interval chosen when this service was logged; overrides the vehicle's plan. */
+  intervalKm?: number | null;
+  intervalMonths?: number | null;
 }
 
 export interface UpcomingItem {
@@ -182,6 +185,26 @@ export function resolveInterval(item: string, rules: ServiceRule[]): Interval {
   };
 }
 
+/** Interval for an occurrence: the one chosen when it was logged, else the vehicle's plan. */
+export function occurrenceInterval(occ: Occurrence, rules: ServiceRule[]): Interval {
+  const plan = resolveInterval(occ.item, rules);
+  const own = (occ.intervalKm ?? null) !== null || (occ.intervalMonths ?? null) !== null;
+  if (!own) return plan;
+  return { intervalKm: occ.intervalKm ?? null, intervalMonths: occ.intervalMonths ?? null, enabled: plan.enabled, custom: true };
+}
+
+/** When the next service falls after one done on `date` at `km` (what the form previews). */
+export function nextDueFrom(date: string, km: number | null, interval: Pick<Interval, 'intervalKm' | 'intervalMonths'>): { dueDate: string | null; dueKm: number | null } {
+  return {
+    dueDate: interval.intervalMonths ? addMonthsTo(date, interval.intervalMonths) : null,
+    dueKm: interval.intervalKm && km !== null ? km + interval.intervalKm : null,
+  };
+}
+
+/**
+ * One item per tracked service, from its latest occurrence: logging a new one replaces the
+ * previous schedule and starts counting again from that date and km.
+ */
 export function buildServiceItems(
   vehicleId: string,
   occurrences: Occurrence[],
@@ -190,10 +213,9 @@ export function buildServiceItems(
 ): UpcomingItem[] {
   const out: UpcomingItem[] = [];
   for (const occ of occurrences) {
-    const interval = resolveInterval(occ.item, rules);
+    const interval = occurrenceInterval(occ, rules);
     if (!interval.enabled || (!interval.intervalKm && !interval.intervalMonths)) continue;
-    const dueDate = interval.intervalMonths ? addMonthsTo(occ.date, interval.intervalMonths) : null;
-    const dueKm = interval.intervalKm && occ.odometer !== null ? occ.odometer + interval.intervalKm : null;
+    const { dueDate, dueKm } = nextDueFrom(occ.date, occ.odometer, interval);
     if (!dueDate && dueKm === null) continue;
     const meta = findItem(occ.item);
     out.push({
@@ -280,9 +302,20 @@ export function sortUpcoming(items: UpcomingItem[]): UpcomingItem[] {
   });
 }
 
+/** No car odometer goes this far: anything above is a typo. */
+export const MAX_ODOMETER = 1_999_999;
+/** A jump bigger than this since the previous reading is asked for confirmation. */
+export const ODOMETER_JUMP_KM = 100_000;
+
+/** Hard error (the value is impossible), or null. */
+export function odometerError(km: number): string | null {
+  return km > MAX_ODOMETER ? `${formatInt(km)} km no es un kilometraje posible. Revisá el número.` : null;
+}
+
 /**
  * Checks a new odometer value against the history around its date.
- * Returns a human message when it is inconsistent (lower than an earlier reading or higher than a later one).
+ * Returns a human message when it is inconsistent (lower than an earlier reading, higher than a
+ * later one, or a suspiciously big jump), so the user can confirm or fix it.
  */
 export function validateOdometer(km: number, date: string, readings: Reading[], initialKm: number, excludeRecordKm?: number | null): string | null {
   const before = readings.filter((r) => r.date <= date && r.km !== excludeRecordKm);
@@ -291,5 +324,6 @@ export function validateOdometer(km: number, date: string, readings: Reading[], 
   const minAfter = after.reduce((m, r) => Math.min(m, r.km), Infinity);
   if (km < maxBefore) return `Es menor al último kilometraje registrado (${formatInt(maxBefore)} km).`;
   if (km > minAfter) return `Es mayor a un registro posterior (${formatInt(minAfter)} km).`;
+  if (km - maxBefore > ODOMETER_JUMP_KM) return `Son ${formatInt(km - maxBefore)} km más que el último registro (${formatInt(maxBefore)} km).`;
   return null;
 }

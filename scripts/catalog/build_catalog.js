@@ -82,6 +82,152 @@ function prettyModel(raw) {
     .join(' ');
 }
 
+/* ---------------------------- spelling fixes ---------------------------- */
+/** Misspellings found in the CCA lists (whole words in version names). */
+const VERSION_WORD_FIXES = {
+  ATTACTION: 'ATTRACTION',
+  ATTRACTIO: 'ATTRACTION',
+  COBRIO: 'CABRIO',
+  CONFORD: 'CONFORT',
+  CUOPE: 'COUPE',
+  DECIGN: 'DESIGN',
+  DUALOGIG: 'DUALOGIC',
+  ELGANCE: 'ELEGANCE',
+  EXCLUSIV: 'EXCLUSIVE',
+  EXPRESION: 'EXPRESSION',
+  HIDRIDO: 'HIBRIDO',
+  HYBIRD: 'HYBRID',
+  HYDRID: 'HYBRID',
+  LIMETED: 'LIMITED',
+  LIMTED: 'LIMITED',
+  LOUGE: 'LOUNGE',
+  LUXYRY: 'LUXURY',
+  MHVE: 'MHEV',
+  MILDHYBIRD: 'MILDHYBRID',
+  MONENTUM: 'MOMENTUM',
+  MOTTION: 'MOTION',
+  PACKPAGE: 'PACKAGE',
+  PAKCAGE: 'PACKAGE',
+  PERFOMANCE: 'PERFORMANCE',
+  PRIVELEGE: 'PRIVILEGE',
+  QUADRIFOLIO: 'QUADRIFOGLIO',
+  QUATTO: 'QUATTRO',
+  ROLLAND: 'ROLAND',
+  TECNHOLOGY: 'TECHNOLOGY',
+  TITANIUN: 'TITANIUM',
+  TRENDILINE: 'TRENDLINE',
+  ULIMATE: 'ULTIMATE',
+  IPREMIUM: 'i PREMIUM',
+  MXDRIVE: 'M XDRIVE',
+  MPERFORMANCE: 'M PERFORMANCE',
+  MPACKAGE: 'M PACKAGE',
+};
+const VERSION_PHRASE_FIXES = [
+  [/\bWORD CUP\b/g, 'WORLD CUP'],
+  [/¨/g, '"'],
+  [/\s+\/\s*/g, ' / '], // "1,0 /1.3" → "1,0 / 1.3"
+];
+function fixVersionSpelling(v) {
+  let out = v.replace(/[A-Za-zÁÉÍÓÚÑ]+/g, (w) => VERSION_WORD_FIXES[w.toUpperCase()] ?? w);
+  for (const [re, to] of VERSION_PHRASE_FIXES) out = out.replace(re, to);
+  return out.replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Model names as people know them (the CCA spells some with spaces, typos or trims glued on).
+ * Renaming to an existing name merges both models.
+ */
+const MODEL_RENAMES = {
+  'alfa-romeo': { Mito: 'MiTo' },
+  aro: { '10,1': '10.1', '10,4': '10.4', '10,9': '10.9' },
+  audi: { 'Q 5 Sportback': 'Q5 Sportback', 'E-TRON': 'e-tron', 'RS E-TRON': 'RS e-tron' },
+  bmw: { 7: '120' },
+  byd: { 'Seal 5 Dm-I': 'Seal 5 DM-i', 'Seal U Dm-I': 'Seal U DM-i', 'Song Pro Dm-I': 'Song Pro DM-i', 'Shark Dmo': 'Shark' },
+  changan: { M: 'M201' },
+  chevrolet: { 'C 20': 'C20', 'D 20': 'D20', 'Spark Euv': 'Spark EUV' },
+  citroen: { 'C- Elysée': 'C-Elysée', 'C 15': 'C15' },
+  ds: { 3: 'DS 3', '3 Crossback': 'DS 3 Crossback', 4: 'DS 4', '7 Crossback': 'DS 7 Crossback' },
+  faw: { 'X 40': 'X40' },
+  ferrari: {
+    'F 430': 'F430',
+    'F 575': '575M',
+    F575: '575M',
+    'F 488': '488',
+    'F 599': '599',
+    'F 612': '612 Scaglietti',
+    'F 812': '812',
+    'F 8 Tributo': 'F8 Tributo',
+    F360: '360',
+    F456: '456',
+    F550: '550',
+  },
+  ford: {
+    'Ecosport Kinetic Design Attraction': 'Ecosport',
+    'Fiesta Kinetic Design Attraction': 'Fiesta',
+    'Fiesta Kinetic Desing': 'Fiesta',
+    'Focus Kinetic Design Attraction': 'Focus',
+    'Ka +': 'Ka',
+  },
+  honda: { Odissey: 'Odyssey' },
+  hummer: { HM: 'H1' },
+  hyundai: { 'Grand I 10': 'Grand i10', 'I 10': 'i10', 'I 30': 'i30', 'H 100': 'H100', 'H 350': 'H350', 'Santa FE': 'Santa Fe', 'Grand Santa FE': 'Grand Santa Fe' },
+  jaguar: { 'F Pace': 'F-Pace', 'F Type': 'F-Type', 'S Type': 'S-Type', 'X Type': 'X-Type' },
+  jeep: { Renagade: 'Renegade', 'Cherokee Grand': 'Grand Cherokee' },
+  jetour: { 'X 70': 'X70' },
+  kia: { 'Carnival Grand': 'Grand Carnival' },
+  'land-rover': { 'Range Rover SE Vogue': 'Range Rover' },
+  lexus: { 200: 'IS 200', 300: 'GS 300', 400: 'LS 400', 430: 'LS 430' },
+  lifan: { 'X 50': 'X50', 'X 60': 'X60', 'X 70': 'X70' },
+  maserati: { Quatroporte: 'Quattroporte', 'Gran Turismo': 'GranTurismo', 'Gran Sport': 'GranSport' },
+  mazda: { 'B 2200': 'B2200', 'B 2500': 'B2500', 'B 2900': 'B2900', 'MX 3': 'MX-3', 'MX 5 Miata': 'MX-5 Miata', 'MX 6': 'MX-6', RX7: 'RX-7' },
+  'mercedes-benz': {
+    'Cle 300': 'CLE 300',
+    'Cle 53': 'CLE 53',
+    'E 220D': 'E 220 d',
+    'GLC 350E': 'GLC 350 e',
+    Eqa: 'EQA',
+    Eqe: 'EQE',
+    'Mercedes-Amg GT 4': 'AMG GT 4 puertas',
+    'Mercedes-Amg GT C': 'AMG GT C',
+    'Mercedes-Amg GT R': 'AMG GT R',
+    'Mercedes-Amg GT S': 'AMG GT S',
+  },
+  mini: { 'Mini Cooper': 'Cooper' },
+  mitsubishi: { 'L 200': 'L200', 'L 300': 'L300', 'GT 3000': '3000 GT' },
+  nissan: { 'NP 300': 'NP300', 'NP 300 Frontier': 'NP300 Frontier', Xtrail: 'X-Trail' },
+  porsche: { 'Taycan (electrico)': 'Taycan', '911 (992)': '911', '911 Turbo PDK': '911 Turbo' },
+  renault: { 'Kangoo II Version Pasajeros': 'Kangoo II', 'Scenic II Grand': 'Grand Scenic II' },
+  saab: { '9,3': '9-3', '9,5': '9-5' },
+  shineray: { 'T 30': 'T30', 'T 32': 'T32', 'X 30': 'X30' },
+  soueast: { 'DX 3': 'DX3' },
+  subaru: { 'Forester All New': 'Forester' },
+  suzuki: { Jimmy: 'Jimny' },
+  toyota: { 'RAV-4': 'RAV4', BZ4X: 'bZ4X', 'Hilux Cover': 'Hilux' },
+};
+
+function renameModel(brandId, name) {
+  let n = MODEL_RENAMES[brandId]?.[name] ?? name;
+  if (brandId === 'bmw') n = n.replace(/^(M?\d{3}) ?I$/, '$1i').replace(/^(\d{3})E$/, '$1e');
+  if (brandId === 'citroen') n = n.replace(/^C (\d)\b/, 'C$1');
+  if (brandId === 'volvo') n = n.replace(/^([CSV]) (\d\d)$/, '$1$2');
+  if (brandId === 'lynk-co') n = n.replace(/^Lynk&co /i, '');
+  return n;
+}
+
+/** Models the CCA lists split between heading and version: Audi "S" + "3P 2,0 3 TFSI" → S3. */
+function splitVersion(brandId, model, version) {
+  if (brandId === 'audi' && model === 'S') {
+    // the model number is the first lone digit after the displacement: "4P 3,0 T FSI 4 QUATTRO" → S4
+    const t = version.split(' ');
+    const disp = t.findIndex((w) => /^\d,\d$/.test(w));
+    const at = t.findIndex((w, i) => i > disp && /^[3-8]$/.test(w));
+    if (disp >= 0 && at > disp) return { model: `S${t[at]}`, version: t.filter((_, i) => i !== at).join(' ') };
+    if (/^4P 3,0 /.test(version)) return { model: 'S4', version }; // 2010–2011 S4 listed without its number
+  }
+  if (brandId === 'changan' && model === 'M201') return { model, version: version.replace(/^201 /, '') };
+  return { model, version };
+}
+
 /* ------------------------------ versions ------------------------------ */
 /**
  * Fake bold in versions comes word by word: "5P 5P 1,4 1,4 FIRE FIRE" → "5P 1,4 FIRE".
@@ -109,7 +255,7 @@ function cleanVersion(raw) {
   let v = undoubleTokens(raw.replace(/\s+/g, ' ').trim());
   const m = /^(.*\S)\s+((?:19|20)\d\d)$/.exec(v);
   if (m && /[A-Z]/i.test(m[1])) v = m[1];
-  return v;
+  return fixVersionSpelling(v);
 }
 
 function bodyOf(modelName, versions) {
@@ -141,17 +287,19 @@ for (const list of lists) {
     if (!brands.has(id)) brands.set(id, { id, name, models: new Map() });
     const brand = brands.get(id);
     for (const m of b.models) {
-      const mName = prettyModel(m.name);
-      if (!mName) continue;
-      const mid = slug(mName);
-      if (!brand.models.has(mid)) brand.models.set(mid, { id: mid, name: mName, versions: new Map() });
-      const model = brand.models.get(mid);
-      if (list.listYear === LATEST) model.name = mName; // prefer the newest spelling
+      const pretty = prettyModel(m.name);
+      if (!pretty) continue;
+      const baseName = renameModel(id, pretty);
       for (const v of m.versions) {
         if (!v.years.length) continue;
-        const vName = cleanVersion(v.name);
-        if (!model.versions.has(vName)) model.versions.set(vName, new Set());
-        const ys = model.versions.get(vName);
+        const split = splitVersion(id, baseName, cleanVersion(v.name));
+        const mName = split.model;
+        const mid = slug(mName);
+        if (!brand.models.has(mid)) brand.models.set(mid, { id: mid, name: mName, versions: new Map() });
+        const model = brand.models.get(mid);
+        if (list.listYear === LATEST) model.name = mName; // prefer the newest spelling
+        if (!model.versions.has(split.version)) model.versions.set(split.version, new Set());
+        const ys = model.versions.get(split.version);
         for (const y of v.years) ys.add(y);
       }
     }

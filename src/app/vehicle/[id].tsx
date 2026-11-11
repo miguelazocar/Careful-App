@@ -7,15 +7,21 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { confirmIdentity } from '@/components/AuthPrompt';
 import { BrandLogo } from '@/components/BrandLogo';
+import { monthsUnit } from '@/components/IntervalFields';
+import { openQuickRecord } from '@/components/QuickRecord';
 import { RecordRow, UpcomingRow } from '@/components/rows';
 import { VehiclePhoto } from '@/components/VehicleCard';
 import { Sheet } from '@/components/ui/overlays';
 import { AppText, Button, Card, Icon, IconButton, ListRow } from '@/components/ui/primitives';
 import { listRecords } from '@/db/records';
+import { getServiceRules } from '@/db/reminders';
 import type { Vehicle } from '@/db/types';
 import { deleteVehicle, setVehicleArchived } from '@/db/vehicles';
 import { flagEmoji } from '@/domain/countries';
+import { CORE_ITEM } from '@/domain/maintenance';
+import { dueText } from '@/domain/notification-plan';
 import { formatPlate } from '@/domain/plate';
+import { resolveInterval, type Interval, type UpcomingItem } from '@/domain/schedule';
 import { COOLANT_BASES, coolantMix, fuelLabel, OIL_BASES } from '@/domain/vehicle-specs';
 import { useQuery } from '@/hooks/useQuery';
 import { formatAmount, formatKm } from '@/lib/format';
@@ -49,8 +55,8 @@ export default function VehicleDetailScreen() {
   const [exporting, setExporting] = useState(false);
 
   const { data } = useQuery(async () => {
-    const [upcoming, records] = await Promise.all([loadUpcoming({ vehicleId: id, warnKm }), listRecords({ vehicleId: id })]);
-    return { upcoming, records };
+    const [upcoming, records, rules] = await Promise.all([loadUpcoming({ vehicleId: id, warnKm }), listRecords({ vehicleId: id }), getServiceRules(id)]);
+    return { upcoming, records, oilPlan: resolveInterval(CORE_ITEM, rules) };
   }, [id, warnKm]);
 
   const snap = data?.upcoming.snapshots.get(id);
@@ -116,6 +122,11 @@ export default function VehicleDetailScreen() {
     ]);
   };
 
+  const quickAccessory = (title: string) => {
+    setSheet(null);
+    openQuickRecord({ kind: 'accessory', vehicleId: v.id, title });
+  };
+
   const go = (pathname: '/record/form' | '/reminder/form' | '/vehicle/plan', params: Record<string, string>) => {
     setSheet(null);
     router.push({ pathname, params } as never);
@@ -174,14 +185,20 @@ export default function VehicleDetailScreen() {
             <IconButton icon="pencil" tone="primary" accessibilityLabel="Editar" onPress={() => void edit()} />
           </View>
           <Animated.View key={tab} entering={FadeIn.duration(180)} style={{ height: TAB_HEIGHT, paddingHorizontal: spacing.sm, paddingBottom: spacing.sm }}>
-            {tab === 'vehiculo' ? <VehicleTab v={v} km={snap.currentKm} /> : tab === 'aceite' ? <OilTab v={v} /> : <CoolantTab v={v} />}
+            {tab === 'vehiculo' ? (
+              <VehicleTab v={v} km={snap.currentKm} />
+            ) : tab === 'aceite' ? (
+              <OilTab v={v} plan={data.oilPlan} next={data.upcoming.items.find((i) => i.item === CORE_ITEM)} />
+            ) : (
+              <CoolantTab v={v} />
+            )}
           </Animated.View>
         </Card>
 
         {/* Quick actions */}
         <View style={{ flexDirection: 'row', gap: spacing.xs }}>
           <Action icon="wrench" label="Registrar" primary onPress={() => go('/record/form', { kind: 'maintenance', vehicleId: v.id })} />
-          <Action icon="speedometer" label="Kilometraje" onPress={() => go('/record/form', { kind: 'odometer', vehicleId: v.id })} />
+          <Action icon="speedometer" label="Kilometraje" onPress={() => openQuickRecord({ kind: 'odometer', vehicleId: v.id })} />
           <Action icon="calendar-clock" label="Services" badge={pending || undefined} onPress={() => setSheet('services')} />
           <Action icon="history" label="Historial" onPress={() => setSheet('history')} />
         </View>
@@ -195,9 +212,11 @@ export default function VehicleDetailScreen() {
                 key={it.key}
                 item={it}
                 onPress={() =>
-                  it.source === 'service'
-                    ? go('/record/form', { kind: it.categoryKey === 'accesorios' ? 'accessory' : 'maintenance', vehicleId: v.id, item: it.item ?? '' })
-                    : go('/reminder/form', { id: it.reminderId ?? '' })
+                  it.source !== 'service'
+                    ? go('/reminder/form', { id: it.reminderId ?? '' })
+                    : it.categoryKey === 'accesorios'
+                      ? quickAccessory(it.title)
+                      : go('/record/form', { kind: 'maintenance', vehicleId: v.id, item: it.item ?? '' })
                 }
               />
             ))
@@ -234,7 +253,7 @@ export default function VehicleDetailScreen() {
 
       <Sheet visible={sheet === 'menu'} onClose={() => setSheet(null)} title={`${v.brand} ${v.model}`}>
         <View style={{ borderRadius: radius.lg, overflow: 'hidden', backgroundColor: colors.surface }}>
-          <ListRow icon="file-pdf-box" title={exporting ? 'Generando…' : 'Exportar historial (PDF)'} subtitle="Ideal para mostrar al vender el auto" onPress={() => void exportPdf()} />
+          <ListRow icon="file-pdf-box" title={exporting ? 'Generando…' : 'Informe del vehículo (PDF)'} subtitle="Resumen, ficha técnica e historial: ideal para vender" onPress={() => void exportPdf()} />
           <ListRow icon="calendar-plus" title="Agregar recordatorio" subtitle="VTV, seguro, patente…" onPress={() => go('/reminder/form', { vehicleId: v.id })} />
           <ListRow icon="tune-variant" title="Plan de mantenimiento" subtitle="Intervalos por km y por tiempo" onPress={() => go('/vehicle/plan', { id: v.id })} />
           <ListRow icon="archive-outline" title="Archivar" subtitle="Lo vendiste o ya no lo usás" onPress={archive} />
@@ -279,18 +298,53 @@ function VehicleTab({ v, km }: { v: Vehicle; km: number }) {
   );
 }
 
-function OilTab({ v }: { v: Vehicle }) {
+function OilTab({ v, plan, next }: { v: Vehicle; plan: Interval; next?: UpcomingItem }) {
+  const { colors } = useTheme();
+  const every = [plan.intervalKm ? formatKm(plan.intervalKm) : null, plan.intervalMonths ? `${plan.intervalMonths} ${monthsUnit(plan.intervalMonths)}` : null].filter(Boolean).join(' o ');
+  const tone = next?.due.status === 'overdue' ? colors.danger : next?.due.status === 'soon' ? colors.warning : colors.primary;
+  const left =
+    next?.due.status === 'overdue'
+      ? 'Vencido'
+      : next?.due.remainingKm !== null && next?.due.remainingKm !== undefined
+        ? `Faltan ${formatKm(next.due.remainingKm)}`
+        : next?.due.daysLeft !== null && next?.due.daysLeft !== undefined
+          ? `Faltan ${next.due.daysLeft} días`
+          : null;
   return (
-    <View style={{ flex: 1, gap: spacing.sm, paddingTop: spacing.xxs }}>
+    <View style={{ flex: 1, gap: spacing.xs, paddingTop: spacing.xxs }}>
       <BaseSelector options={OIL_BASES} value={v.oilBase} />
-      <BigStat icon="oil" label="Cantidad de aceite (con filtro)" value={liters(v.oilLiters)} />
+      <Row>
+        <Cell label="Cantidad (con filtro)" value={liters(v.oilLiters)} big />
+        <Cell label="Versión" value={v.oilType} />
+      </Row>
       <Row>
         <Cell label="Marca" value={v.oilBrand} />
         <Cell label="Modelo" value={v.oilModel} />
       </Row>
-      <Row>
-        <Cell label="Versión" value={v.oilType} />
-      </Row>
+      <View style={{ flex: 1.25, justifyContent: 'center', gap: 6, paddingHorizontal: spacing.sm, borderRadius: radius.sm, backgroundColor: colors.primarySoft }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <Icon name="calendar-sync" size={16} color={colors.primary} />
+          <AppText variant="captionStrong" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={{ flex: 1 }}>
+            {every ? `Cada ${every}` : 'Sin intervalo de cambio'}
+          </AppText>
+          {left ? (
+            <AppText variant="captionStrong" color={tone} numberOfLines={1}>
+              {left}
+            </AppText>
+          ) : null}
+        </View>
+        {next ? (
+          <>
+            <View style={{ height: 6, borderRadius: 3, backgroundColor: colors.surface, overflow: 'hidden' }}>
+              <View style={{ width: `${Math.min(100, Math.round(next.due.progress * 100))}%`, height: 6, borderRadius: 3, backgroundColor: tone }} />
+            </View>
+            <AppText variant="caption" tone="muted" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={{ fontSize: 12 }}>
+              {next.estimated ? 'Estimado: ' : 'Próximo: '}
+              {dueText(next.due)}
+            </AppText>
+          </>
+        ) : null}
+      </View>
     </View>
   );
 }
@@ -390,25 +444,6 @@ function BaseSelector({ options, value }: { options: { value: string; label: str
           </View>
         );
       })}
-    </View>
-  );
-}
-
-function BigStat({ icon, label, value }: { icon: string; label: string; value: string | null }) {
-  const { colors } = useTheme();
-  return (
-    <View style={{ flex: 1.2, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.sm, borderRadius: radius.sm, backgroundColor: colors.surfaceAlt }}>
-      <View style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center' }}>
-        <Icon name={icon} size={24} color={colors.primary} />
-      </View>
-      <View style={{ flex: 1 }}>
-        <AppText variant="number" tone={value ? 'default' : 'subtle'} style={{ fontSize: 28 }}>
-          {value ?? '—'}
-        </AppText>
-        <AppText variant="caption" tone="muted" style={{ fontSize: 11 }} numberOfLines={1}>
-          {label}
-        </AppText>
-      </View>
     </View>
   );
 }

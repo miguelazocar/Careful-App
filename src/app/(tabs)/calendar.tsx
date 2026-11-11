@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Pressable, View } from 'react-native';
 
+import { openQuickRecord } from '@/components/QuickRecord';
 import { UpcomingRow } from '@/components/rows';
 import { Sheet } from '@/components/ui/overlays';
 import { Header, Screen } from '@/components/ui/layout';
@@ -116,7 +117,8 @@ export default function CalendarScreen() {
                   subtitle="Carga el service y reprograma el próximo"
                   onPress={() => {
                     setAction(null);
-                    router.push({ pathname: '/record/form', params: { kind: action.categoryKey === 'accesorios' ? 'accessory' : 'maintenance', vehicleId: action.vehicleId, item: action.item } });
+                    if (action.categoryKey === 'accesorios') openQuickRecord({ kind: 'accessory', vehicleId: action.vehicleId, title: action.title });
+                    else router.push({ pathname: '/record/form', params: { kind: 'maintenance', vehicleId: action.vehicleId, item: action.item } });
                   }}
                 />
               ) : (

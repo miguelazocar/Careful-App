@@ -2,25 +2,31 @@ import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Pressable, View } from 'react-native';
+import Animated, { Easing, FadeIn } from 'react-native-reanimated';
 
+import { IntervalFields } from '@/components/IntervalFields';
 import { PhotoStrip, VehicleSelector } from '@/components/pickers';
-import { Sheet } from '@/components/ui/overlays';
+import { openQuickRecord } from '@/components/QuickRecord';
 import { DateField, FieldLabel, TextField } from '@/components/ui/inputs';
 import { Header, Screen } from '@/components/ui/layout';
+import { Sheet } from '@/components/ui/overlays';
 import { AppText, Button, Chip, Grid, Icon } from '@/components/ui/primitives';
-import { createRecord, getOdometerReadings, getRecord, updateRecord, type RecordInput } from '@/db/records';
-import type { RecordKind, Vehicle } from '@/db/types';
+import { createRecord, getOdometerReadings, getRecord, updateRecord, type RecordInput, type RecordItemInput } from '@/db/records';
+import { getServiceRules } from '@/db/reminders';
+import type { ServiceRule, Vehicle } from '@/db/types';
 import { listVehicles } from '@/db/vehicles';
 import {
-  ACCESSORY_CATEGORY,
-  ACCESSORY_ICONS,
   findItem,
+  groupOfItem,
   isOtherItem,
+  isTrackedItem,
   MAINTENANCE_CATEGORIES,
+  SERVICE_GROUPS,
   type Category,
+  type ServiceGroup,
 } from '@/domain/maintenance';
-import { formatPlate } from '@/domain/plate';
-import { currentOdometer, validateOdometer } from '@/domain/schedule';
+import { dueText } from '@/domain/notification-plan';
+import { currentOdometer, nextDueFrom, odometerError, resolveInterval, validateOdometer } from '@/domain/schedule';
 import { today } from '@/lib/dates';
 import { formatAmount, formatInt, formatKm, parseAmountInput, parseIntInput } from '@/lib/format';
 import { runAi } from '@/services/ai';
@@ -31,31 +37,41 @@ import { toast } from '@/stores/ui';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 
-type SelectedItem = RecordInput['items'][number];
+/**
+ * Registrar un servicio / mantenimiento.
+ * 1) Mosaico con los 6 rubros habituales (más «Otro servicio» con el catálogo completo).
+ * 2) Las tareas frecuentes del rubro. Las que se repiten (cambio de aceite, refrigerante…)
+ *    piden cada cuántos km y meses toca la próxima, precargado con el plan del vehículo.
+ * 3) Siempre: kilometraje, monto, descripción y foto opcional.
+ * Accesorios y kilometraje usan los modales rápidos (components/QuickRecord).
+ */
 
-const TITLES: Record<RecordKind, string> = {
-  maintenance: 'Mantenimiento o reparación',
-  accessory: 'Accesorio',
-  odometer: 'Actualizar kilometraje',
-};
+type Group = ServiceGroup | 'other';
+interface Interval {
+  km: string;
+  months: number;
+}
+
+const enter = FadeIn.duration(220).easing(Easing.out(Easing.cubic));
+const labelOf = (i: { item: string; label: string }) => (isOtherItem(i.item) ? i.label : (findItem(i.item)?.item.label ?? i.label));
 
 export default function RecordFormScreen() {
-  const params = useLocalSearchParams<{ kind?: RecordKind; vehicleId?: string; item?: string; id?: string }>();
+  const params = useLocalSearchParams<{ kind?: string; vehicleId?: string; item?: string; id?: string }>();
   const editingId = params.id;
   const { colors } = useTheme();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [kind, setKind] = useState<RecordKind>(params.kind ?? 'maintenance');
   const [vehicleId, setVehicleId] = useState<string | null>(null);
+  const [rules, setRules] = useState<ServiceRule[]>([]);
+  const [group, setGroup] = useState<Group | null>(null);
+  const [items, setItems] = useState<RecordItemInput[]>([]);
+  const [intervals, setIntervals] = useState<Record<string, Interval>>({});
   const [date, setDate] = useState(today());
   const [odometer, setOdometer] = useState('');
   const [amount, setAmount] = useState('');
   const [workshop, setWorkshop] = useState('');
   const [description, setDescription] = useState('');
-  const [items, setItems] = useState<SelectedItem[]>([]);
   const [photos, setPhotos] = useState<string[]>([]);
-  const [lastKm, setLastKm] = useState<number | null>(null);
   const [readings, setReadings] = useState<{ date: string; km: number }[]>([]);
-  const [initialKm, setInitialKm] = useState(0);
   const [openCategory, setOpenCategory] = useState<Category | null>(null);
   const [saving, setSaving] = useState(false);
   const [improving, setImproving] = useState(false);
@@ -72,25 +88,41 @@ export default function RecordFormScreen() {
       setVehicles(list);
       if (editingId) {
         const r = await getRecord(editingId);
+        if (r && r.kind !== 'maintenance') {
+          // accessories and odometer readings are edited in their quick modal
+          openQuickRecord({ kind: r.kind, recordId: r.id });
+          router.back();
+          return;
+        }
         if (r) {
-          setKind(r.kind);
           setVehicleId(r.vehicleId);
           setDate(r.date);
           setOdometer(r.odometer !== null ? formatInt(r.odometer) : '');
           setAmount(r.amountCents !== null ? formatAmount(r.amountCents) : '');
           setWorkshop(r.workshop ?? '');
           setDescription(r.description ?? '');
-          setItems(r.items.map((i) => ({ category: i.category, item: i.item, label: i.label })));
+          setItems(r.items.map((i) => ({ category: i.category, item: i.item, label: i.label, intervalKm: i.intervalKm, intervalMonths: i.intervalMonths })));
+          setIntervals(
+            Object.fromEntries(
+              r.items.filter((i) => i.intervalKm !== null || i.intervalMonths !== null).map((i) => [i.item, { km: i.intervalKm ? formatInt(i.intervalKm) : '', months: i.intervalMonths ?? 0 }]),
+            ),
+          );
           setPhotos(r.photos.map((p) => p.path));
+          setGroup((r.items[0] && groupOfItem(r.items[0].item)) ?? 'other');
           original.current = { photos: r.photos.map((p) => p.path), km: r.odometer };
         }
       } else {
+        if (params.kind === 'accessory' || params.kind === 'odometer') {
+          openQuickRecord({ kind: params.kind, vehicleId: params.vehicleId });
+          router.back();
+          return;
+        }
         const last = useSettings.getState().lastVehicleId;
-        const preferred = params.vehicleId ?? (list.some((v) => v.id === last) ? last : null) ?? list[0]?.id ?? null;
-        setVehicleId(preferred);
-        if (params.item) {
-          const meta = findItem(params.item);
-          if (meta) setItems([{ category: meta.category.key, item: meta.item.key, label: meta.item.label }]);
+        setVehicleId(params.vehicleId ?? (list.some((v) => v.id === last) ? last : null) ?? list[0]?.id ?? null);
+        const meta = params.item ? findItem(params.item) : undefined;
+        if (meta) {
+          setItems([{ category: meta.category.key, item: meta.item.key, label: meta.item.label }]);
+          setGroup(groupOfItem(meta.item.key) ?? 'other');
         }
       }
       setLoaded(true);
@@ -102,32 +134,36 @@ export default function RecordFormScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // odometer context for the selected vehicle
+  // odometer history and service plan of the selected vehicle
   useEffect(() => {
     if (!vehicleId) return;
-    const v = vehicles.find((x) => x.id === vehicleId);
-    void getOdometerReadings(vehicleId).then((r) => {
+    void Promise.all([getOdometerReadings(vehicleId), getServiceRules(vehicleId)]).then(([r, rl]) => {
       setReadings(r);
-      setInitialKm(v?.initialOdometer ?? 0);
-      setLastKm(currentOdometer(v?.initialOdometer ?? 0, r));
+      setRules(rl);
     });
-  }, [vehicleId, vehicles]);
+  }, [vehicleId]);
 
   const vehicle = vehicles.find((v) => v.id === vehicleId);
+  const lastKm = vehicle ? currentOdometer(vehicle.initialOdometer, readings) : null;
   const km = parseIntInput(odometer);
-  const amountCents = parseAmountInput(amount);
-  const trackedByKm = items.some((i) => findItem(i.item)?.item.intervalKm);
+  const tracked = items.filter((i) => isTrackedItem(i.item));
 
-  const toggleItem = (category: Category, key: string, label: string) => {
-    setItems((prev) => (prev.some((i) => i.item === key && !isOtherItem(key)) ? prev.filter((i) => i.item !== key) : [...prev, { category: category.key, item: key, label }]));
+  /** The interval shown for a tracked item: what the user set, else the vehicle's plan. */
+  const intervalOf = (item: string): Interval => {
+    const own = intervals[item];
+    if (own) return own;
+    const plan = resolveInterval(item, rules);
+    return { km: plan.intervalKm ? formatInt(plan.intervalKm) : '', months: plan.intervalMonths ?? 0 };
   };
+
+  const toggle = (category: string, item: string, label: string) =>
+    setItems((prev) => (prev.some((i) => i.item === item && !isOtherItem(item)) ? prev.filter((i) => i.item !== item) : [...prev, { category, item, label }]));
 
   const improve = async () => {
     if (!description.trim()) return toast('Escribí primero una descripción', 'info');
     setImproving(true);
     try {
-      const labels = items.map((i) => (isOtherItem(i.item) ? i.label : (findItem(i.item)?.item.label ?? i.label)));
-      const { result, provider } = await runAi((ai) => ai.improveText(description, { items: labels }));
+      const { result, provider } = await runAi((ai) => ai.improveText(description, { items: items.map(labelOf) }));
       if (result.trim()) {
         setDescription(result.trim());
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -146,14 +182,19 @@ export default function RecordFormScreen() {
     try {
       const input: RecordInput = {
         vehicleId,
-        kind,
+        kind: 'maintenance',
         date,
         odometer: km,
-        amountCents: kind === 'odometer' ? null : amountCents,
-        workshop: kind === 'odometer' ? null : workshop.trim() || null,
+        amountCents: parseAmountInput(amount),
+        workshop: workshop.trim() || null,
         description: description.trim() || null,
-        items: kind === 'odometer' ? [] : items,
-        photos: kind === 'odometer' ? [] : photos,
+        // tracked services keep the interval chosen here: it rules the next one
+        items: items.map((i) => {
+          if (!isTrackedItem(i.item)) return { ...i, intervalKm: null, intervalMonths: null };
+          const iv = intervalOf(i.item);
+          return { ...i, intervalKm: parseIntInput(iv.km), intervalMonths: iv.months || null };
+        }),
+        photos,
       };
       if (editingId) {
         const { removedPhotos } = await updateRecord(editingId, input);
@@ -165,8 +206,8 @@ export default function RecordFormScreen() {
       deletePhotoFiles(sessionPhotos.current.filter((p) => !photos.includes(p)));
       await useSettings.getState().set('lastVehicleId', vehicleId);
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      toast(kind === 'odometer' ? 'Kilometraje actualizado' : editingId ? 'Registro actualizado' : 'Registro guardado');
-      if (kind === 'maintenance' || kind === 'accessory') void ensurePermission();
+      toast(editingId ? 'Registro actualizado' : tracked.length ? 'Service guardado. Agendamos el próximo.' : 'Registro guardado');
+      void ensurePermission();
       router.back();
     } catch (e) {
       toast(e instanceof Error ? e.message : 'No se pudo guardar', 'error');
@@ -177,10 +218,16 @@ export default function RecordFormScreen() {
 
   const save = () => {
     if (!vehicleId) return toast('Elegí un vehículo', 'info');
-    if (kind === 'odometer' && km === null) return toast('Ingresá el kilometraje', 'info');
-    if (kind !== 'odometer' && !items.length && !description.trim()) return toast('Elegí al menos un ítem o escribí una descripción', 'info');
+    if (!items.length) return toast('Elegí qué se hizo', 'info');
+    if (km === null && !(editingId && original.current.km === null)) return toast('Ingresá el kilometraje actual', 'info');
+    const impossible = km !== null ? odometerError(km) : null;
+    if (impossible) return toast(impossible, 'error');
+    for (const t of tracked) {
+      const iv = intervalOf(t.item);
+      if (!parseIntInput(iv.km) && !iv.months) return toast(`Indicá cada cuántos km o meses toca: ${labelOf(t)}`, 'info');
+    }
     if (km !== null) {
-      const problem = validateOdometer(km, date, readings, initialKm, editingId ? original.current.km : undefined);
+      const problem = validateOdometer(km, date, readings, vehicle?.initialOdometer ?? 0, editingId ? original.current.km : undefined);
       if (problem) {
         Alert.alert('Revisá el kilometraje', `${formatKm(km)}: ${problem}\n\n¿Guardar igual?`, [
           { text: 'Corregir', style: 'cancel' },
@@ -192,138 +239,268 @@ export default function RecordFormScreen() {
     void persist();
   };
 
-  const selectedLabels = useMemo(
-    () => items.map((i) => ({ ...i, display: isOtherItem(i.item) ? i.label : (findItem(i.item)?.item.label ?? i.label), color: findItem(i.item)?.category.color })),
-    [items],
+  const extraChips = useMemo(
+    () => items.filter((i) => group === 'other' || !group || !group.options.some((o) => o.item === i.item)),
+    [items, group],
   );
 
   if (!loaded) return null;
   if (!vehicles.length) {
     return (
-      <Screen header={<Header back title={TITLES[kind]} />}>
+      <Screen header={<Header back title="Registrar servicio" />}>
         <AppText tone="muted">Primero agregá un vehículo.</AppText>
         <Button label="Agregar vehículo" onPress={() => router.replace('/vehicle/form')} />
       </Screen>
     );
   }
 
+  const vehiclePicker =
+    vehicles.length > 1 ? (
+      <VehicleSelector vehicles={vehicles} value={vehicleId} onChange={setVehicleId} />
+    ) : vehicle ? (
+      <AppText variant="caption" tone="muted">
+        {vehicle.brand} {vehicle.model} · {formatKm(lastKm)}
+      </AppText>
+    ) : null;
+
+  /* ------------------------------ 1. Mosaic ------------------------------ */
+  if (!group) {
+    return (
+      <Screen header={<Header back title="Registrar servicio" />}>
+        {vehiclePicker}
+        <AppText variant="heading">¿Qué le hiciste al auto?</AppText>
+        <Grid columns={2} gap={spacing.sm}>
+          {SERVICE_GROUPS.map((g) => (
+            <GroupTile key={g.key} group={g} onPress={() => setGroup(g)} />
+          ))}
+        </Grid>
+        <Pressable
+          onPress={() => setGroup('other')}
+          style={({ pressed }) => ({
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: spacing.sm,
+            padding: spacing.md,
+            borderRadius: radius.lg,
+            borderWidth: 1,
+            borderColor: colors.border,
+            backgroundColor: pressed ? colors.surfaceAlt : colors.surface,
+          })}>
+          <View style={{ width: 40, height: 40, borderRadius: 13, backgroundColor: colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name="dots-grid" size={22} color={colors.textMuted} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <AppText variant="bodyStrong">Otro servicio</AppText>
+            <AppText variant="caption" tone="muted">
+              Frenos, caja, eléctrico, climatización, VTV…
+            </AppText>
+          </View>
+          <Icon name="chevron-right" size={22} color={colors.textSubtle} />
+        </Pressable>
+      </Screen>
+    );
+  }
+
+  /* ------------------------------ 2. Details ------------------------------ */
+  const g = group === 'other' ? null : group;
   return (
     <Screen
-      header={<Header back title={editingId ? 'Editar registro' : TITLES[kind]} />}
+      header={<Header back title={editingId ? 'Editar servicio' : (g?.label ?? 'Otro servicio')} />}
       footer={<Button label="Guardar" icon="check" size="lg" full loading={saving} onPress={save} />}>
-      {vehicles.length > 1 ? (
-        <View>
-          <FieldLabel label="Vehículo" />
-          <VehicleSelector vehicles={vehicles} value={vehicleId} onChange={setVehicleId} />
-        </View>
-      ) : vehicle ? (
-        <AppText variant="caption" tone="muted">
-          {vehicle.brand} {vehicle.model} {vehicle.plate ? `· ${formatPlate(vehicle.plate, vehicle.country)}` : ''}
-        </AppText>
-      ) : null}
+      {!editingId ? vehiclePicker : null}
 
-      {kind === 'odometer' ? (
-        <View style={{ gap: spacing.md }}>
-          <View style={{ alignItems: 'center', gap: 4, paddingVertical: spacing.md }}>
-            <Icon name="speedometer" size={44} color={colors.primary} />
+      <View>
+        <FieldLabel
+          label="¿Qué se hizo?"
+          hint={items.length ? `${items.length} seleccionado${items.length > 1 ? 's' : ''}` : 'Podés elegir varios'}
+          right={
+            <Pressable onPress={() => setGroup(null)} hitSlop={8} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <Icon name="swap-horizontal" size={16} color={colors.primary} />
+              <AppText variant="captionStrong" tone="primary">
+                Cambiar rubro
+              </AppText>
+            </Pressable>
+          }
+        />
+        {extraChips.length ? (
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: spacing.sm }}>
+            {extraChips.map((i, idx) => (
+              <Chip
+                key={`${i.item}-${idx}`}
+                size="sm"
+                selected
+                color={findItem(i.item)?.category.color ?? colors.primary}
+                label={labelOf(i)}
+                onRemove={() => setItems((p) => p.filter((x) => x !== i))}
+              />
+            ))}
+          </View>
+        ) : null}
+        {g ? (
+          <Animated.View entering={enter}>
+            <Grid columns={2} gap={spacing.xs}>
+              {g.options.map((o) => {
+                const meta = findItem(o.item);
+                if (!meta) return null;
+                return (
+                  <OptionTile
+                    key={o.item}
+                    icon={o.icon}
+                    label={meta.item.label}
+                    tracked={isTrackedItem(o.item)}
+                    color={g.color}
+                    active={items.some((i) => i.item === o.item)}
+                    onPress={() => toggle(meta.category.key, o.item, meta.item.label)}
+                  />
+                );
+              })}
+            </Grid>
+          </Animated.View>
+        ) : (
+          <Grid columns={4} gap={spacing.xs}>
+            {MAINTENANCE_CATEGORIES.map((c) => (
+              <CategoryTile key={c.key} category={c} count={items.filter((i) => i.category === c.key).length} onPress={() => setOpenCategory(c)} />
+            ))}
+          </Grid>
+        )}
+      </View>
+
+      {tracked.map((t) => {
+        const iv = intervalOf(t.item);
+        const next = nextDueFrom(date, km, { intervalKm: parseIntInput(iv.km), intervalMonths: iv.months || null });
+        const when = dueText(next);
+        return (
+          <Animated.View key={t.item} entering={enter} style={{ gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, backgroundColor: colors.primarySoft }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+              <Icon name="calendar-sync" size={20} color={colors.primary} />
+              <AppText variant="bodyStrong" style={{ flex: 1 }}>
+                Próximo: {labelOf(t).toLowerCase()}
+              </AppText>
+            </View>
+            <IntervalFields km={iv.km} months={iv.months} onKm={(v) => setIntervals((p) => ({ ...p, [t.item]: { ...iv, km: v } }))} onMonths={(v) => setIntervals((p) => ({ ...p, [t.item]: { ...iv, months: v } }))} />
             <AppText variant="caption" tone="muted">
-              Último registrado: {formatKm(lastKm)}
+              {when ? `Te avisamos para hacerlo ${when}.` : 'Cargá el kilometraje para calcular el próximo.'}
             </AppText>
-          </View>
-          <TextField label="Kilometraje actual" value={odometer} onChangeText={setOdometer} format="int" suffix="km" placeholder={lastKm ? formatInt(lastKm) : '0'} autoFocus style={{ fontSize: 24 }} />
-          <DateField label="Fecha" value={date} onChange={setDate} />
-          <AppText variant="caption" tone="subtle">
-            Actualizar el odómetro seguido permite estimar tu uso diario y avisarte antes de cada service por kilometraje.
-          </AppText>
-        </View>
-      ) : (
-        <>
-          <View>
-            <FieldLabel label={kind === 'accessory' ? '¿Qué accesorio?' : '¿Qué se hizo?'} hint={items.length ? `${items.length} seleccionado${items.length > 1 ? 's' : ''}` : 'Podés elegir varios'} />
-            {selectedLabels.length ? (
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: spacing.sm }}>
-                {selectedLabels.map((i, idx) => (
-                  <Chip key={`${i.item}-${idx}`} size="sm" selected color={i.color ?? colors.primary} label={i.display} onRemove={() => setItems((p) => p.filter((_, j) => j !== idx))} />
-                ))}
-              </View>
-            ) : null}
-            {kind === 'maintenance' ? (
-              <Grid columns={4} gap={spacing.xs}>
-                {MAINTENANCE_CATEGORIES.map((c) => {
-                  const count = items.filter((i) => i.category === c.key).length;
-                  return <CategoryTile key={c.key} category={c} count={count} onPress={() => setOpenCategory(c)} />;
-                })}
-              </Grid>
-            ) : (
-              <Grid columns={3} gap={spacing.xs}>
-                {ACCESSORY_CATEGORY.items.map((it) => {
-                  const active = items.some((i) => i.item === it.key);
-                  return (
-                    <ItemTile
-                      key={it.key}
-                      icon={ACCESSORY_ICONS[it.key] ?? 'star-four-points'}
-                      label={it.label}
-                      active={active}
-                      color={ACCESSORY_CATEGORY.color}
-                      onPress={() => (isOtherItem(it.key) ? setOpenCategory(ACCESSORY_CATEGORY) : toggleItem(ACCESSORY_CATEGORY, it.key, it.label))}
-                    />
-                  );
-                })}
-              </Grid>
-            )}
-          </View>
+          </Animated.View>
+        );
+      })}
 
-          <DateField label="Fecha" value={date} onChange={setDate} />
-          <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-            <View style={{ flex: 1 }}>
-              <TextField label="Kilometraje" value={odometer} onChangeText={setOdometer} format="int" suffix="km" placeholder={lastKm ? formatInt(lastKm) : '0'} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <TextField label="Monto" value={amount} onChangeText={setAmount} format="amount" placeholder="0" icon="cash" />
-            </View>
-          </View>
-          {trackedByKm && km === null ? (
-            <AppText variant="caption" tone="warning" style={{ marginTop: -12 }}>
-              Sin kilometraje, el próximo service se calcula solo por fecha.
+      <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+        <View style={{ flex: 1 }}>
+          <TextField label="Kilometraje" value={odometer} onChangeText={setOdometer} format="int" suffix="km" placeholder={lastKm ? formatInt(lastKm) : '0'} icon="speedometer" />
+        </View>
+        <View style={{ flex: 1 }}>
+          <TextField label="Monto" value={amount} onChangeText={setAmount} format="amount" placeholder="0" icon="cash" />
+        </View>
+      </View>
+      <DateField label="Fecha" value={date} onChange={setDate} />
+      <TextField
+        label="Descripción"
+        labelRight={
+          <Pressable onPress={() => void improve()} disabled={improving} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, height: 30, borderRadius: radius.pill, backgroundColor: colors.accentSoft }}>
+            <Icon name="star-four-points" size={14} color={colors.accent} />
+            <AppText variant="captionStrong" color={colors.accent} style={{ fontSize: 12 }}>
+              {improving ? 'Mejorando…' : 'Mejorar texto'}
             </AppText>
-          ) : null}
-          <TextField label={kind === 'accessory' ? 'Comercio / instalador' : 'Taller'} value={workshop} onChangeText={setWorkshop} placeholder="Opcional" icon="store-outline" />
-          <TextField
-            label="Descripción"
-            labelRight={
-              <Pressable onPress={() => void improve()} disabled={improving} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, height: 30, borderRadius: radius.pill, backgroundColor: colors.accentSoft }}>
-                <Icon name="star-four-points" size={14} color={colors.accent} />
-                <AppText variant="captionStrong" color={colors.accent} style={{ fontSize: 12 }}>
-                  {improving ? 'Mejorando…' : 'Mejorar texto'}
-                </AppText>
-              </Pressable>
-            }
-            value={description}
-            onChangeText={setDescription}
-            multiline
-            placeholder="Ej: le cambié el aceite 5w30 y el filtro, revisaron frenos"
-          />
-          <View>
-            <FieldLabel label="Fotos" hint="Factura, repuestos, el trabajo terminado…" />
-            <PhotoStrip
-              photos={photos}
-              onChange={(next) => {
-                next.filter((p) => !photos.includes(p) && !original.current.photos.includes(p)).forEach((p) => sessionPhotos.current.push(p));
-                setPhotos(next);
-              }}
-            />
-          </View>
-        </>
-      )}
+          </Pressable>
+        }
+        value={description}
+        onChangeText={setDescription}
+        multiline
+        placeholder="Ej: aceite 5W-30 sintético y filtro, revisaron niveles"
+      />
+      <TextField label="Taller" value={workshop} onChangeText={setWorkshop} placeholder="Opcional" icon="store-outline" />
+      <View>
+        <FieldLabel label="Foto" hint="Opcional: factura, repuestos, el trabajo terminado" />
+        <PhotoStrip
+          photos={photos}
+          onChange={(next) => {
+            next.filter((p) => !photos.includes(p) && !original.current.photos.includes(p)).forEach((p) => sessionPhotos.current.push(p));
+            setPhotos(next);
+          }}
+        />
+      </View>
 
       <CategorySheet
         category={openCategory}
         selected={items}
         onClose={() => setOpenCategory(null)}
-        onToggle={toggleItem}
+        onToggle={(c, key, label) => toggle(c.key, key, label)}
         onAddOther={(cat, text) => setItems((p) => [...p, { category: cat.key, item: `${cat.key}.otro`, label: text }])}
       />
     </Screen>
+  );
+}
+
+/* ------------------------------ Building blocks ------------------------------ */
+
+function GroupTile({ group, onPress }: { group: ServiceGroup; onPress: () => void }) {
+  const { colors } = useTheme();
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={group.label}
+      style={({ pressed }) => ({
+        minHeight: 140,
+        gap: spacing.sm,
+        borderRadius: radius.xl,
+        padding: spacing.md,
+        justifyContent: 'space-between',
+        backgroundColor: colors.surface,
+        borderWidth: 1,
+        borderColor: colors.border,
+        transform: [{ scale: pressed ? 0.97 : 1 }],
+      })}>
+      <View style={{ width: 52, height: 52, borderRadius: 17, backgroundColor: group.color, alignItems: 'center', justifyContent: 'center' }}>
+        <Icon name={group.icon} size={30} color="#FFFFFF" />
+      </View>
+      <View>
+        <AppText variant="bodyStrong" numberOfLines={1} adjustsFontSizeToFit>
+          {group.label}
+        </AppText>
+        <AppText variant="caption" tone="muted" numberOfLines={2} style={{ fontSize: 12, lineHeight: 15 }}>
+          {group.hint}
+        </AppText>
+      </View>
+    </Pressable>
+  );
+}
+
+function OptionTile({ icon, label, active, tracked, color, onPress }: { icon: string; label: string; active: boolean; tracked: boolean; color: string; onPress: () => void }) {
+  const { colors } = useTheme();
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: active }}
+      accessibilityLabel={label}
+      style={({ pressed }) => ({
+        minHeight: 64,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: spacing.sm,
+        paddingHorizontal: spacing.sm,
+        paddingVertical: spacing.xs,
+        borderRadius: radius.lg,
+        borderWidth: active ? 2 : 1,
+        borderColor: active ? color : colors.border,
+        backgroundColor: active ? color + '1F' : pressed ? colors.surfaceAlt : colors.surface,
+      })}>
+      <View style={{ width: 36, height: 36, borderRadius: 12, backgroundColor: active ? color : colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}>
+        <Icon name={icon} size={20} color={active ? '#FFFFFF' : color} />
+      </View>
+      <View style={{ flex: 1 }}>
+        <AppText variant="captionStrong" numberOfLines={2} style={{ lineHeight: 16 }}>
+          {label}
+        </AppText>
+        {tracked ? (
+          <AppText variant="caption" tone="muted" style={{ fontSize: 11 }}>
+            Agenda el próximo
+          </AppText>
+        ) : null}
+      </View>
+    </Pressable>
   );
 }
 
@@ -362,31 +539,6 @@ function CategoryTile({ category, count, onPress }: { category: Category; count:
   );
 }
 
-function ItemTile({ icon, label, active, color, onPress }: { icon: string; label: string; active: boolean; color: string; onPress: () => void }) {
-  const { colors } = useTheme();
-  return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => ({
-        height: 86,
-        borderRadius: radius.lg,
-        backgroundColor: active ? color + '22' : colors.surface,
-        borderWidth: active ? 2 : 1,
-        borderColor: active ? color : colors.border,
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 6,
-        padding: 6,
-        transform: [{ scale: pressed ? 0.95 : 1 }],
-      })}>
-      <Icon name={icon} size={26} color={active ? color : colors.textMuted} />
-      <AppText variant="caption" align="center" numberOfLines={2} style={{ fontSize: 12, lineHeight: 14 }}>
-        {label}
-      </AppText>
-    </Pressable>
-  );
-}
-
 function CategorySheet({
   category,
   selected,
@@ -395,12 +547,17 @@ function CategorySheet({
   onAddOther,
 }: {
   category: Category | null;
-  selected: SelectedItem[];
+  selected: RecordItemInput[];
   onClose: () => void;
   onToggle: (c: Category, key: string, label: string) => void;
   onAddOther: (c: Category, text: string) => void;
 }) {
   const [other, setOther] = useState('');
+  const add = () => {
+    if (!category || !other.trim()) return;
+    onAddOther(category, other.trim());
+    setOther('');
+  };
   return (
     <Sheet visible={!!category} onClose={onClose} title={category?.label}>
       {category ? (
@@ -409,7 +566,14 @@ function CategorySheet({
             {category.items
               .filter((i) => !isOtherItem(i.key))
               .map((i) => (
-                <Chip key={i.key} label={i.label} color={category.color} selected={selected.some((s) => s.item === i.key)} onPress={() => onToggle(category, i.key, i.label)} icon={i.intervalKm || i.intervalMonths ? 'calendar-clock' : undefined} />
+                <Chip
+                  key={i.key}
+                  label={i.label}
+                  color={category.color}
+                  selected={selected.some((s) => s.item === i.key)}
+                  onPress={() => onToggle(category, i.key, i.label)}
+                  icon={i.intervalKm || i.intervalMonths ? 'calendar-clock' : undefined}
+                />
               ))}
           </View>
           <TextField
@@ -418,23 +582,8 @@ function CategorySheet({
             placeholder="Otro (escribilo)"
             icon="pencil"
             returnKeyType="done"
-            onSubmitEditing={() => {
-              if (!other.trim()) return;
-              onAddOther(category, other.trim());
-              setOther('');
-            }}
-            right={
-              other.trim() ? (
-                <Button
-                  label="Agregar"
-                  size="sm"
-                  onPress={() => {
-                    onAddOther(category, other.trim());
-                    setOther('');
-                  }}
-                />
-              ) : undefined
-            }
+            onSubmitEditing={add}
+            right={other.trim() ? <Button label="Agregar" size="sm" onPress={add} /> : undefined}
           />
           <AppText variant="caption" tone="subtle">
             Los ítems con reloj agendan automáticamente el próximo service.

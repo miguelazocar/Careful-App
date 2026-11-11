@@ -11,6 +11,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 import { AuthPromptHost } from '@/components/AuthPrompt';
+import { QuickRecordHost } from '@/components/QuickRecord';
 import { LockScreen } from '@/components/LockScreen';
 import { ToastHost } from '@/components/ui/overlays';
 import { AppText, Button } from '@/components/ui/primitives';
@@ -118,6 +119,7 @@ function AppShell() {
         <StatusBar style={locked ? 'light' : isDark ? 'light' : 'dark'} />
         <ToastHost />
         <AuthPromptHost />
+        <QuickRecordHost />
         {locked && securityMode !== 'none' ? <LockScreen /> : null}
       </View>
     </NavThemeProvider>

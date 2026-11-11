@@ -9,6 +9,7 @@ import {
   estimateDailyKm,
   resolveInterval,
   sortUpcoming,
+  odometerError,
   validateOdometer,
   type ScheduleContext,
 } from '../schedule';
@@ -20,6 +21,32 @@ const ctx = (over: Partial<ScheduleContext> = {}): ScheduleContext => ({
   warnKm: 1000,
   soonDays: 30,
   ...over,
+});
+
+describe('interval chosen when the service was logged', () => {
+  it('overrides the vehicle plan and restarts the count from that service', () => {
+    const occ = { item: 'motor.aceite', category: 'motor', date: '2026-01-10', odometer: 40_000, recordId: 'r1', intervalKm: 7_500, intervalMonths: 6 };
+    const rules = [{ vehicleId: 'v', item: 'motor.aceite', intervalKm: 10_000, intervalMonths: 12, enabled: true }];
+    const [it] = buildServiceItems('v', [occ], rules, ctx({ currentKm: 46_800 }));
+    expect(it.intervalKm).toBe(7_500);
+    expect(it.due.dueKm).toBe(47_500);
+    expect(it.due.dueDate).toBe('2026-07-10');
+    expect(it.due.remainingKm).toBe(700);
+    expect(it.due.status).toBe('soon');
+  });
+
+  it('falls back to the plan when the service had no interval of its own', () => {
+    const occ = { item: 'motor.aceite', category: 'motor', date: '2026-01-10', odometer: 40_000, recordId: 'r1', intervalKm: null, intervalMonths: null };
+    const rules = [{ vehicleId: 'v', item: 'motor.aceite', intervalKm: 15_000, intervalMonths: 12, enabled: true }];
+    const [it] = buildServiceItems('v', [occ], rules, ctx());
+    expect(it.due.dueKm).toBe(55_000);
+    expect(it.due.dueDate).toBe('2027-01-10');
+  });
+
+  it('a top-up (relleno) never schedules anything', () => {
+    const occ = { item: 'motor.aceite_relleno', category: 'motor', date: '2026-01-10', odometer: 40_000, recordId: 'r1' };
+    expect(buildServiceItems('v', [occ], [], ctx())).toHaveLength(0);
+  });
 });
 
 describe('odometer', () => {
@@ -59,6 +86,13 @@ describe('odometer', () => {
     expect(validateOdometer(19_000, '2026-02-01', readings, 0)).toMatch(/menor/);
     expect(validateOdometer(26_000, '2026-02-01', readings, 0)).toMatch(/mayor/);
     expect(validateOdometer(500, '2026-02-01', [], 1_000)).toMatch(/menor/);
+  });
+
+  it('asks about huge jumps and rejects impossible values', () => {
+    expect(validateOdometer(150_001, '2026-02-01', [], 50_000)).toMatch(/100\.001 km más/);
+    expect(validateOdometer(149_000, '2026-02-01', [], 50_000)).toBeNull();
+    expect(odometerError(50_500_345_000)).toMatch(/no es un kilometraje posible/);
+    expect(odometerError(350_000)).toBeNull();
   });
 });
 

@@ -35,13 +35,16 @@ export const MAINTENANCE_CATEGORIES: Category[] = [
     color: '#0B63F6',
     items: [
       { key: 'motor.aceite', label: 'Cambio de aceite', intervalKm: 10000, intervalMonths: 12 },
+      { key: 'motor.aceite_relleno', label: 'Relleno de aceite' },
       { key: 'motor.filtro_aceite', label: 'Filtro de aceite' },
       { key: 'motor.filtro_aire', label: 'Filtro de aire', intervalKm: 20000, intervalMonths: 24 },
       { key: 'motor.filtro_combustible', label: 'Filtro de combustible', intervalKm: 30000, intervalMonths: 24 },
       { key: 'motor.bujias', label: 'Bujías', intervalKm: 40000, intervalMonths: 36 },
       { key: 'motor.distribucion', label: 'Kit de distribución', intervalKm: 60000, intervalMonths: 48 },
       { key: 'motor.correa_accesorios', label: 'Correa de accesorios', intervalKm: 60000, intervalMonths: 48 },
-      { key: 'motor.refrigerante', label: 'Líquido refrigerante', intervalKm: 40000, intervalMonths: 24 },
+      { key: 'motor.refrigerante', label: 'Cambio de refrigerante', intervalKm: 40000, intervalMonths: 24 },
+      { key: 'motor.refrigerante_relleno', label: 'Relleno de refrigerante' },
+      { key: 'motor.termostato', label: 'Termostato' },
       { key: 'motor.bomba_agua', label: 'Bomba de agua' },
       { key: 'motor.radiador', label: 'Radiador / mangueras' },
       { key: 'motor.inyectores', label: 'Limpieza de inyectores' },
@@ -87,6 +90,7 @@ export const MAINTENANCE_CATEGORIES: Category[] = [
     icon: 'car-cog',
     color: '#0EA5E9',
     items: [
+      { key: 'tren_delantero.revision', label: 'Revisión de tren delantero', intervalKm: 20000, intervalMonths: 12 },
       { key: 'tren_delantero.amortiguadores', label: 'Amortiguadores delanteros' },
       { key: 'tren_delantero.rotulas', label: 'Rótulas' },
       { key: 'tren_delantero.extremos', label: 'Extremos de dirección' },
@@ -130,7 +134,9 @@ export const MAINTENANCE_CATEGORIES: Category[] = [
     icon: 'car-battery',
     color: '#E8930C',
     items: [
-      { key: 'electrico.bateria', label: 'Batería' },
+      { key: 'electrico.bateria', label: 'Cambio de batería', intervalMonths: 36 },
+      { key: 'electrico.bateria_carga', label: 'Carga / prueba de batería' },
+      { key: 'electrico.bateria_bornes', label: 'Limpieza de bornes' },
       { key: 'electrico.alternador', label: 'Alternador' },
       { key: 'electrico.arranque', label: 'Burro de arranque' },
       { key: 'electrico.lamparas', label: 'Lámparas / ópticas' },
@@ -258,6 +264,131 @@ export const ACCESSORY_ICONS: Record<string, IconName> = {
   'accesorios.cargador': 'usb-port',
   'accesorios.otro': 'dots-horizontal',
 };
+
+/* ------------------------------------------------------------------ */
+/* Quick mosaic: the 6 usual service groups and their frequent jobs     */
+/* ------------------------------------------------------------------ */
+
+export interface ServiceOption {
+  /** Catalog item key (its category stays the one in MAINTENANCE_CATEGORIES). */
+  item: string;
+  icon: IconName;
+}
+
+export interface ServiceGroup {
+  key: string;
+  label: string;
+  /** What's inside, shown under the tile. */
+  hint: string;
+  icon: IconName;
+  color: string;
+  options: ServiceOption[];
+}
+
+export const SERVICE_GROUPS: ServiceGroup[] = [
+  {
+    key: 'aceite',
+    label: 'Aceite',
+    hint: 'Cambio, relleno y filtros',
+    icon: 'oil',
+    color: '#E8930C',
+    options: [
+      { item: 'motor.aceite', icon: 'oil' },
+      { item: 'motor.aceite_relleno', icon: 'oil-level' },
+      { item: 'motor.filtro_aceite', icon: 'filter' },
+      { item: 'motor.filtro_aire', icon: 'air-filter' },
+      { item: 'motor.filtro_combustible', icon: 'gas-station' },
+      { item: 'climatizacion.filtro_habitaculo', icon: 'fan' },
+    ],
+  },
+  {
+    key: 'refrigerante',
+    label: 'Agua / Refrigerante',
+    hint: 'Cambio, relleno y radiador',
+    icon: 'coolant-temperature',
+    color: '#0EA5E9',
+    options: [
+      { item: 'motor.refrigerante', icon: 'coolant-temperature' },
+      { item: 'motor.refrigerante_relleno', icon: 'water-plus' },
+      { item: 'motor.radiador', icon: 'radiator' },
+      { item: 'motor.bomba_agua', icon: 'water-pump' },
+      { item: 'motor.termostato', icon: 'thermometer' },
+    ],
+  },
+  {
+    key: 'tren_delantero',
+    label: 'Tren delantero',
+    hint: 'Revisión, amortiguadores, rótulas',
+    icon: 'steering',
+    color: '#7C5CFF',
+    options: [
+      { item: 'tren_delantero.revision', icon: 'clipboard-check-outline' },
+      { item: 'tren_delantero.amortiguadores', icon: 'arrow-collapse-vertical' },
+      { item: 'tren_delantero.rotulas', icon: 'axis-arrow' },
+      { item: 'tren_delantero.extremos', icon: 'steering' },
+      { item: 'tren_delantero.bujes', icon: 'circle-double' },
+      { item: 'tren_delantero.bieletas', icon: 'link-variant' },
+      { item: 'tren_delantero.cremallera', icon: 'car-cog' },
+      { item: 'tren_delantero.rodamientos', icon: 'cog' },
+    ],
+  },
+  {
+    key: 'estetica',
+    label: 'Estético / Limpieza',
+    hint: 'Lavado, encerado y pulido',
+    icon: 'car-wash',
+    color: '#14C895',
+    options: [
+      { item: 'lavado.exterior', icon: 'car-wash' },
+      { item: 'lavado.completo', icon: 'spray-bottle' },
+      { item: 'lavado.encerado', icon: 'shimmer' },
+      { item: 'carroceria.pulido', icon: 'auto-fix' },
+      { item: 'tapiceria.limpieza', icon: 'car-seat' },
+      { item: 'lavado.motor', icon: 'engine' },
+      { item: 'lavado.detailing', icon: 'creation' },
+      { item: 'lavado.ceramico', icon: 'shield-car' },
+    ],
+  },
+  {
+    key: 'ruedas',
+    label: 'Ruedas',
+    hint: 'Alineación, balanceo y cubiertas',
+    icon: 'tire',
+    color: '#475569',
+    options: [
+      { item: 'ruedas.alineacion_balanceo', icon: 'scale-balance' },
+      { item: 'ruedas.rotacion', icon: 'autorenew' },
+      { item: 'ruedas.neumaticos', icon: 'tire' },
+      { item: 'ruedas.gomeria', icon: 'tools' },
+      { item: 'ruedas.auxilio', icon: 'car-tire-alert' },
+    ],
+  },
+  {
+    key: 'bateria',
+    label: 'Batería',
+    hint: 'Cambio, carga y bornes',
+    icon: 'car-battery',
+    color: '#E8384F',
+    options: [
+      { item: 'electrico.bateria', icon: 'car-battery' },
+      { item: 'electrico.bateria_carga', icon: 'battery-charging-high' },
+      { item: 'electrico.bateria_bornes', icon: 'flash' },
+      { item: 'electrico.alternador', icon: 'battery-sync' },
+      { item: 'electrico.arranque', icon: 'car-key' },
+    ],
+  },
+];
+
+/** The quick group an item belongs to (for editing a record or "registrar como hecho"). */
+export function groupOfItem(item: string): ServiceGroup | undefined {
+  return SERVICE_GROUPS.find((g) => g.options.some((o) => o.item === item));
+}
+
+/** Items that carry a default interval (the form asks "próximo cambio" for them). */
+export function isTrackedItem(item: string): boolean {
+  const it = findItem(item)?.item;
+  return !!(it?.intervalKm || it?.intervalMonths);
+}
 
 /** The item every vehicle is expected to track from day one. */
 export const CORE_ITEM = 'motor.aceite';

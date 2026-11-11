@@ -7,6 +7,7 @@ import { PhotoViewer } from '@/components/pickers';
 import { recordTitle, recordVisual } from '@/components/rows';
 import { Header, Screen } from '@/components/ui/layout';
 import { confirmIdentity } from '@/components/AuthPrompt';
+import { openQuickRecord } from '@/components/QuickRecord';
 import { AppText, Button, Card, Chip, Grid, Icon, IconButton, ListRow } from '@/components/ui/primitives';
 import { deleteRecord, getRecord } from '@/db/records';
 import { getVehicle } from '@/db/vehicles';
@@ -41,7 +42,9 @@ export default function RecordDetailScreen() {
   const visual = recordVisual(r, colors.primary);
 
   const edit = async () => {
-    if (await confirmIdentity('Confirmá que sos vos para editar este registro.')) router.push({ pathname: '/record/form', params: { id: r.id } });
+    if (!(await confirmIdentity('Confirmá que sos vos para editar este registro.'))) return;
+    if (r.kind === 'maintenance') router.push({ pathname: '/record/form', params: { id: r.id } });
+    else openQuickRecord({ kind: r.kind, recordId: r.id });
   };
 
   const remove = async () => {

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
+import { openQuickRecord } from '@/components/QuickRecord';
 import { TabBar } from '@/components/TabBar';
 import { Sheet } from '@/components/ui/overlays';
 import { AppText, Button, Icon } from '@/components/ui/primitives';
@@ -30,22 +31,22 @@ export default function TabsLayout() {
 const OPTIONS = [
   {
     kind: 'maintenance',
-    title: 'Mantenimiento o reparación',
-    subtitle: 'Service, cambio de aceite, frenos, lavado…',
+    title: 'Servicio / Mantenimiento',
+    subtitle: 'Aceite, refrigerante, tren delantero, ruedas, batería…',
     icon: 'wrench',
     colors: brand.gradient,
   },
   {
     kind: 'accessory',
-    title: 'Accesorio',
-    subtitle: 'Luces, estéreo, polarizado, llantas, matafuego…',
+    title: 'Accesorios',
+    subtitle: 'Polarizado, estéreo, alarma, matafuego…',
     icon: 'star-four-points',
     colors: ['#2EE8B6', '#0FA57D'],
   },
   {
     kind: 'odometer',
-    title: 'Solo kilometraje',
-    subtitle: 'Actualizá el odómetro para afinar los avisos',
+    title: 'Kilometraje',
+    subtitle: 'Cargá el km actual para afinar los avisos',
     icon: 'speedometer',
     colors: ['#334155', '#1D2633'],
   },
@@ -67,7 +68,8 @@ function QuickAddSheet({ visible, onClose }: { visible: boolean; onClose: () => 
               accessibilityLabel={o.title}
               onPress={() => {
                 onClose();
-                router.push({ pathname: '/record/form', params: { kind: o.kind } });
+                if (o.kind === 'maintenance') router.push({ pathname: '/record/form', params: { kind: o.kind } });
+                else openQuickRecord({ kind: o.kind });
               }}
               style={({ pressed }) => ({
                 flexDirection: 'row',

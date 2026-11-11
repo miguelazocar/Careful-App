@@ -24,8 +24,15 @@ export interface FluidSuggestion {
   coolantConcentration?: number;
   coolantBrand?: string;
   coolantModel?: string;
+  /** Manufacturer's oil-change interval for normal use. */
+  oilIntervalKm?: number;
+  oilIntervalMonths?: number;
+  /** Engine the data refers to, as identified by the research ("1.4 Fire Evo 8V"). */
+  engine?: string;
   /** Where the data came from, shown to the user ("Catálogo Careful", "Gemini + búsqueda web"). */
   source: string;
+  /** Web pages the search actually used (site name + link). */
+  sources?: { title: string; url: string }[];
   notes?: string;
 }
 

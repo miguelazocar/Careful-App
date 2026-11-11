@@ -110,6 +110,85 @@ export function TextField({ label, hint, error, value, onChangeText, icon, suffi
   );
 }
 
+/** "−  12 meses  +": small integers without the keyboard. `zeroLabel` names 0 when allowed (min 0). */
+export function Stepper({
+  label,
+  value,
+  onChange,
+  min = 1,
+  max = 60,
+  unit,
+  zeroLabel,
+}: {
+  label?: string;
+  value: number;
+  onChange: (v: number) => void;
+  min?: number;
+  max?: number;
+  unit?: (n: number) => string;
+  zeroLabel?: string;
+}) {
+  const { colors } = useTheme();
+  const step = (delta: number) => onChange(Math.min(max, Math.max(min, value + delta)));
+  const button = (icon: string, delta: number, disabled: boolean) => (
+    <Pressable
+      onPress={() => step(delta)}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel={delta < 0 ? 'Restar' : 'Sumar'}
+      hitSlop={6}
+      style={({ pressed }) => ({
+        width: 42,
+        height: 42,
+        borderRadius: radius.sm,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: pressed ? colors.primarySoft : colors.surfaceAlt,
+        opacity: disabled ? 0.35 : 1,
+      })}>
+      <Icon name={icon} size={22} color={colors.primary} />
+    </Pressable>
+  );
+  return (
+    <View>
+      {label ? <FieldLabel label={label} /> : null}
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          height: 52,
+          paddingHorizontal: 4,
+          gap: 4,
+          borderRadius: radius.md,
+          borderWidth: 1.5,
+          borderColor: colors.border,
+          backgroundColor: colors.surface,
+        }}>
+        {button('minus', -1, value <= min)}
+        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'baseline', justifyContent: 'center', gap: 4 }} accessibilityLiveRegion="polite">
+          {value === 0 && zeroLabel ? (
+            <AppText variant="captionStrong" tone="muted">
+              {zeroLabel}
+            </AppText>
+          ) : (
+            <>
+              <AppText variant="number" style={{ fontSize: 22 }}>
+                {value}
+              </AppText>
+              {unit ? (
+                <AppText variant="captionStrong" tone="muted">
+                  {unit(value)}
+                </AppText>
+              ) : null}
+            </>
+          )}
+        </View>
+        {button('plus', 1, value >= max)}
+      </View>
+    </View>
+  );
+}
+
 export function DateField({ label, value, onChange, maximumToday = true }: { label?: string; value: string; onChange: (day: string) => void; maximumToday?: boolean }) {
   const { colors } = useTheme();
   const [iosOpen, setIosOpen] = useState(false);

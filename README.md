@@ -43,18 +43,21 @@
 - Resumen: vehículos, services que requieren atención y gastos del año.
 - Detalle por vehículo: kilometraje, uso promedio, próximos services con barra de progreso, ficha técnica e historial.
 
-### 🧭 Alta de vehículo (wizard de 3 pasos)
+### 🧭 Alta de vehículo (asistente de 4 pasos, sin scroll)
 1. **Tu auto** — foto + **marca → año → modelo → versión → color**, con el catálogo del mercado argentino: **88 marcas, unos 1.000 modelos y casi 12.000 versiones de 1997 a 2026**, tomados de las listas de la CCA ([detalle](docs/CATALOG.md)). Elegís marca y año y aparecen solo los modelos de ese año, y después sus versiones. «Otro modelo» permite escribirlo a mano si no está.
-2. **Registro** — patente, país, **kilometraje actual**, VIN (validado y decodificado), N° de motor y apodo.
-3. **Fluidos** — tipo y cantidad de aceite y refrigerante, con **"Investigar automáticamente"**, y opcionalmente el último cambio de aceite.
+2. **Registro** — patente, país, **kilometraje actual**, VIN (validado y decodificado), N° de motor y combustible (GNC, gasolina o diésel).
+3. **Aceite** — tipo, marca, modelo, versión, cantidad y **cada cuántos km y meses se cambia**.
+4. **Refrigerante** — tipo, cantidad, concentración (con el cálculo de refrigerante + agua desmineralizada), marca, modelo y versión.
+
+En los pasos 3 y 4, **«Investigar con IA»** busca en internet los datos del fabricante para ese año, motor y versión, y muestra las fuentes.
 
 IA en el alta: **escanear la cédula verde** completa los datos, y la **foto del auto** detecta patente y color.
 
 ### 🔧 Registro de actividad (botón ＋ central)
-- **Mantenimiento o reparación** en 12 categorías con íconos: motor, caja, frenos, tren delantero, tren trasero, ruedas, sistema eléctrico, climatización, carrocería, tapicería, lavado e inspección. Selección múltiple de ítems y "Otro".
-- **Accesorios**: luces, alfombras, parlantes, estéreo, polarizado, llantas, matafuego, fundas, alarma, GPS, cámara y más.
-- **Solo kilometraje**: actualizar el odómetro en un toque.
-- Fecha, km (con validación contra el historial), monto **sin símbolo de moneda**, taller, descripción con **"Mejorar texto"** y fotos.
+- **Servicio / Mantenimiento**: mosaico con 6 rubros (**Aceite, Agua / Refrigerante, Tren delantero, Estético / Limpieza, Ruedas, Batería**) y sus tareas frecuentes, más «Otro servicio» con el catálogo completo. Las tareas que se repiten piden **cada cuántos km y meses toca la próxima**, precargado con el plan del auto.
+- **Accesorios**: panel rápido con título, descripción, monto, km y foto.
+- **Kilometraje**: panel rápido con el km actual y una descripción.
+- Km (validado contra el historial), monto **sin símbolo de moneda**, descripción con **"Mejorar texto"**, taller y foto opcional.
 
 ### 📅 Agenda inteligente
 - Cada ítem con intervalo (aceite, filtros, distribución, bujías, refrigerante, frenos, alineación, A/C, VTV, matafuego…) agenda el **próximo service por km o por fecha, lo que ocurra primero**.
@@ -63,8 +66,9 @@ IA en el alta: **escanear la cédula verde** completa los datos, y la **foto del
 - Calendario mensual + lista de vencidos y próximos.
 
 ### 🔔 Notificaciones
-- **4 momentos**: al comenzar el mes, al comenzar la semana, el día anterior y el mismo día (sin duplicados).
-- **Aviso cuando faltan menos de 1.000 km** (inmediato al cargar km y programado según tu uso).
+- **Cada semana** desde que faltan **1.000 km o un mes** (lo que llegue primero) **hasta que registres el servicio**, aunque ya esté vencido.
+- **Mañana** y **Hoy** el día del vencimiento, y un aviso inmediato al cargar un km que deja menos de 1.000 km.
+- Registrar el servicio borra los avisos anteriores y agenda el próximo desde ese día y ese km.
 - Recordatorio para actualizar el kilometraje.
 
 ### 🔐 Seguridad y privacidad
@@ -86,14 +90,14 @@ IA en el alta: **escanear la cédula verde** completa los datos, y la **foto del
 | Costo | Gratis | Clave gratuita de Google AI Studio |
 | Conexión | Offline | Requiere internet |
 | Cédula y patente | OCR con ML Kit + parser propio | Visión multimodal |
-| Fluidos | Catálogo offline | Búsqueda en manuales con Google Search |
+| Fluidos | Catálogo offline | «Investigar con IA»: búsqueda web con fuentes fiables (manual, fabricante, lubricantes) |
 | Mejorar texto | Reglas de estandarización | Redacción técnica |
 
 En modo **Automático** usa Gemini si está configurado y cae a la IA local si no hay conexión.
 
 ### 📄 Más
 - Historial agrupado por mes, filtros por auto y tipo, y **gráfico de gastos**.
-- **Exportar historial en PDF** (ideal para la venta del auto).
+- **Informe del vehículo en PDF** para la venta: resumen (km recorridos, gastos por rubro, costo por km, servicios), ficha técnica, estado de cada servicio e historial detallado con fotos.
 - Archivar vehículos vendidos sin perder su historia.
 - Tema **automático / claro / oscuro** (automático por defecto).
 

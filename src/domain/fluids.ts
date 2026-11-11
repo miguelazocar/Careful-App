@@ -16,8 +16,12 @@ export interface FluidData {
   coolantConcentration?: number;
   coolantBrand?: string;
   coolantModel?: string;
+  oilIntervalKm?: number;
+  oilIntervalMonths?: number;
+  engine?: string;
   /** Where the data came from, shown to the user. */
   source: string;
+  sources?: { title: string; url: string }[];
   notes?: string;
 }
 
@@ -25,7 +29,7 @@ export const FLUID_FIELDS = ['oilType', 'oilLiters', 'coolantType', 'coolantLite
 export type FluidField = (typeof FLUID_FIELDS)[number];
 
 /** Filled from the extra source too, but never reported as "missing". */
-const EXTRA_FIELDS = ['oilBase', 'oilBrand', 'oilModel', 'coolantBase', 'coolantConcentration', 'coolantBrand', 'coolantModel'] as const;
+const EXTRA_FIELDS = ['oilBase', 'oilBrand', 'oilModel', 'coolantBase', 'coolantConcentration', 'coolantBrand', 'coolantModel', 'oilIntervalKm', 'oilIntervalMonths', 'engine'] as const;
 type AnyField = FluidField | (typeof EXTRA_FIELDS)[number];
 
 const LABELS: Record<FluidField, string> = {
@@ -73,6 +77,7 @@ export function mergeFluids(base: FluidData | null, extra: FluidData | null): Fl
   if (core) {
     out.source = `${base.source} + ${extra.source}`;
     out.notes = extra.notes ?? base.notes;
+    out.sources = extra.sources ?? base.sources;
   }
   return out;
 }

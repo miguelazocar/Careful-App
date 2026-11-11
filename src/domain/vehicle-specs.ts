@@ -76,3 +76,14 @@ export function guessCoolantBase(text: string | null | undefined): CoolantBase |
   if (/\boat\b|organ|\bg12\b|\bg12\s*\+|long life|rosa|rojo/.test(t)) return 'organico';
   return null;
 }
+
+/** "5P 1,4 FIRE TOP" → "1.4 L · FIRE": displacement and engine codes written in a catalog version. */
+export function engineFromVersion(version: string | null | undefined): string | null {
+  if (!version) return null;
+  const disp = /(\d)[,.](\d)/.exec(version);
+  const codes = version
+    .toUpperCase()
+    .match(/\b(FIRE(?:FLY)?|EVO|E\.?TORQ|MULTIAIR|T-?JET|GSE|MPI|MSI|TSI|TFSI|FSI|TDI|HDI|BLUEHDI|THP|VTI|PURETECH|DCI|SCE|TCE|CDI|CRDI|GDI|T-?GDI|VVT-?I?|D-4D|ECOBOOST|DURATEC|SIGMA|ZETEC|SKYACTIV|V6|V8|V10|V12|16V|8V|TURBO|BITURBO)\b/g);
+  const parts = [disp ? `${disp[1]}.${disp[2]} L` : null, codes?.length ? [...new Set(codes)].join(' ') : null].filter(Boolean);
+  return parts.length ? parts.join(' · ') : null;
+}

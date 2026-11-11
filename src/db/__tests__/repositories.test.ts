@@ -164,6 +164,20 @@ describe('repositories on real SQLite', () => {
     expect(occ).toHaveLength(3);
   });
 
+  it('keeps the interval chosen when the service was logged; the newest service rules the schedule', async () => {
+    const v = await createVehicle(baseVehicle);
+    const oil = (intervalKm: number | null, intervalMonths: number | null) => [{ category: 'motor', item: 'motor.aceite', label: 'Cambio de aceite', intervalKm, intervalMonths }];
+    await createRecord(record(v.id, { date: '2025-06-01', odometer: 35_000, items: oil(10_000, 12) }));
+    const latest = await createRecord(record(v.id, { date: '2026-01-15', odometer: 45_000, items: oil(7_500, 6) }));
+    expect(latest.items[0]).toMatchObject({ intervalKm: 7_500, intervalMonths: 6 });
+    const occ = (await getLatestItemOccurrences(v.id)).find((o) => o.item === 'motor.aceite')!;
+    expect(occ).toMatchObject({ date: '2026-01-15', odometer: 45_000, intervalKm: 7_500, intervalMonths: 6 });
+    const { items } = await loadUpcoming({ vehicleId: v.id, now: new Date(2026, 1, 1) });
+    const next = items.find((i) => i.item === 'motor.aceite')!;
+    expect(next.due.dueKm).toBe(52_500);
+    expect(next.due.dueDate).toBe('2026-07-15');
+  });
+
   it('aggregates odometer readings, stats and monthly spend', async () => {
     const v = await createVehicle(baseVehicle);
     await createRecord(record(v.id, { date: '2026-01-15', odometer: 45_000, amountCents: 1000 }));

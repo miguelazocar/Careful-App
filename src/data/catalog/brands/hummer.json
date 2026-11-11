@@ -1,1 +1,1 @@
-{"id":"hummer","name":"Hummer","models":[{"id":"hm","name":"HM","body":"pickup","variants":[["D/C T/F C4",1997,2005],["D/C T/L CO",1997,2005],["SW CS",1997,2005]]},{"id":"xl","name":"XL","body":"sedan","variants":[["PICK UP C2",1997,2005]]}]}
+{"id":"hummer","name":"Hummer","models":[{"id":"h1","name":"H1","body":"pickup","variants":[["D/C T/F C4",1997,2005],["D/C T/L CO",1997,2005],["SW CS",1997,2005]]},{"id":"xl","name":"XL","body":"sedan","variants":[["PICK UP C2",1997,2005]]}]}

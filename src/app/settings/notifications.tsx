@@ -74,13 +74,17 @@ export default function NotificationsScreen() {
           Cuándo avisarte
         </AppText>
         <Card padded={false}>
-          <SwitchRow title="Al comenzar el mes" subtitle="El día 1 del mes del service" value={prefs.month} onChange={(v) => void patch({ month: v })} />
-          <SwitchRow title="Al comenzar la semana" subtitle="El lunes de esa semana" value={prefs.week} onChange={(v) => void patch({ week: v })} />
+          <SwitchRow
+            title="Cada semana"
+            subtitle={`Desde 1 mes antes o cuando falten ${formatInt(prefs.warnKm)} km, hasta que registres el service`}
+            value={prefs.weekly}
+            onChange={(v) => void patch({ weekly: v })}
+          />
           <SwitchRow title="Un día antes" value={prefs.dayBefore} onChange={(v) => void patch({ dayBefore: v })} />
           <SwitchRow title="El mismo día" value={prefs.sameDay} onChange={(v) => void patch({ sameDay: v })} last />
         </Card>
         <AppText variant="caption" tone="subtle">
-          Si dos avisos caen el mismo día, enviamos solo uno (el más específico).
+          Al registrar el service se borra el aviso anterior y se agenda el próximo desde ese día y ese kilometraje.
         </AppText>
       </View>
 

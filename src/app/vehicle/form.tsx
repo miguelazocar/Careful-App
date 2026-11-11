@@ -2,9 +2,10 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, View } from 'react-native';
+import { ActivityIndicator, Linking, Pressable, View } from 'react-native';
 
 import { BrandLogo } from '@/components/BrandLogo';
+import { IntervalFields } from '@/components/IntervalFields';
 import { FieldLabel, TextField } from '@/components/ui/inputs';
 import { Header, Screen } from '@/components/ui/layout';
 import { Sheet } from '@/components/ui/overlays';
@@ -12,12 +13,14 @@ import { AppText, Button, Icon, ListRow, Segmented } from '@/components/ui/primi
 import { BrandSheet, ColorSheet, OptionSheet, SelectField } from '@/components/vehicle-fields';
 import { getBrand, getModel, matchBrand, maxCatalogYear, modelsFor, variantsFor, yearsForBrand } from '@/data/catalog';
 import { createRecord, getOdometerReadings } from '@/db/records';
+import { getServiceRules, saveServiceRule } from '@/db/reminders';
 import { createVehicle, getVehicle, updateVehicle, type VehicleInput } from '@/db/vehicles';
 import { colorHexFor } from '@/domain/colors';
 import { COUNTRIES, flagEmoji } from '@/domain/countries';
 import { describeMissing, mergeFluids, missingFluidFields } from '@/domain/fluids';
 import { formatPlate, normalizePlate } from '@/domain/plate';
-import { currentOdometer } from '@/domain/schedule';
+import { CORE_ITEM, findItem } from '@/domain/maintenance';
+import { currentOdometer, odometerError, resolveInterval } from '@/domain/schedule';
 import { COOLANT_BASES, COOLANT_CONCENTRATIONS, coolantMix, FUEL_OPTIONS, fuelLabel, OIL_BASES, type CoolantBase, type FuelKey, type OilBase } from '@/domain/vehicle-specs';
 import { isValidVin, normalizeVin, vinBrandId, vinModelYear } from '@/domain/vin';
 import { today } from '@/lib/dates';
@@ -52,6 +55,9 @@ interface Draft {
   oilBrand: string;
   oilModel: string;
   oilType: string;
+  /** Base oil-change interval (the vehicle's plan); every service can still set its own. */
+  oilIntervalKm: string;
+  oilIntervalMonths: number;
   coolantBase: string | null;
   coolantLiters: string;
   coolantConcentration: number | null;
@@ -87,6 +93,8 @@ const EMPTY: Draft = {
   oilBrand: '',
   oilModel: '',
   oilType: '',
+  oilIntervalKm: formatInt(findItem(CORE_ITEM)?.item.intervalKm ?? 10000),
+  oilIntervalMonths: findItem(CORE_ITEM)?.item.intervalMonths ?? 12,
   coolantBase: null,
   coolantLiters: '',
   coolantConcentration: null,
@@ -122,14 +130,15 @@ export default function VehicleFormScreen() {
   /** When editing: odometer at creation and the current one (latest reading). */
   const [km, setKm] = useState<{ initial: number; current: number } | null>(null);
   const [researching, setResearching] = useState(false);
-  const [source, setSource] = useState<string | null>(null);
+  const [source, setSource] = useState<ResearchInfo | null>(null);
 
   const set = (patch: Partial<Draft>) => setDraft((d) => ({ ...d, ...patch }));
 
   useEffect(() => {
     if (!id) return;
-    void Promise.all([getVehicle(id), getOdometerReadings(id)]).then(([v, readings]) => {
+    void Promise.all([getVehicle(id), getOdometerReadings(id), getServiceRules(id)]).then(([v, readings, rules]) => {
       if (!v) return;
+      const oilPlan = resolveInterval(CORE_ITEM, rules);
       const current = currentOdometer(v.initialOdometer, readings);
       setKm({ initial: v.initialOdometer, current });
       setInitialPhoto(v.photo);
@@ -156,6 +165,8 @@ export default function VehicleFormScreen() {
         oilBrand: v.oilBrand ?? '',
         oilModel: v.oilModel ?? '',
         oilType: v.oilType ?? '',
+        oilIntervalKm: oilPlan.intervalKm ? formatInt(oilPlan.intervalKm) : '',
+        oilIntervalMonths: oilPlan.intervalMonths ?? 0,
         coolantBase: v.coolantBase,
         coolantLiters: litersText(v.coolantLiters),
         coolantConcentration: v.coolantConcentration,
@@ -200,7 +211,7 @@ export default function VehicleFormScreen() {
       return next;
     });
 
-  /** "Investigar automáticamente": catalog first, then the AI for whatever is missing. */
+  /** "Investigar con IA": the manufacturer's fluids for this exact year, engine and version (catalog first, then Gemini with web search). */
   const research = async () => {
     setResearching(true);
     setSource(null);
@@ -226,7 +237,7 @@ export default function VehicleFormScreen() {
             ? `No se pudo investigar: ${aiProblem}`
             : cloud
               ? 'Gemini no encontró datos confiables para esta versión. Completalos desde el manual.'
-              : 'El catálogo no tiene datos de esta versión. Configurá Gemini en Ajustes › Inteligencia artificial para buscarlos.',
+              : 'Para investigar con IA, cargá tu clave gratuita de Gemini en Ajustes › Inteligencia artificial.',
           aiProblem ? 'error' : 'info',
         );
         return;
@@ -245,6 +256,8 @@ export default function VehicleFormScreen() {
         coolantConcentration: r.coolantConcentration ?? d.coolantConcentration,
         coolantBrand: d.coolantBrand || r.coolantBrand || '',
         coolantModel: d.coolantModel || r.coolantModel || '',
+        oilIntervalKm: r.oilIntervalKm ? formatInt(r.oilIntervalKm) : d.oilIntervalKm,
+        oilIntervalMonths: r.oilIntervalMonths ?? d.oilIntervalMonths,
       }));
       const missing = missingFluidFields(r);
       const gap = missing.length
@@ -254,7 +267,8 @@ export default function VehicleFormScreen() {
             ? ` No se encontró ${describeMissing(missing)}: completalo desde el manual.`
             : ` Falta ${describeMissing(missing)}: conectá Gemini en Ajustes › Inteligencia artificial para buscarlo.`
         : '';
-      setSource(`${r.source}${r.notes ? ` — ${r.notes}` : ''}.${gap}`);
+      setSource({ text: `${r.source}${r.engine ? ` · motor ${r.engine}` : ''}${r.notes ? ` — ${r.notes}` : ''}.${gap}`, sources: r.sources ?? [] });
+      toast('Datos completados con IA. Revisalos antes de guardar.');
     } catch (e) {
       toast(e instanceof Error ? e.message : 'No se pudo investigar', 'error');
     } finally {
@@ -271,6 +285,7 @@ export default function VehicleFormScreen() {
   const next = () => {
     if (step === 0 && !validAuto) return toast('Elegí al menos la marca y el modelo', 'info');
     if (step === 1 && !validRegistro) return toast('Ingresá el kilometraje actual', 'info');
+    if (step === 1 && odometer !== null && odometerError(odometer)) return toast(odometerError(odometer)!, 'error');
     setStep((s) => s + 1);
   };
 
@@ -282,6 +297,10 @@ export default function VehicleFormScreen() {
     if (odometer === null) {
       setStep(1);
       return toast('Ingresá el kilometraje actual', 'info');
+    }
+    if (odometerError(odometer)) {
+      setStep(1);
+      return toast(odometerError(odometer)!, 'error');
     }
     // Editing the current km: a higher value is a new reading of today; with no readings yet it
     // simply corrects the starting km; never lower than what was already logged.
@@ -331,8 +350,11 @@ export default function VehicleFormScreen() {
         coolantConcentration: draft.coolantConcentration,
         notes: draft.notes,
       };
+      const saveOilPlan = (vehicleId: string) =>
+        saveServiceRule({ vehicleId, item: CORE_ITEM, intervalKm: parseIntInput(draft.oilIntervalKm), intervalMonths: draft.oilIntervalMonths || null, enabled: true });
       if (editing && id) {
         await updateVehicle(id, input);
+        await saveOilPlan(id);
         if (newReading !== null) {
           await createRecord({ vehicleId: id, kind: 'odometer', date: today(), odometer: newReading, amountCents: null, workshop: null, description: null, items: [], photos: [] });
         }
@@ -341,6 +363,7 @@ export default function VehicleFormScreen() {
         router.back();
       } else {
         const v = await createVehicle(input);
+        await saveOilPlan(v.id);
         await useSettings.getState().set('lastVehicleId', v.id);
         void ensurePermission();
         toast('¡Vehículo agregado!');
@@ -799,10 +822,15 @@ function RegistroStep({ draft, set }: StepProps) {
 
 /* ====================== 3. Aceite · 4. Refrigerante ====================== */
 
-type FluidStepProps = StepProps & { researching: boolean; source: string | null; onResearch: () => void };
+interface ResearchInfo {
+  text: string;
+  sources: { title: string; url: string }[];
+}
+type FluidStepProps = StepProps & { researching: boolean; source: ResearchInfo | null; onResearch: () => void };
 
-function ResearchBar({ draft, researching, source, onResearch }: Omit<FluidStepProps, 'set'>) {
+function ResearchBar({ draft, researching, source, onResearch, subject }: Omit<FluidStepProps, 'set'> & { subject: string }) {
   const { colors } = useTheme();
+  const vehicle = [draft.model, draft.year].filter(Boolean).join(' ') || 'tu auto';
   return (
     <View style={{ gap: 4 }}>
       <Pressable
@@ -822,17 +850,30 @@ function ResearchBar({ draft, researching, source, onResearch }: Omit<FluidStepP
           {researching ? <ActivityIndicator color="#fff" size="small" /> : <Icon name="star-four-points" size={18} color="#fff" />}
         </LinearGradient>
         <View style={{ flex: 1 }}>
-          <AppText variant="captionStrong">{researching ? 'Investigando…' : 'Investigar automáticamente'}</AppText>
-          <AppText variant="caption" tone="muted" style={{ fontSize: 11 }} numberOfLines={1}>
-            Aceite y refrigerante recomendados para tu {draft.model || 'auto'}
+          <AppText variant="captionStrong">{researching ? 'Investigando en internet…' : 'Investigar con IA'}</AppText>
+          <AppText variant="caption" tone="muted" style={{ fontSize: 11 }} numberOfLines={2}>
+            {subject} del fabricante para {vehicle}
           </AppText>
         </View>
         <Icon name="chevron-right" size={20} color={colors.textSubtle} />
       </Pressable>
       {source ? (
-        <AppText variant="caption" tone="muted" style={{ fontSize: 11 }} numberOfLines={3}>
-          Fuente: {source}
-        </AppText>
+        <View style={{ gap: 2 }}>
+          <AppText variant="caption" tone="muted" style={{ fontSize: 11 }} numberOfLines={2}>
+            {source.text}
+          </AppText>
+          {source.sources.length ? (
+            <AppText variant="caption" tone="muted" style={{ fontSize: 11 }} numberOfLines={1}>
+              Fuentes:{' '}
+              {source.sources.map((s, i) => (
+                <AppText key={s.url} variant="caption" tone="primary" style={{ fontSize: 11 }} onPress={() => void Linking.openURL(s.url)}>
+                  {i ? ' · ' : ''}
+                  {s.title}
+                </AppText>
+              ))}
+            </AppText>
+          ) : null}
+        </View>
       ) : null}
     </View>
   );
@@ -841,12 +882,11 @@ function ResearchBar({ draft, researching, source, onResearch }: Omit<FluidStepP
 function AceiteStep({ draft, set, ...rest }: FluidStepProps) {
   return (
     <View style={{ gap: spacing.md }}>
-      <ResearchBar draft={draft} {...rest} />
+      <ResearchBar draft={draft} subject="Aceite, cantidad e intervalo" {...rest} />
       <View>
         <FieldLabel label="Tipo de aceite" />
         <Segmented<OilBase> options={OIL_BASES} value={(draft.oilBase ?? '') as OilBase} onChange={(v) => set({ oilBase: v })} />
       </View>
-      <TextField label="Cantidad de aceite" hint="Con filtro" value={draft.oilLiters} onChangeText={(t) => set({ oilLiters: t.replace(/[^\d,.]/g, '') })} keyboardType="decimal-pad" placeholder="4,0" suffix="L" icon="oil" />
       <View style={{ flexDirection: 'row', gap: spacing.sm }}>
         <View style={{ flex: 1 }}>
           <TextField label="Marca" value={draft.oilBrand} onChangeText={(t) => set({ oilBrand: t })} placeholder="Ej. Shell" />
@@ -855,7 +895,21 @@ function AceiteStep({ draft, set, ...rest }: FluidStepProps) {
           <TextField label="Modelo" value={draft.oilModel} onChangeText={(t) => set({ oilModel: t })} placeholder="Ej. Helix HX8" />
         </View>
       </View>
-      <TextField label="Versión" value={draft.oilType} onChangeText={(t) => set({ oilType: t })} placeholder="Viscosidad y norma, ej. 5W-30 · ACEA C2" />
+      <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+        <View style={{ flex: 1.5 }}>
+          <TextField label="Versión" value={draft.oilType} onChangeText={(t) => set({ oilType: t })} placeholder="Ej. 5W-30 · ACEA C2" />
+        </View>
+        <View style={{ flex: 1 }}>
+          <TextField label="Cantidad" value={draft.oilLiters} onChangeText={(t) => set({ oilLiters: t.replace(/[^\d,.]/g, '') })} keyboardType="decimal-pad" placeholder="4,0" suffix="L" />
+        </View>
+      </View>
+      <IntervalFields
+        km={draft.oilIntervalKm}
+        months={draft.oilIntervalMonths}
+        onKm={(t) => set({ oilIntervalKm: t })}
+        onMonths={(m) => set({ oilIntervalMonths: m })}
+        kmLabel="Cambio cada"
+      />
     </View>
   );
 }
@@ -866,7 +920,7 @@ function RefrigeranteStep({ draft, set, ...rest }: FluidStepProps) {
   const mix = coolantMix(total, draft.coolantConcentration);
   return (
     <View style={{ gap: spacing.md }}>
-      <ResearchBar draft={draft} {...rest} />
+      <ResearchBar draft={draft} subject="Refrigerante, cantidad y mezcla" {...rest} />
       <View>
         <FieldLabel label="Tipo de refrigerante" />
         <Segmented<CoolantBase> options={COOLANT_BASES} value={(draft.coolantBase ?? '') as CoolantBase} onChange={(v) => set({ coolantBase: v })} />

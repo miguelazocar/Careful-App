@@ -5,6 +5,19 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
 ## [Sin publicar]
 
 ### Agregado
+- **Registrar con el botón ＋ en tres opciones**: Servicio / Mantenimiento, Accesorios o Kilometraje.
+  - **Servicio**: mosaico con los 6 rubros habituales y su ícono: Aceite, Agua / Refrigerante, Tren delantero, Estético / Limpieza, Ruedas y Batería. Cada rubro muestra sus tareas frecuentes; por ejemplo, Aceite ofrece cambio (service), relleno y filtros. «Otro servicio» da acceso al catálogo completo (frenos, caja, VTV…).
+  - Las tareas que se repiten (cambio de aceite, refrigerante, revisión de tren delantero, batería…) piden **cada cuántos km y cada cuántos meses toca la próxima**. Vienen precargados con el plan del vehículo y se pueden cambiar: los km aceptan solo números enteros y los meses se ajustan con − y +.
+  - Siempre se piden kilometraje, monto, descripción y una foto opcional.
+  - **Accesorios** y **Kilometraje** se cargan en un panel rápido. Accesorio pide título (con sugerencias), descripción, monto, km y foto. Kilometraje pide solo el km actual y una descripción.
+- **Pestaña Aceite de la ficha**: muestra «Cambio cada X km o N meses», el próximo cambio y una barra de cuánto falta. El intervalo base se edita en el paso Aceite del asistente.
+- **Cada servicio nuevo reemplaza al anterior**: el próximo vencimiento y el conteo de km empiezan de nuevo desde ese día y ese kilometraje.
+- **Avisos semanales**: desde que faltan 1.000 km o un mes para el vencimiento (lo que llegue primero), hasta que se registre el servicio, aunque ya esté vencido. Además, «Mañana» y «Hoy» el día del vencimiento.
+- **Informe del vehículo en PDF**, para entregar a un comprador:
+  - **Resumen**: km recorridos desde el alta, gasto total y por rubro, costo por km, servicios, cambios de aceite, accesorios y uso promedio.
+  - **Ficha técnica completa** y **estado de cada servicio** (al día, pronto o vencido).
+  - **Historial detallado** con fotos.
+- **«Investigar con IA»** en los pasos Aceite y Refrigerante. Busca en internet los datos del fabricante para el año, la marca, el modelo, el motor y la versión exactos, con fuentes fiables: manual, sitio oficial y buscadores de lubricantes. Completa también el intervalo de cambio de aceite y muestra las fuentes consultadas.
 - **Catálogo del mercado argentino completo**: 88 marcas, unos 1.000 modelos y casi 12.000 versiones, de 1997 a 2026.
   - Los nombres y años salen de cuatro ediciones de las listas de la Cámara del Comercio Automotor (2011, 2016, 2021 y 2026).
   - Se eligen primero la marca y el año. Después aparecen solo los modelos de ese año y las versiones de ese modelo en ese año.
@@ -22,10 +35,15 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
   - marca, modelo y versión.
 - **Logos de las marcas**, de [Simple Icons](https://simpleicons.org) (CC0), en la ficha y en el asistente.
 - **Editar o borrar datos ya guardados pide la seguridad activa** (PIN de App o desbloqueo del teléfono).
-- "Investigar automáticamente" también sugiere el tipo de aceite y de refrigerante, la concentración y los productos recomendados.
 - Se puede probar en **Expo Go**. Las funciones que necesitan módulos nativos propios (OCR del teléfono, Google Drive) avisan que no están disponibles en lugar de cerrar la app.
 
 ### Cambiado
+- **Nombres del catálogo corregidos**:
+  - Sin palabras duplicadas por la negrita de los PDF («5P 5P 1,4 1,4 FIRE FIRE» → «5P 1,4 FIRE»).
+  - Unos 35 errores de tipeo de las listas corregidos (TITANIUN, LUXYRY, LIMTED…).
+  - Modelos con su nombre real: «Odyssey», «Renegade», «C4 Lounge», «i10», «MX-5», «218i», «Audi S3/S4/S5»…
+  - Modelos duplicados unificados («F 430» y «F430»; «DS 3» y «3»).
+- Notificaciones: los avisos «al comenzar el mes» y «al comenzar la semana» pasan a ser un **aviso semanal** que empieza 1 mes o 1.000 km antes.
 - **Asistente de alta y edición en 4 pasos** que entran en una pantalla: Auto, Registro, Aceite, Refrigerante. Cada dato se elige desde un panel, y al elegir uno se abre el siguiente. Al editar, se abre directo en el paso de la pestaña desde la que se tocó Editar.
 - Combustible: **GNC, Gasolina o Diésel**.
 - Se quitó el "apodo" del vehículo: ahora siempre se muestran la marca y el modelo.

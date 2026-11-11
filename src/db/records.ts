@@ -22,6 +22,8 @@ interface ItemRow {
   category: string;
   item: string;
   label: string;
+  interval_km: number | null;
+  interval_months: number | null;
 }
 
 interface PhotoRow {
@@ -29,6 +31,15 @@ interface PhotoRow {
   record_id: string;
   path: string;
   sort_order: number;
+}
+
+export interface RecordItemInput {
+  category: string;
+  item: string;
+  label: string;
+  /** Only for tracked services: when the next one is due. */
+  intervalKm?: number | null;
+  intervalMonths?: number | null;
 }
 
 export interface RecordInput {
@@ -39,7 +50,7 @@ export interface RecordInput {
   amountCents: number | null;
   workshop: string | null;
   description: string | null;
-  items: { category: string; item: string; label: string }[];
+  items: RecordItemInput[];
   /** Relative photo paths, in display order. */
   photos: string[];
 }
@@ -63,6 +74,8 @@ const mapItem = (r: ItemRow): RecordItem => ({
   category: r.category,
   item: r.item,
   label: r.label,
+  intervalKm: r.interval_km ?? null,
+  intervalMonths: r.interval_months ?? null,
 });
 
 const mapPhoto = (r: PhotoRow): RecordPhoto => ({
@@ -148,13 +161,10 @@ export async function getRecord(id: string): Promise<LogRecordFull | null> {
 async function writeChildren(recordId: string, input: RecordInput): Promise<void> {
   const db = getDb();
   for (const it of input.items) {
-    await db.runAsync('INSERT INTO record_items (id, record_id, category, item, label) VALUES (?, ?, ?, ?, ?)', [
-      newId(),
-      recordId,
-      it.category,
-      it.item,
-      it.label,
-    ]);
+    await db.runAsync(
+      'INSERT INTO record_items (id, record_id, category, item, label, interval_km, interval_months) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [newId(), recordId, it.category, it.item, it.label, it.intervalKm ?? null, it.intervalMonths ?? null],
+    );
   }
   for (let i = 0; i < input.photos.length; i++) {
     await db.runAsync('INSERT INTO record_photos (id, record_id, path, sort_order) VALUES (?, ?, ?, ?)', [
@@ -255,12 +265,15 @@ export interface ItemOccurrence {
   date: string;
   odometer: number | null;
   recordId: string;
+  intervalKm: number | null;
+  intervalMonths: number | null;
 }
 
 /** Latest occurrence of every item for a vehicle (the baseline for service intervals). */
 export async function getLatestItemOccurrences(vehicleId: string): Promise<ItemOccurrence[]> {
   return getDb().getAllAsync<ItemOccurrence>(
-    `SELECT i.item AS item, i.category AS category, r.date AS date, r.odometer AS odometer, r.id AS recordId
+    `SELECT i.item AS item, i.category AS category, r.date AS date, r.odometer AS odometer, r.id AS recordId,
+            i.interval_km AS intervalKm, i.interval_months AS intervalMonths
      FROM record_items i
      JOIN records r ON r.id = i.record_id
      WHERE r.vehicle_id = ?

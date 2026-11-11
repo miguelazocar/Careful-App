@@ -1,1 +1,1 @@
-{"id":"soueast","name":"Soueast","models":[{"id":"dx-3","name":"DX 3","body":"hatchback","variants":[["5P 1,5",2020,2020],["5P 1,5 T 8CVT",2020,2024]]},{"id":"s06","name":"S06","body":"hatchback","variants":[["5P 1,5 T PHEV COMFORT",2026,null],["5P 1,5 T PHEV LUXURY",2026,null]]}]}
+{"id":"soueast","name":"Soueast","models":[{"id":"dx3","name":"DX3","body":"hatchback","variants":[["5P 1,5",2020,2020],["5P 1,5 T 8CVT",2020,2024]]},{"id":"s06","name":"S06","body":"hatchback","variants":[["5P 1,5 T PHEV COMFORT",2026,null],["5P 1,5 T PHEV LUXURY",2026,null]]}]}

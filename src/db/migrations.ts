@@ -125,6 +125,12 @@ export const MIGRATIONS: string[] = [
     ELSE NULL END
   WHERE coolant_type IS NOT NULL;
   `,
+  // 3 — interval chosen when a service is logged ("próximo cambio cada N km / N meses").
+  //     NULL = use the vehicle's plan (service_rules) or the catalog default.
+  `
+  ALTER TABLE record_items ADD COLUMN interval_km INTEGER;
+  ALTER TABLE record_items ADD COLUMN interval_months INTEGER;
+  `,
 ];
 
 export async function migrate(db: Db): Promise<number> {

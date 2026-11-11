@@ -2,14 +2,14 @@ import { File } from 'expo-file-system';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as SecureStore from 'expo-secure-store';
 
-import { getBrand, matchBrand, matchModel } from '@/data/catalog';
+import { fuelFromVersion, getBrand, matchBrand, matchModel, transmissionFromVersion } from '@/data/catalog';
 import { VEHICLE_COLORS } from '@/domain/colors';
 import { normalizePlate } from '@/domain/plate';
-import { guessCoolantBase, guessOilBase } from '@/domain/vehicle-specs';
+import { engineFromVersion, guessCoolantBase, guessOilBase } from '@/domain/vehicle-specs';
 import { normalizeVin } from '@/domain/vin';
 import { getSettings } from '@/stores/settings';
 
-import { AiUnavailableError, type AiProvider, type FluidSuggestion, type VehicleGuess } from './types';
+import { AiUnavailableError, type AiProvider, type FluidQuery, type FluidSuggestion, type VehicleGuess } from './types';
 
 const KEY_STORE = 'careful.gemini.apiKey';
 const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta';
@@ -51,6 +51,13 @@ async function fetchWithTimeout(url: string, init: RequestInit): Promise<Respons
 type Part = { text: string } | { inline_data: { mime_type: string; data: string } };
 
 async function generate(parts: Part[], opts: { json?: boolean; search?: boolean } = {}): Promise<string> {
+  return (await call(parts, opts)).text;
+}
+
+type Source = { title: string; url: string };
+
+/** Gemini request; with `search` it also returns the web pages Google Search grounded the answer on. */
+async function call(parts: Part[], opts: { json?: boolean; search?: boolean } = {}): Promise<{ text: string; sources: Source[] }> {
   const key = await getGeminiKey();
   if (!key) throw new AiUnavailableError('Configurá tu clave de Gemini en Ajustes › Inteligencia artificial.');
   const model = getSettings().ai.model || 'gemini-flash-latest';
@@ -70,12 +77,21 @@ async function generate(parts: Part[], opts: { json?: boolean; search?: boolean 
     throw new GeminiHttpError(res.status, apiErrorMessage(detail));
   }
   const data = (await res.json()) as {
-    candidates?: { finishReason?: string; content?: { parts?: { text?: string; thought?: boolean }[] } }[];
+    candidates?: {
+      finishReason?: string;
+      content?: { parts?: { text?: string; thought?: boolean }[] };
+      groundingMetadata?: { groundingChunks?: { web?: { uri?: string; title?: string } }[] };
+    }[];
   };
   const candidate = data.candidates?.[0];
   const text = candidate?.content?.parts?.filter((p) => !p.thought).map((p) => p.text ?? '').join('') ?? '';
   if (!text.trim()) throw new Error(`Gemini no devolvió resultados${candidate?.finishReason ? ` (${candidate.finishReason})` : ''}.`);
-  return text;
+  const sources: Source[] = [];
+  for (const c of candidate?.groundingMetadata?.groundingChunks ?? []) {
+    const title = c.web?.title?.trim();
+    if (title && c.web?.uri && !sources.some((s) => s.title === title)) sources.push({ title, url: c.web.uri });
+  }
+  return { text, sources: sources.slice(0, 5) };
 }
 
 /** HTTP failure from the Gemini API, with a readable message. */
@@ -108,18 +124,47 @@ function apiErrorMessage(body: string): string {
  */
 let searchUnavailable = false;
 
-function fluidsPrompt(vehicle: string, fuel: string | null, withSearch: boolean): string {
+const FUEL_WORD: Record<string, string> = { nafta: 'nafta', diesel: 'diésel', gnc: 'GNC', hibrido: 'híbrido', electrico: 'eléctrico' };
+const GEARBOX_WORD: Record<string, string> = { manual: 'manual', automatica: 'automática', cvt: 'CVT', dsg: 'DSG (doble embrague)' };
+
+function fluidsPrompt(q: FluidQuery, brand: string, withSearch: boolean): string {
+  const fuelKey = q.fuel ?? (q.variant ? fuelFromVersion(q.variant) : null);
+  const gearbox = q.variant ? transmissionFromVersion(q.variant) : undefined;
+  const engine = engineFromVersion(q.variant);
+  const facts = [
+    `- Marca: ${brand}`,
+    `- Modelo: ${q.model}`,
+    q.variant ? `- Versión: ${q.variant}` : null,
+    q.year ? `- Año modelo: ${q.year}` : null,
+    engine ? `- Motor (según la versión): ${engine}` : null,
+    fuelKey ? `- Combustible: ${FUEL_WORD[fuelKey] ?? fuelKey}` : null,
+    gearbox ? `- Caja: ${GEARBOX_WORD[gearbox] ?? gearbox}` : null,
+    '- Mercado: Argentina',
+  ]
+    .filter(Boolean)
+    .join('\n');
   return (
-    `Necesito los fluidos de servicio que recomienda el fabricante para un ${vehicle} (mercado argentino${fuel ? `, motor ${fuel}` : ''}). ` +
-    (withSearch ? 'Buscá en el manual del propietario o en fuentes oficiales o confiables. ' : 'Respondé con lo que sepas de este motor. ') +
-    'Si no encontrás la versión exacta, usá los valores del mismo motor en otros mercados o años cercanos y aclaralo en "notes". ' +
-    'Usá null solo si de verdad no tenés un dato razonable; no inventes. ' +
-    'Respondé SOLO JSON: {"oilType": string|null (viscosidad SAE y norma, ej "5W-30 · ACEA C2"), ' +
-    '"oilBase": "mineral"|"semisintetico"|"sintetico"|null, "oilLiters": number|null (capacidad con filtro, en litros), ' +
-    '"oilBrand": string|null y "oilModel": string|null (aceite que recomienda el fabricante, ej "Selenia" y "K Pure Energy"), ' +
+    'Sos un asesor técnico de mantenimiento automotor. Necesito los fluidos de servicio que especifica el FABRICANTE para este vehículo exacto:\n' +
+    facts +
+    '\n\n' +
+    (withSearch
+      ? 'Investigá en internet usando solo fuentes fiables, en este orden de preferencia: 1) manual del propietario o plan de mantenimiento oficial; ' +
+        '2) sitio oficial de la marca en Argentina o en el país de fabricación; 3) buscadores oficiales de lubricantes (Shell, YPF Elaion, Castrol, Mobil, Total, Petronas, Motul, Liqui Moly); ' +
+        '4) fichas técnicas de concesionarios oficiales. No uses foros, redes sociales ni sitios de usuarios. Contrastá al menos dos fuentes cuando sea posible.\n'
+      : 'Respondé con los datos del fabricante que conozcas para este motor.\n') +
+    'Primero identificá el motor exacto (familia y código) a partir de la versión y el año, y usá los datos de ESE motor. ' +
+    'Si la versión exacta no figura, usá el mismo motor en años cercanos o en Brasil/Mercosur y aclaralo en "notes". ' +
+    'Completá todos los campos con el dato más fiable que encuentres; usá null solo si no existe ningún dato verificable. No inventes.\n\n' +
+    'Respondé SOLO un objeto JSON, sin texto antes ni después:\n' +
+    '{"engine": string|null (motor identificado, ej "1.4 Fire Evo 8V"), ' +
+    '"oilType": string|null (viscosidad SAE y norma, ej "5W-30 · ACEA C2"), ' +
+    '"oilBase": "mineral"|"semisintetico"|"sintetico"|null, "oilLiters": number|null (capacidad con cambio de filtro, en litros), ' +
+    '"oilBrand": string|null y "oilModel": string|null (aceite que recomienda o usa de fábrica la marca, ej "Selenia" y "K Pure Energy"), ' +
+    '"oilIntervalKm": number|null (km entre cambios de aceite en uso normal según el fabricante), "oilIntervalMonths": number|null (meses entre cambios), ' +
     '"coolantType": string|null (norma y color, ej "G12+ · rosa"), "coolantBase": "inorganico"|"organico"|"hibrido"|null, ' +
     '"coolantLiters": number|null (capacidad total del sistema, en litros), "coolantConcentration": 30|40|50|60|null (% de refrigerante recomendado; el resto es agua desmineralizada), ' +
-    '"coolantBrand": string|null y "coolantModel": string|null (refrigerante recomendado), "notes": string (máximo 140 caracteres: fuente o aclaración)}'
+    '"coolantBrand": string|null y "coolantModel": string|null (refrigerante recomendado), ' +
+    '"notes": string (máximo 160 caracteres: de dónde sale cada dato o qué se asumió)}'
   );
 }
 
@@ -225,20 +270,22 @@ export const geminiProvider: AiProvider = {
 
   async researchFluids(q): Promise<FluidSuggestion | null> {
     const brand = getBrand(q.brandId)?.name ?? q.brand;
-    const vehicle = [brand, q.model, q.variant, q.year].filter(Boolean).join(' ');
-    const ask = (withSearch: boolean) => generate([{ text: fluidsPrompt(vehicle, q.fuel, withSearch) }], withSearch ? { search: true } : { json: true });
+    const ask = (withSearch: boolean) => call([{ text: fluidsPrompt(q, brand, withSearch) }], withSearch ? { search: true } : { json: true });
     let viaSearch = !searchUnavailable;
-    let text: string;
+    let res: { text: string; sources: Source[] };
     try {
-      text = await ask(viaSearch);
+      res = await ask(viaSearch);
     } catch (e) {
       // Only the web search is optional: a bad key or no connection must surface as-is.
       if (!viaSearch || !(e instanceof GeminiHttpError)) throw e;
       searchUnavailable = true;
       viaSearch = false;
-      text = await ask(false);
+      res = await ask(false);
     }
     const raw = extractJson<{
+      engine?: string | null;
+      oilIntervalKm?: number | string | null;
+      oilIntervalMonths?: number | string | null;
       oilType?: string | null;
       oilBase?: string | null;
       oilLiters?: number | string | null;
@@ -251,7 +298,11 @@ export const geminiProvider: AiProvider = {
       coolantBrand?: string | null;
       coolantModel?: string | null;
       notes?: string | null;
-    }>(text);
+    }>(res.text);
+    const int = (v: unknown, min: number, max: number) => {
+      const n = typeof v === 'string' ? Number(v.replace(/\./g, '').replace(',', '.')) : Number(v);
+      return Number.isFinite(n) && n >= min && n <= max ? Math.round(n) : undefined;
+    };
     const num = (v: unknown) => {
       const n = typeof v === 'string' ? Number(v.replace(',', '.')) : Number(v);
       return Number.isFinite(n) && n > 0 && n < 40 ? n : undefined;
@@ -268,7 +319,11 @@ export const geminiProvider: AiProvider = {
       coolantConcentration: [30, 40, 50, 60].find((p) => p === Number(raw.coolantConcentration)),
       coolantBrand: cleanText(raw.coolantBrand),
       coolantModel: cleanText(raw.coolantModel),
-      source: viaSearch ? 'Gemini + búsqueda web' : 'Gemini',
+      oilIntervalKm: int(raw.oilIntervalKm, 1000, 50000),
+      oilIntervalMonths: int(raw.oilIntervalMonths, 1, 48),
+      engine: cleanText(raw.engine),
+      source: viaSearch ? 'Gemini + búsqueda web' : 'Gemini (sin búsqueda web)',
+      sources: res.sources.length ? res.sources : undefined,
       notes: raw.notes?.trim() || 'Verificá siempre en el manual del vehículo.',
     };
     return out.oilType || out.coolantType || out.oilLiters || out.coolantLiters ? out : null;

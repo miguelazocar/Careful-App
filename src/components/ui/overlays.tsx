@@ -1,14 +1,21 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useId, useState, type ReactNode } from 'react';
 import { BackHandler, Modal, Pressable, useWindowDimensions, View } from 'react-native';
 import Animated, { Easing, SlideInUp, SlideOutUp, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { create } from 'zustand';
 
 import { useToast } from '@/stores/ui';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 
 import { AppText, Icon } from './primitives';
+
+/**
+ * Open sheets, innermost last. Each sheet is its own window (Modal) that covers the root, so toasts
+ * are drawn inside the top sheet while one is open; otherwise they would sit under its dim layer.
+ */
+const useSheetStack = create<{ ids: string[] }>(() => ({ ids: [] }));
 
 const SHEET_IN = { duration: 320, easing: Easing.out(Easing.cubic) };
 const SHEET_OUT = { duration: 220, easing: Easing.in(Easing.cubic) };
@@ -26,6 +33,14 @@ export function Sheet({ visible, onClose, children, title }: { visible: boolean;
   if (visible && !mounted) setMounted(true);
   const progress = useSharedValue(0);
   const keyboard = useReanimatedKeyboardAnimation();
+  const id = useId();
+  const isTop = useSheetStack((st) => st.ids[st.ids.length - 1] === id);
+
+  useEffect(() => {
+    if (!visible) return;
+    useSheetStack.setState((st) => ({ ids: [...st.ids, id] }));
+    return () => useSheetStack.setState((st) => ({ ids: st.ids.filter((x) => x !== id) }));
+  }, [visible, id]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -78,6 +93,7 @@ export function Sheet({ visible, onClose, children, title }: { visible: boolean;
           ) : null}
           {children}
         </Animated.View>
+        {isTop ? <ToastHost inSheet /> : null}
       </Animated.View>
     </Modal>
   );
@@ -89,11 +105,12 @@ const TOAST_VISIBLE_MS = 3000;
 const toastEnter = SlideInUp.duration(380).easing(Easing.out(Easing.cubic));
 const toastExit = SlideOutUp.duration(300).easing(Easing.in(Easing.cubic));
 
-/** Global toast host — rendered once at the root. */
-export function ToastHost() {
+/** Global toast host — rendered at the root, and inside the top sheet while one is open. */
+export function ToastHost({ inSheet = false }: { inSheet?: boolean }) {
   const { message, tone, key, hide } = useToast();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const covered = useSheetStack((st) => st.ids.length > 0);
 
   useEffect(() => {
     if (!message) return;
@@ -101,7 +118,7 @@ export function ToastHost() {
     return () => clearTimeout(t);
   }, [message, key, hide]);
 
-  if (!message) return null;
+  if (!message || (covered && !inSheet)) return null;
   const bg = tone === 'error' ? colors.danger : tone === 'info' ? colors.surfaceRaised : '#0E1A2E';
   const icon = tone === 'error' ? 'alert-circle' : tone === 'info' ? 'information-outline' : 'check-circle';
   const iconColor = tone === 'error' ? '#fff' : tone === 'info' ? colors.primary : '#2EE8B6';

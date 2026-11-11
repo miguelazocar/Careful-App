@@ -1,5 +1,5 @@
 /// <reference types="jest" />
-import { coolantMix, fuelLabel, guessCoolantBase, guessOilBase } from '../vehicle-specs';
+import { coolantMix, fuelLabel, guessCoolantBase, guessOilBase, engineFromVersion } from '../vehicle-specs';
 
 describe('coolantMix', () => {
   it('splits the total capacity into coolant and demineralized water', () => {
@@ -42,5 +42,16 @@ describe('labels and guesses', () => {
     expect(guessCoolantBase('Inorgánico verde')).toBe('inorganico');
     expect(guessCoolantBase('Paraflu UP')).toBeNull();
     expect(guessCoolantBase('')).toBeNull();
+  });
+});
+
+describe('engineFromVersion', () => {
+  it('reads displacement and engine codes from a catalog version', () => {
+    expect(engineFromVersion('5P 1,4 FIRE TOP')).toBe('1.4 L · FIRE');
+    expect(engineFromVersion('4P 2,0 TDI 140CV DSG')).toBe('2.0 L · TDI');
+    expect(engineFromVersion('5P 1.6 16V THP')).toBe('1.6 L · 16V THP');
+    expect(engineFromVersion('D/C 2,8 TD 4X4')).toBe('2.8 L');
+    expect(engineFromVersion('5P HIGHLINE')).toBeNull();
+    expect(engineFromVersion(null)).toBeNull();
   });
 });
