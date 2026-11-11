@@ -22,10 +22,17 @@ interface VehicleRow {
   engine_number: string | null;
   photo: string | null;
   initial_odometer: number;
+  oil_base: string | null;
+  oil_brand: string | null;
+  oil_model: string | null;
   oil_type: string | null;
   oil_liters: number | null;
+  coolant_base: string | null;
+  coolant_brand: string | null;
+  coolant_model: string | null;
   coolant_type: string | null;
   coolant_liters: number | null;
+  coolant_concentration: number | null;
   notes: string | null;
   sort_order: number;
   archived_at: string | null;
@@ -55,10 +62,17 @@ const COLUMNS: [keyof VehicleInput, string][] = [
   ['engineNumber', 'engine_number'],
   ['photo', 'photo'],
   ['initialOdometer', 'initial_odometer'],
+  ['oilBase', 'oil_base'],
+  ['oilBrand', 'oil_brand'],
+  ['oilModel', 'oil_model'],
   ['oilType', 'oil_type'],
   ['oilLiters', 'oil_liters'],
+  ['coolantBase', 'coolant_base'],
+  ['coolantBrand', 'coolant_brand'],
+  ['coolantModel', 'coolant_model'],
   ['coolantType', 'coolant_type'],
   ['coolantLiters', 'coolant_liters'],
+  ['coolantConcentration', 'coolant_concentration'],
   ['notes', 'notes'],
 ];
 
@@ -82,10 +96,17 @@ export function mapVehicle(r: VehicleRow): Vehicle {
     engineNumber: r.engine_number,
     photo: r.photo,
     initialOdometer: r.initial_odometer,
+    oilBase: r.oil_base,
+    oilBrand: r.oil_brand,
+    oilModel: r.oil_model,
     oilType: r.oil_type,
     oilLiters: r.oil_liters,
+    coolantBase: r.coolant_base,
+    coolantBrand: r.coolant_brand,
+    coolantModel: r.coolant_model,
     coolantType: r.coolant_type,
     coolantLiters: r.coolant_liters,
+    coolantConcentration: r.coolant_concentration,
     notes: r.notes,
     sortOrder: r.sort_order,
     archivedAt: r.archived_at,

@@ -31,7 +31,7 @@ export function RecordRow({ record, vehicle, onPress, showVehicle = true }: { re
   const { colors } = useTheme();
   const visual = recordVisual(record, colors.primary);
   const thumb = record.photos[0] ? photoUri(record.photos[0].path) : null;
-  const meta = [formatDay(record.date), record.odometer !== null ? formatKm(record.odometer) : null, showVehicle && vehicle ? vehicle.nickname || `${vehicle.brand} ${vehicle.model}` : null]
+  const meta = [formatDay(record.date), record.odometer !== null ? formatKm(record.odometer) : null, showVehicle && vehicle ? `${vehicle.brand} ${vehicle.model}` : null]
     .filter(Boolean)
     .join(' · ');
   return (
@@ -109,7 +109,7 @@ export function UpcomingRow({ item, vehicle, onPress, compact }: { item: Upcomin
             {item.title}
           </AppText>
           <AppText variant="caption" tone="muted" numberOfLines={2}>
-            {vehicle ? `${vehicle.nickname || `${vehicle.brand} ${vehicle.model}`} · ` : ''}
+            {vehicle ? `${vehicle.brand} ${vehicle.model} · ` : ''}
             {item.estimated ? 'Estimado · ' : ''}
             {dueLabel(item)}
           </AppText>

@@ -38,10 +38,23 @@ export interface Vehicle {
   /** Relative path inside the app documents directory (e.g. "photos/abc.jpg"). */
   photo: string | null;
   initialOdometer: number;
+  /** Mineral / semi-sintético / sintético (domain/vehicle-specs OilBase). */
+  oilBase: string | null;
+  oilBrand: string | null;
+  oilModel: string | null;
+  /** "Versión" of the oil: SAE grade and spec, e.g. "5W-30 · ACEA C2". */
   oilType: string | null;
   oilLiters: number | null;
+  /** Inorgánico / orgánico / híbrido (domain/vehicle-specs CoolantBase). */
+  coolantBase: string | null;
+  coolantBrand: string | null;
+  coolantModel: string | null;
+  /** "Versión" of the coolant: spec / color, e.g. "G12+ · rosa". */
   coolantType: string | null;
+  /** Total system capacity (concentrate + water). */
   coolantLiters: number | null;
+  /** % of concentrate in the mix (30, 40, 50 or 60); the rest is demineralized water. */
+  coolantConcentration: number | null;
   notes: string | null;
   sortOrder: number;
   archivedAt: string | null;

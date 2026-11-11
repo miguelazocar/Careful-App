@@ -75,6 +75,6 @@ export async function loadUpcoming(opts: { vehicleId?: string; warnKm?: number; 
   return { items: sortUpcoming(items), snapshots };
 }
 
-export function vehicleLabel(v: Pick<Vehicle, 'nickname' | 'brand' | 'model'>): string {
-  return v.nickname?.trim() || `${v.brand} ${v.model}`.trim();
+export function vehicleLabel(v: Pick<Vehicle, 'brand' | 'model'>): string {
+  return `${v.brand} ${v.model}`.trim();
 }

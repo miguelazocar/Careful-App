@@ -8,6 +8,7 @@ import { getVehicle } from '@/db/vehicles';
 import { countryName, flagEmoji } from '@/domain/countries';
 import { findItem } from '@/domain/maintenance';
 import { formatPlate } from '@/domain/plate';
+import { coolantBaseLabel, fuelLabel, oilBaseLabel } from '@/domain/vehicle-specs';
 import { formatDay, today } from '@/lib/dates';
 import { formatAmount, formatKm } from '@/lib/format';
 import { withExternalActivity } from '@/stores/ui';
@@ -18,7 +19,6 @@ import { loadUpcoming, vehicleLabel } from './upcoming';
 const esc = (s: string | null | undefined) =>
   (s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 
-const FUEL_LABEL: Record<string, string> = { nafta: 'Nafta', diesel: 'Diésel', gnc: 'GNC', hibrido: 'Híbrido', electrico: 'Eléctrico' };
 
 const KIND_LABEL: Record<string, string> = {
   maintenance: 'Mantenimiento',
@@ -109,11 +109,11 @@ export async function buildVehicleReportHtml(vehicleId: string): Promise<string>
           ${field('Patente', vehicle.plate ? `${flagEmoji(vehicle.country)} ${formatPlate(vehicle.plate, vehicle.country)}` : null)}
           ${field('País', countryName(vehicle.country))}
           ${field('Color', vehicle.color)}
-          ${field('VIN / chasis', vehicle.vin)}
-          ${field('N° de motor', vehicle.engineNumber)}
-          ${field('Combustible', vehicle.fuel ? (FUEL_LABEL[vehicle.fuel] ?? vehicle.fuel) : null)}
-          ${field('Aceite', [vehicle.oilType, vehicle.oilLiters ? `${vehicle.oilLiters} L` : null].filter(Boolean).join(' · ') || null)}
-          ${field('Refrigerante', [vehicle.coolantType, vehicle.coolantLiters ? `${vehicle.coolantLiters} L` : null].filter(Boolean).join(' · ') || null)}
+          ${field('Serial de chasis', vehicle.vin)}
+          ${field('Serial de motor', vehicle.engineNumber)}
+          ${field('Combustible', fuelLabel(vehicle.fuel))}
+          ${field('Aceite', [oilBaseLabel(vehicle.oilBase), [vehicle.oilBrand, vehicle.oilModel].filter(Boolean).join(' '), vehicle.oilType, vehicle.oilLiters ? `${vehicle.oilLiters} L` : null].filter(Boolean).join(' · ') || null)}
+          ${field('Refrigerante', [coolantBaseLabel(vehicle.coolantBase), [vehicle.coolantBrand, vehicle.coolantModel].filter(Boolean).join(' '), vehicle.coolantType, vehicle.coolantLiters ? `${vehicle.coolantLiters} L` : null, vehicle.coolantConcentration ? `${vehicle.coolantConcentration}%` : null].filter(Boolean).join(' · ') || null)}
         </div>
       </div>
     </div>

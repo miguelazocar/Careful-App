@@ -30,8 +30,8 @@ export function VehiclePhoto({ vehicle, style }: { vehicle: Pick<Vehicle, 'photo
 export function VehicleCard({ vehicle, currentKm, onPress }: { vehicle: Vehicle; currentKm: number; onPress: () => void }) {
   const { colors, isDark } = useTheme();
   const surface = colors.surface;
-  const modelLine = vehicle.nickname || vehicle.model;
-  const modelDetail = vehicle.nickname ? [vehicle.model, vehicle.variant].filter(Boolean).join(' ') : vehicle.variant;
+  const modelLine = vehicle.model;
+  const modelDetail = vehicle.variant;
 
   return (
     <Pressable

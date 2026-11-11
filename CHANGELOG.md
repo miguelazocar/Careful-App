@@ -4,7 +4,27 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
 
 ## [Sin publicar]
 
+### Agregado
+- **Ficha del vehículo nueva**: foto arriba y un recuadro con pestañas (**Vehículo**, **Aceite**, **Refrigerante**) que se ve completo, sin scroll. Abajo hay accesos a Registrar, Kilometraje, Services e Historial.
+- **Datos de aceite**:
+  - tipo (mineral, semi-sintético o sintético);
+  - cantidad;
+  - marca, modelo y versión.
+- **Datos de refrigerante**:
+  - tipo (inorgánico, orgánico o híbrido);
+  - cantidad total y concentración (30, 40, 50 o 60 %);
+  - **cuánto refrigerante y cuánta agua desmineralizada usar** (por ejemplo, 6 L al 40 % = 2,4 L + 3,6 L);
+  - marca, modelo y versión.
+- **Logos de las marcas**, de [Simple Icons](https://simpleicons.org) (CC0), en la ficha y en el asistente.
+- **Editar o borrar datos ya guardados pide la seguridad activa** (PIN de App o desbloqueo del teléfono).
+- "Investigar automáticamente" también sugiere el tipo de aceite y de refrigerante, la concentración y los productos recomendados.
+- Se puede probar en **Expo Go**. Las funciones que necesitan módulos nativos propios (OCR del teléfono, Google Drive) avisan que no están disponibles en lugar de cerrar la app.
+
 ### Cambiado
+- **Asistente de alta y edición en 4 pasos** que entran en una pantalla: Auto, Registro, Aceite, Refrigerante. Cada dato se elige desde un panel, y al elegir uno se abre el siguiente. Al editar, se abre directo en el paso de la pestaña desde la que se tocó Editar.
+- Combustible: **GNC, Gasolina o Diésel**.
+- Se quitó el "apodo" del vehículo: ahora siempre se muestran la marca y el modelo.
+- **Ninguna animación rebota**: los paneles y las tarjetas se deslizan y frenan suave. Un PIN incorrecto muestra un aviso en lugar de sacudir los puntos.
 - **Garage**: la tarjeta de cada auto alinea los datos a la derecha, en este orden: patente (destacada), marca, modelo, color y kilometraje actual.
 - **Garage**: se quitaron los resúmenes (vehículos, pendientes, gastos) y el cartel "Activá los avisos de service".
 - **Los avisos de service están siempre activos**: se quitó el interruptor en Ajustes › Notificaciones. Solo dependen del permiso de notificaciones del teléfono.
@@ -20,6 +40,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
 - **Apariencia**: la opción "Sistema" pasa a llamarse "Automático" y es la predeterminada.
 
 ### Corregido
+- Al editar un vehículo, "Kilometraje actual" mostraba el kilometraje con el que se lo dio de alta. Ahora muestra el actual, y un valor mayor se guarda como una lectura nueva.
 - Un cambio hecho mientras se subía una copia podía quedar sin respaldar hasta el día siguiente. Ahora se guarda otra copia al terminar.
 - Si el teléfono deja de tener bloqueo de pantalla, el modo "Desbloqueo del teléfono" ya no deja la app trabada en la pantalla de bloqueo: se desactiva y avisa, igual que cuando se pierde el PIN.
 

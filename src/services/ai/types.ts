@@ -17,6 +17,13 @@ export interface FluidSuggestion {
   oilLiters?: number;
   coolantType?: string;
   coolantLiters?: number;
+  oilBase?: string;
+  oilBrand?: string;
+  oilModel?: string;
+  coolantBase?: string;
+  coolantConcentration?: number;
+  coolantBrand?: string;
+  coolantModel?: string;
   /** Where the data came from, shown to the user ("Catálogo Careful", "Gemini + búsqueda web"). */
   source: string;
   notes?: string;

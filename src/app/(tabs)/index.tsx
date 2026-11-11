@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated, { Easing, FadeInDown } from 'react-native-reanimated';
 
 import { AppIcon, Wordmark } from '@/components/brand';
 import { UpcomingRow } from '@/components/rows';
@@ -33,7 +33,7 @@ export default function GarageScreen() {
       }>
       <View style={{ gap: spacing.md }}>
         {snapshots.map((s, i) => (
-          <Animated.View key={s.vehicle.id} entering={FadeInDown.delay(i * 60).springify().damping(18)}>
+          <Animated.View key={s.vehicle.id} entering={FadeInDown.delay(i * 60).duration(360).easing(Easing.out(Easing.cubic))}>
             <VehicleCard
               vehicle={s.vehicle}
               currentKm={s.currentKm}

@@ -3,13 +3,13 @@
 import { loadUpcoming } from '@/services/upcoming';
 
 import { onDataChanged } from '../connection';
-import { MIGRATIONS } from '../migrations';
+import { migrate, MIGRATIONS } from '../migrations';
 import { createRecord, deleteRecord, getLatestItemOccurrences, getMonthlySpend, getOdometerReadings, getVehicleStats, listRecords, updateRecord, type RecordInput } from '../records';
 import { createManualReminder, listManualReminders, markNotified, saveServiceRule, setManualReminderDone, wasNotified } from '../reminders';
 import { getAllSettings, setSetting } from '../settings';
 import { exportSnapshot, importSnapshot, referencedPhotos, validatePayload } from '../snapshot';
 import { createVehicle, deleteVehicle, getVehicle, listVehicles, setVehicleArchived, updateVehicle, type VehicleInput } from '../vehicles';
-import { setupTestDb } from './node-db';
+import { createNodeDb, setupTestDb } from './node-db';
 
 const baseVehicle: VehicleInput = {
   nickname: null,
@@ -29,10 +29,17 @@ const baseVehicle: VehicleInput = {
   engineNumber: null,
   photo: 'photos/cover.jpg',
   initialOdometer: 40_000,
+  oilBase: 'sintetico',
+  oilBrand: 'Selenia',
+  oilModel: 'K Pure Energy',
   oilType: '5W-30',
   oilLiters: 3.4,
+  coolantBase: null,
+  coolantBrand: null,
+  coolantModel: null,
   coolantType: null,
   coolantLiters: null,
+  coolantConcentration: null,
   notes: null,
 };
 
@@ -62,6 +69,45 @@ describe('repositories on real SQLite', () => {
   it('migrates idempotently', async () => {
     const v = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
     expect(v?.user_version).toBe(MIGRATIONS.length);
+  });
+
+  it('stores the detailed oil and coolant data', async () => {
+    const v = await createVehicle({
+      ...baseVehicle,
+      coolantBase: 'organico',
+      coolantBrand: 'Paraflu',
+      coolantModel: 'Up',
+      coolantType: 'G12+ · rosa',
+      coolantLiters: 6,
+      coolantConcentration: 40,
+    });
+    expect(v).toMatchObject({ oilBase: 'sintetico', oilBrand: 'Selenia', oilModel: 'K Pure Energy', coolantBase: 'organico', coolantConcentration: 40, coolantLiters: 6 });
+    await updateVehicle(v.id, { coolantConcentration: 50, oilBrand: null });
+    expect(await getVehicle(v.id)).toMatchObject({ coolantConcentration: 50, oilBrand: null, oilModel: 'K Pure Energy' });
+  });
+
+  it('migration 2 infers oil and coolant bases for existing vehicles', async () => {
+    const old = createNodeDb();
+    await old.execAsync(MIGRATIONS[0]);
+    await old.execAsync('PRAGMA user_version = 1');
+    const ins = (id: string, oil: string | null, coolant: string | null) =>
+      old.runAsync(
+        "INSERT INTO vehicles (id, brand, model, country, initial_odometer, oil_type, coolant_type, sort_order, created_at, updated_at) VALUES (?, 'Fiat', 'Cronos', 'AR', 0, ?, ?, 0, '2026-01-01', '2026-01-01')",
+        [id, oil, coolant],
+      );
+    await ins('a', '5W-30 · ACEA C2', 'Orgánico (OAT) rosa');
+    await ins('b', '15W-40', 'HOAT · amarillo');
+    await ins('c', '10W-40', 'Inorgánico verde');
+    await ins('d', null, 'Paraflu UP');
+    await migrate(old);
+    const rows = await old.getAllAsync<{ id: string; oil_base: string | null; coolant_base: string | null }>('SELECT id, oil_base, coolant_base FROM vehicles ORDER BY id');
+    expect(rows).toEqual([
+      { id: 'a', oil_base: 'sintetico', coolant_base: 'organico' },
+      { id: 'b', oil_base: 'mineral', coolant_base: 'hibrido' },
+      { id: 'c', oil_base: 'semisintetico', coolant_base: 'inorganico' },
+      { id: 'd', oil_base: null, coolant_base: null },
+    ]);
+    old.close();
   });
 
   it('creates, updates, archives and lists vehicles in order', async () => {

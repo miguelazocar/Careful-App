@@ -166,4 +166,4 @@ IA on-device con Gemini Nano, cargas de combustible, vencimientos de documentaci
 
 ---
 
-<sub>Los datos técnicos del catálogo (capacidades de aceite y refrigerante) son de referencia; verificá siempre el manual de tu vehículo. Marcas y modelos mencionados pertenecen a sus respectivos dueños y se usan solo para identificar vehículos.</sub>
+<sub>Los datos técnicos del catálogo (capacidades de aceite y refrigerante) son de referencia; verificá siempre el manual de tu vehículo. Marcas y modelos mencionados pertenecen a sus respectivos dueños y se usan solo para identificar vehículos. Los logos de marcas provienen de [Simple Icons](https://simpleicons.org) (CC0) y se muestran solo con ese fin.</sub>

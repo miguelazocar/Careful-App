@@ -8,6 +8,14 @@ export interface FluidData {
   oilLiters?: number;
   coolantType?: string;
   coolantLiters?: number;
+  /** Optional extras: base technology, recommended concentration and product. */
+  oilBase?: string;
+  oilBrand?: string;
+  oilModel?: string;
+  coolantBase?: string;
+  coolantConcentration?: number;
+  coolantBrand?: string;
+  coolantModel?: string;
   /** Where the data came from, shown to the user. */
   source: string;
   notes?: string;
@@ -16,6 +24,10 @@ export interface FluidData {
 export const FLUID_FIELDS = ['oilType', 'oilLiters', 'coolantType', 'coolantLiters'] as const;
 export type FluidField = (typeof FLUID_FIELDS)[number];
 
+/** Filled from the extra source too, but never reported as "missing". */
+const EXTRA_FIELDS = ['oilBase', 'oilBrand', 'oilModel', 'coolantBase', 'coolantConcentration', 'coolantBrand', 'coolantModel'] as const;
+type AnyField = FluidField | (typeof EXTRA_FIELDS)[number];
+
 const LABELS: Record<FluidField, string> = {
   oilType: 'tipo de aceite',
   oilLiters: 'capacidad de aceite',
@@ -23,7 +35,7 @@ const LABELS: Record<FluidField, string> = {
   coolantLiters: 'capacidad de refrigerante',
 };
 
-const has = (s: FluidData, k: FluidField) => {
+const has = (s: FluidData, k: AnyField) => {
   const v = s[k];
   return typeof v === 'number' ? Number.isFinite(v) && v > 0 : typeof v === 'string' && v.trim().length > 0;
 };
@@ -47,15 +59,20 @@ export function mergeFluids(base: FluidData | null, extra: FluidData | null): Fl
   if (!base) return extra && FLUID_FIELDS.some((k) => has(extra, k)) ? extra : null;
   if (!extra) return base;
   const out: FluidData = { ...base };
-  let filled = false;
-  for (const k of FLUID_FIELDS) {
+  let any = false;
+  let core = false;
+  for (const k of [...FLUID_FIELDS, ...EXTRA_FIELDS]) {
     if (!has(out, k) && has(extra, k)) {
-      (out as unknown as Record<FluidField, unknown>)[k] = extra[k];
-      filled = true;
+      (out as unknown as Record<AnyField, unknown>)[k] = extra[k];
+      any = true;
+      if ((FLUID_FIELDS as readonly string[]).includes(k)) core = true;
     }
   }
-  if (!filled) return base;
-  out.source = `${base.source} + ${extra.source}`;
-  out.notes = extra.notes ?? base.notes;
+  if (!any) return base;
+  // only the core values make the extra source worth mentioning
+  if (core) {
+    out.source = `${base.source} + ${extra.source}`;
+    out.notes = extra.notes ?? base.notes;
+  }
   return out;
 }

@@ -1,21 +1,24 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { Alert, ScrollView, View } from 'react-native';
+import { useState, type ReactNode } from 'react';
+import { Alert, Pressable, ScrollView, View } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { PlateBadge } from '@/components/brand';
+import { confirmIdentity } from '@/components/AuthPrompt';
+import { BrandLogo } from '@/components/BrandLogo';
 import { RecordRow, UpcomingRow } from '@/components/rows';
 import { VehiclePhoto } from '@/components/VehicleCard';
 import { Sheet } from '@/components/ui/overlays';
-import { AppText, Button, Card, Icon, IconButton, ListRow, SectionTitle } from '@/components/ui/primitives';
-import { getMonthlySpend, listRecords } from '@/db/records';
+import { AppText, Button, Card, Icon, IconButton, ListRow } from '@/components/ui/primitives';
+import { listRecords } from '@/db/records';
+import type { Vehicle } from '@/db/types';
 import { deleteVehicle, setVehicleArchived } from '@/db/vehicles';
-import { countryName, flagEmoji } from '@/domain/countries';
+import { flagEmoji } from '@/domain/countries';
 import { formatPlate } from '@/domain/plate';
+import { COOLANT_BASES, coolantMix, fuelLabel, OIL_BASES } from '@/domain/vehicle-specs';
 import { useQuery } from '@/hooks/useQuery';
-import { addMonthsTo, today } from '@/lib/dates';
-import { formatAmount, formatInt, formatLiters } from '@/lib/format';
+import { formatAmount, formatKm } from '@/lib/format';
 import { deletePhotoFiles } from '@/services/photos';
 import { shareVehicleReport } from '@/services/report';
 import { loadUpcoming } from '@/services/upcoming';
@@ -24,23 +27,30 @@ import { toast } from '@/stores/ui';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 
-const FUEL_LABEL: Record<string, string> = { nafta: 'Nafta', diesel: 'Diésel', gnc: 'GNC', hibrido: 'Híbrido', electrico: 'Eléctrico' };
+type Tab = 'vehiculo' | 'aceite' | 'refrigerante';
+const TABS: { key: Tab; label: string }[] = [
+  { key: 'vehiculo', label: 'Vehículo' },
+  { key: 'aceite', label: 'Aceite' },
+  { key: 'refrigerante', label: 'Refrigerante' },
+];
+/** Wizard step that edits each tab. */
+const EDIT_STEP: Record<Tab, number> = { vehiculo: 0, aceite: 2, refrigerante: 3 };
+const TAB_HEIGHT = 318;
+
+const liters = (n: number | null | undefined) => (n ? `${String(Math.round(n * 100) / 100).replace('.', ',')} L` : null);
 
 export default function VehicleDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const warnKm = useSettings((s) => s.notifications.warnKm);
-  const [menu, setMenu] = useState(false);
+  const [tab, setTab] = useState<Tab>('vehiculo');
+  const [sheet, setSheet] = useState<null | 'menu' | 'services' | 'history'>(null);
   const [exporting, setExporting] = useState(false);
 
   const { data } = useQuery(async () => {
-    const [upcoming, records, spend] = await Promise.all([
-      loadUpcoming({ vehicleId: id, warnKm }),
-      listRecords({ vehicleId: id }),
-      getMonthlySpend('0000-01-01', id),
-    ]);
-    return { upcoming, records, spend };
+    const [upcoming, records] = await Promise.all([loadUpcoming({ vehicleId: id, warnKm }), listRecords({ vehicleId: id })]);
+    return { upcoming, records };
   }, [id, warnKm]);
 
   const snap = data?.upcoming.snapshots.get(id);
@@ -54,12 +64,16 @@ export default function VehicleDetailScreen() {
     );
   }
   const v = snap.vehicle;
-  const total = data.spend.reduce((s, m) => s + m.cents, 0);
-  const yearFrom = addMonthsTo(today(), -12).slice(0, 7);
-  const lastYear = data.spend.filter((m) => m.month >= yearFrom).reduce((s, m) => s + m.cents, 0);
+  const pending = data.upcoming.items.filter((i) => i.due.status !== 'ok').length;
+  const total = data.records.reduce((s, r) => s + (r.amountCents ?? 0), 0);
+
+  const edit = async () => {
+    if (!(await confirmIdentity('Confirmá que sos vos para editar los datos del vehículo.'))) return;
+    router.push({ pathname: '/vehicle/form', params: { id: v.id, step: String(EDIT_STEP[tab]) } });
+  };
 
   const exportPdf = async () => {
-    setMenu(false);
+    setSheet(null);
     setExporting(true);
     try {
       await shareVehicleReport(v.id);
@@ -70,8 +84,9 @@ export default function VehicleDetailScreen() {
     }
   };
 
-  const remove = () => {
-    setMenu(false);
+  const remove = async () => {
+    setSheet(null);
+    if (!(await confirmIdentity('Confirmá que sos vos para eliminar el vehículo.'))) return;
     Alert.alert('Eliminar vehículo', `Se borrarán ${v.brand} ${v.model} y sus ${data.records.length} registros. Esta acción no se puede deshacer.`, [
       { text: 'Cancelar', style: 'cancel' },
       {
@@ -87,7 +102,7 @@ export default function VehicleDetailScreen() {
   };
 
   const archive = () => {
-    setMenu(false);
+    setSheet(null);
     Alert.alert('Archivar vehículo', 'Lo ocultamos del garage y de los avisos, pero conservás su historial. Podés restaurarlo desde Ajustes.', [
       { text: 'Cancelar', style: 'cancel' },
       {
@@ -101,136 +116,333 @@ export default function VehicleDetailScreen() {
     ]);
   };
 
+  const go = (pathname: '/record/form' | '/reminder/form' | '/vehicle/plan', params: Record<string, string>) => {
+    setSheet(null);
+    router.push({ pathname, params } as never);
+  };
+
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 110 }} showsVerticalScrollIndicator={false}>
-        <View style={{ height: 300 }}>
-          <VehiclePhoto vehicle={v} />
-          <LinearGradient colors={['rgba(7,11,20,0.55)', 'rgba(7,11,20,0)', colors.bg]} locations={[0, 0.35, 1]} style={{ position: 'absolute', inset: 0 }} />
-          <View style={{ position: 'absolute', top: insets.top + 8, left: spacing.lg, right: spacing.lg, flexDirection: 'row', justifyContent: 'space-between' }}>
-            <IconButton icon="arrow-left" tone="glass" accessibilityLabel="Volver" onPress={() => router.back()} />
-            <View style={{ flexDirection: 'row', gap: 8 }}>
-              <IconButton icon="pencil" tone="glass" accessibilityLabel="Editar" onPress={() => router.push({ pathname: '/vehicle/form', params: { id: v.id } })} />
-              <IconButton icon="dots-vertical" tone="glass" accessibilityLabel="Más opciones" onPress={() => setMenu(true)} />
-            </View>
+    <View style={{ flex: 1, backgroundColor: colors.bg, paddingBottom: insets.bottom + spacing.sm }}>
+      {/* Photo */}
+      <View style={{ flex: 1, minHeight: 150 }}>
+        <VehiclePhoto vehicle={v} />
+        <LinearGradient colors={['rgba(7,11,20,0.55)', 'rgba(7,11,20,0)', 'rgba(7,11,20,0.75)']} locations={[0, 0.35, 1]} style={{ position: 'absolute', inset: 0 }} />
+        <View style={{ position: 'absolute', top: insets.top + 8, left: spacing.lg, right: spacing.lg, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <IconButton icon="arrow-left" tone="glass" accessibilityLabel="Volver" onPress={() => router.back()} />
+          <IconButton icon="dots-vertical" tone="glass" accessibilityLabel="Más opciones" onPress={() => setSheet('menu')} />
+        </View>
+        <View style={{ position: 'absolute', left: spacing.lg, right: spacing.lg, bottom: spacing.xl + 8, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+          <BrandLogo brandId={v.brandId} brand={v.brand} size={48} />
+          <View style={{ flex: 1 }}>
+            <AppText variant="overline" color="rgba(255,255,255,0.85)" numberOfLines={1}>
+              {v.brand}
+              {v.year ? ` · ${v.year}` : ''}
+            </AppText>
+            <AppText variant="display" color="#FFFFFF" numberOfLines={1} adjustsFontSizeToFit style={{ fontSize: 30, lineHeight: 36 }}>
+              {v.model}
+            </AppText>
+            {v.variant ? (
+              <AppText variant="caption" color="rgba(255,255,255,0.85)" numberOfLines={1}>
+                {v.variant}
+              </AppText>
+            ) : null}
           </View>
         </View>
+      </View>
 
-        <View style={{ paddingHorizontal: spacing.lg, marginTop: -54, gap: spacing.lg }}>
-          <View style={{ gap: 6 }}>
-            <AppText variant="overline" tone="primary">
-              {v.brand} {v.year ? `· ${v.year}` : ''} {flagEmoji(v.country)}
-            </AppText>
-            <AppText variant="display">{v.nickname || v.model}</AppText>
-            <AppText variant="body" tone="muted">
-              {[v.nickname ? v.model : null, v.variant, v.color].filter(Boolean).join(' · ')}
-            </AppText>
-            <View style={{ marginTop: 4 }}>
-              <PlateBadge plate={v.plate} country={v.country} size="lg" />
+      {/* Data card with tabs */}
+      <View style={{ paddingHorizontal: spacing.lg, marginTop: -spacing.xl, gap: spacing.sm }}>
+        <Card padded={false} style={{ overflow: 'hidden' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, padding: spacing.xs, paddingRight: spacing.sm }}>
+            <View style={{ flex: 1, flexDirection: 'row', backgroundColor: colors.surfaceAlt, borderRadius: radius.md, padding: 4, gap: 4 }}>
+              {TABS.map((t) => {
+                const active = tab === t.key;
+                return (
+                  <Pressable
+                    key={t.key}
+                    onPress={() => setTab(t.key)}
+                    accessibilityRole="tab"
+                    accessibilityState={{ selected: active }}
+                    style={{ flex: 1, height: 36, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', backgroundColor: active ? colors.primary : 'transparent' }}>
+                    <AppText variant="captionStrong" color={active ? '#FFFFFF' : colors.textMuted} numberOfLines={1} adjustsFontSizeToFit>
+                      {t.label}
+                    </AppText>
+                  </Pressable>
+                );
+              })}
             </View>
+            <IconButton icon="pencil" tone="primary" accessibilityLabel="Editar" onPress={() => void edit()} />
           </View>
+          <Animated.View key={tab} entering={FadeIn.duration(180)} style={{ height: TAB_HEIGHT, paddingHorizontal: spacing.sm, paddingBottom: spacing.sm }}>
+            {tab === 'vehiculo' ? <VehicleTab v={v} km={snap.currentKm} /> : tab === 'aceite' ? <OilTab v={v} /> : <CoolantTab v={v} />}
+          </Animated.View>
+        </Card>
 
-          <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-            <Stat icon="speedometer" label="Kilometraje" value={formatInt(snap.currentKm)} unit="km" />
-            <Stat icon="cash" label="Últimos 12 meses" value={formatAmount(lastYear)} />
-            <Stat icon="chart-line" label="Uso promedio" value={snap.dailyKm ? formatInt(snap.dailyKm * 30) : '—'} unit={snap.dailyKm ? 'km/mes' : undefined} />
-          </View>
-
-          <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-            <Button style={{ flex: 1 }} label="Registrar" icon="wrench" onPress={() => router.push({ pathname: '/record/form', params: { kind: 'maintenance', vehicleId: v.id } })} />
-            <Button style={{ flex: 1 }} label="Kilometraje" icon="speedometer" variant="secondary" onPress={() => router.push({ pathname: '/record/form', params: { kind: 'odometer', vehicleId: v.id } })} />
-          </View>
-
-          <View>
-            <SectionTitle title="Próximos services" action="Plan" onAction={() => router.push({ pathname: '/vehicle/plan', params: { id: v.id } })} />
-            <View style={{ gap: spacing.sm }}>
-              {data.upcoming.items.length ? (
-                data.upcoming.items.map((it) => (
-                  <UpcomingRow
-                    key={it.key}
-                    item={it}
-                    onPress={() =>
-                      it.source === 'service'
-                        ? router.push({ pathname: '/record/form', params: { kind: it.categoryKey === 'accesorios' ? 'accessory' : 'maintenance', vehicleId: v.id, item: it.item } })
-                        : router.push({ pathname: '/reminder/form', params: { id: it.reminderId } })
-                    }
-                  />
-                ))
-              ) : (
-                <AppText variant="caption" tone="muted">
-                  No hay services programados.
-                </AppText>
-              )}
-            </View>
-          </View>
-
-          <View>
-            <SectionTitle title="Ficha técnica" />
-            <Card padded={false}>
-              <Spec icon="card-text-outline" label="Patente" value={v.plate ? `${formatPlate(v.plate, v.country)} · ${countryName(v.country)}` : null} />
-              <Spec icon="barcode" label="VIN / chasis" value={v.vin} />
-              <Spec icon="engine" label="N° de motor" value={v.engineNumber} />
-              <Spec icon="gas-station" label="Combustible" value={v.fuel ? (FUEL_LABEL[v.fuel] ?? v.fuel) : null} />
-              <Spec icon="oil" label="Aceite" value={[v.oilType, v.oilLiters ? formatLiters(v.oilLiters) : null].filter(Boolean).join(' · ') || null} />
-              <Spec icon="coolant-temperature" label="Refrigerante" value={[v.coolantType, v.coolantLiters ? formatLiters(v.coolantLiters) : null].filter(Boolean).join(' · ') || null} last />
-            </Card>
-          </View>
-
-          <View>
-            <SectionTitle title="Historial" action={data.records.length ? `Total ${formatAmount(total)}` : undefined} />
-            {data.records.length ? (
-              <View style={{ gap: 6 }}>
-                {data.records.slice(0, 30).map((r) => (
-                  <RecordRow key={r.id} record={r} showVehicle={false} onPress={() => router.push({ pathname: '/record/[id]', params: { id: r.id } })} />
-                ))}
-              </View>
-            ) : (
-              <Card>
-                <AppText variant="caption" tone="muted">
-                  Todavía no hay registros. Tocá “Registrar” para cargar el primero.
-                </AppText>
-              </Card>
-            )}
-          </View>
+        {/* Quick actions */}
+        <View style={{ flexDirection: 'row', gap: spacing.xs }}>
+          <Action icon="wrench" label="Registrar" primary onPress={() => go('/record/form', { kind: 'maintenance', vehicleId: v.id })} />
+          <Action icon="speedometer" label="Kilometraje" onPress={() => go('/record/form', { kind: 'odometer', vehicleId: v.id })} />
+          <Action icon="calendar-clock" label="Services" badge={pending || undefined} onPress={() => setSheet('services')} />
+          <Action icon="history" label="Historial" onPress={() => setSheet('history')} />
         </View>
-      </ScrollView>
+      </View>
 
-      <Sheet visible={menu} onClose={() => setMenu(false)} title={v.nickname || `${v.brand} ${v.model}`}>
+      <Sheet visible={sheet === 'services'} onClose={() => setSheet(null)} title="Próximos services">
+        <ScrollView style={{ flexShrink: 1 }} contentContainerStyle={{ gap: spacing.sm }}>
+          {data.upcoming.items.length ? (
+            data.upcoming.items.map((it) => (
+              <UpcomingRow
+                key={it.key}
+                item={it}
+                onPress={() =>
+                  it.source === 'service'
+                    ? go('/record/form', { kind: it.categoryKey === 'accesorios' ? 'accessory' : 'maintenance', vehicleId: v.id, item: it.item ?? '' })
+                    : go('/reminder/form', { id: it.reminderId ?? '' })
+                }
+              />
+            ))
+          ) : (
+            <AppText variant="caption" tone="muted">
+              No hay services programados.
+            </AppText>
+          )}
+          <Button label="Plan de mantenimiento" icon="tune-variant" variant="secondary" onPress={() => go('/vehicle/plan', { id: v.id })} />
+        </ScrollView>
+      </Sheet>
+
+      <Sheet visible={sheet === 'history'} onClose={() => setSheet(null)} title={data.records.length ? `Historial · ${formatAmount(total)}` : 'Historial'}>
+        <ScrollView style={{ flexShrink: 1 }} contentContainerStyle={{ gap: 6 }}>
+          {data.records.length ? (
+            data.records.map((r) => (
+              <RecordRow
+                key={r.id}
+                record={r}
+                showVehicle={false}
+                onPress={() => {
+                  setSheet(null);
+                  router.push({ pathname: '/record/[id]', params: { id: r.id } });
+                }}
+              />
+            ))
+          ) : (
+            <AppText variant="caption" tone="muted">
+              Todavía no hay registros. Tocá «Registrar» para cargar el primero.
+            </AppText>
+          )}
+        </ScrollView>
+      </Sheet>
+
+      <Sheet visible={sheet === 'menu'} onClose={() => setSheet(null)} title={`${v.brand} ${v.model}`}>
         <View style={{ borderRadius: radius.lg, overflow: 'hidden', backgroundColor: colors.surface }}>
           <ListRow icon="file-pdf-box" title={exporting ? 'Generando…' : 'Exportar historial (PDF)'} subtitle="Ideal para mostrar al vender el auto" onPress={() => void exportPdf()} />
-          <ListRow icon="calendar-plus" title="Agregar recordatorio" subtitle="VTV, seguro, patente…" onPress={() => { setMenu(false); router.push({ pathname: '/reminder/form', params: { vehicleId: v.id } }); }} />
-          <ListRow icon="tune-variant" title="Plan de mantenimiento" subtitle="Intervalos por km y por tiempo" onPress={() => { setMenu(false); router.push({ pathname: '/vehicle/plan', params: { id: v.id } }); }} />
+          <ListRow icon="calendar-plus" title="Agregar recordatorio" subtitle="VTV, seguro, patente…" onPress={() => go('/reminder/form', { vehicleId: v.id })} />
+          <ListRow icon="tune-variant" title="Plan de mantenimiento" subtitle="Intervalos por km y por tiempo" onPress={() => go('/vehicle/plan', { id: v.id })} />
           <ListRow icon="archive-outline" title="Archivar" subtitle="Lo vendiste o ya no lo usás" onPress={archive} />
-          <ListRow icon="delete-outline" title="Eliminar vehículo" danger last onPress={remove} />
+          <ListRow icon="delete-outline" title="Eliminar vehículo" danger last onPress={() => void remove()} />
         </View>
       </Sheet>
     </View>
   );
 }
 
-function Stat({ icon, label, value, unit }: { icon: string; label: string; value: string; unit?: string }) {
+/* --------------------------------- Tabs --------------------------------- */
+
+function VehicleTab({ v, km }: { v: Vehicle; km: number }) {
   const { colors } = useTheme();
   return (
-    <Card style={{ flex: 1, padding: spacing.sm, gap: 4 }}>
-      <Icon name={icon} size={18} color={colors.primary} />
-      <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 3 }}>
-        <AppText variant="number" numberOfLines={1} adjustsFontSizeToFit style={{ fontSize: 19, flexShrink: 1 }}>
-          {value}
-        </AppText>
-        {unit ? (
-          <AppText variant="caption" tone="muted" style={{ fontSize: 11 }}>
-            {unit}
-          </AppText>
-        ) : null}
-      </View>
-      <AppText variant="caption" tone="muted" style={{ fontSize: 11 }} numberOfLines={1}>
-        {label}
-      </AppText>
-    </Card>
+    <View style={{ flex: 1, gap: spacing.xs }}>
+      <Row>
+        <Cell label="Patente / placa" value={v.plate ? `${flagEmoji(v.country)} ${formatPlate(v.plate, v.country)}` : null} />
+        <Cell label="Kilometraje actual" value={formatKm(km)} />
+      </Row>
+      <Row>
+        <Cell label="Marca" value={v.brand} left={<BrandLogo brandId={v.brandId} brand={v.brand} size={20} />} />
+        <Cell label="Modelo" value={v.model} />
+      </Row>
+      <Row>
+        <Cell label="Variante / versión" value={v.variant} />
+        <Cell label="Año" value={v.year ? String(v.year) : null} />
+      </Row>
+      <Row>
+        <Cell
+          label="Color"
+          value={v.color}
+          left={v.color ? <View style={{ width: 14, height: 14, borderRadius: 7, backgroundColor: v.colorHex ?? colors.textSubtle, borderWidth: 1, borderColor: colors.border }} /> : undefined}
+        />
+        <Cell label="Serial de chasis" value={v.vin} />
+      </Row>
+      <Row>
+        <Cell label="Serial de motor" value={v.engineNumber} />
+        <Cell label="Combustible" value={fuelLabel(v.fuel)} />
+      </Row>
+    </View>
   );
 }
 
-function Spec({ icon, label, value, last }: { icon: string; label: string; value: string | null; last?: boolean }) {
-  return <ListRow icon={icon} title={label} subtitle={value ?? 'Sin datos'} last={last} />;
+function OilTab({ v }: { v: Vehicle }) {
+  return (
+    <View style={{ flex: 1, gap: spacing.sm, paddingTop: spacing.xxs }}>
+      <BaseSelector options={OIL_BASES} value={v.oilBase} />
+      <BigStat icon="oil" label="Cantidad de aceite (con filtro)" value={liters(v.oilLiters)} />
+      <Row>
+        <Cell label="Marca" value={v.oilBrand} />
+        <Cell label="Modelo" value={v.oilModel} />
+      </Row>
+      <Row>
+        <Cell label="Versión" value={v.oilType} />
+      </Row>
+    </View>
+  );
 }
 
+function CoolantTab({ v }: { v: Vehicle }) {
+  const { colors } = useTheme();
+  const mix = coolantMix(v.coolantLiters, v.coolantConcentration);
+  return (
+    <View style={{ flex: 1, gap: spacing.sm, paddingTop: spacing.xxs }}>
+      <BaseSelector options={COOLANT_BASES} value={v.coolantBase} />
+      <Row>
+        <Cell label="Cantidad total" value={liters(v.coolantLiters)} big />
+        <Cell label="Concentración" value={v.coolantConcentration ? `${v.coolantConcentration}%` : null} big />
+      </Row>
+      <View style={{ gap: 6, padding: spacing.sm, borderRadius: radius.md, backgroundColor: colors.primarySoft }}>
+        {mix && v.coolantConcentration ? (
+          <>
+            <View style={{ flexDirection: 'row', height: 8, borderRadius: 4, overflow: 'hidden', backgroundColor: '#9EC5FF' }}>
+              <View style={{ width: `${v.coolantConcentration}%`, backgroundColor: colors.primary }} />
+            </View>
+            <AppText variant="captionStrong" numberOfLines={2}>
+              {liters(mix.coolant)} de refrigerante + {liters(mix.water)} de agua desmineralizada
+            </AppText>
+          </>
+        ) : (
+          <AppText variant="caption" tone="muted" numberOfLines={2}>
+            Cargá la cantidad total y la concentración para ver la mezcla de refrigerante y agua.
+          </AppText>
+        )}
+      </View>
+      <Row>
+        <Cell label="Marca" value={v.coolantBrand} />
+        <Cell label="Modelo" value={v.coolantModel} />
+      </Row>
+      <Row>
+        <Cell label="Versión" value={v.coolantType} />
+      </Row>
+    </View>
+  );
+}
+
+/* ------------------------------ Building blocks ------------------------------ */
+
+function Row({ children }: { children: ReactNode }) {
+  return <View style={{ flex: 1, flexDirection: 'row', gap: spacing.xs }}>{children}</View>;
+}
+
+function Cell({ label, value, left, big }: { label: string; value: string | null | undefined; left?: ReactNode; big?: boolean }) {
+  const { colors } = useTheme();
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', paddingHorizontal: spacing.sm, paddingVertical: 6, borderRadius: radius.sm, backgroundColor: colors.surfaceAlt }}>
+      <AppText variant="caption" tone="muted" numberOfLines={1} style={{ fontSize: 11 }}>
+        {label}
+      </AppText>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+        {left}
+        <AppText
+          variant={big ? 'number' : 'bodyStrong'}
+          tone={value ? 'default' : 'subtle'}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.75}
+          style={[{ flexShrink: 1 }, big ? { fontSize: 22 } : null]}>
+          {value || '—'}
+        </AppText>
+      </View>
+    </View>
+  );
+}
+
+/** The three base types, the vehicle's one highlighted. */
+function BaseSelector({ options, value }: { options: { value: string; label: string }[]; value: string | null }) {
+  const { colors } = useTheme();
+  return (
+    <View style={{ flexDirection: 'row', gap: 6 }}>
+      {options.map((o) => {
+        const active = o.value === value;
+        return (
+          <View
+            key={o.value}
+            style={{
+              flex: 1,
+              height: 36,
+              borderRadius: radius.sm,
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'row',
+              gap: 4,
+              backgroundColor: active ? colors.primary : 'transparent',
+              borderWidth: 1,
+              borderColor: active ? colors.primary : colors.border,
+            }}>
+            {active ? <Icon name="check" size={14} color="#FFFFFF" /> : null}
+            <AppText variant="captionStrong" color={active ? '#FFFFFF' : colors.textSubtle} numberOfLines={1} adjustsFontSizeToFit>
+              {o.label}
+            </AppText>
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
+function BigStat({ icon, label, value }: { icon: string; label: string; value: string | null }) {
+  const { colors } = useTheme();
+  return (
+    <View style={{ flex: 1.2, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.sm, borderRadius: radius.sm, backgroundColor: colors.surfaceAlt }}>
+      <View style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center' }}>
+        <Icon name={icon} size={24} color={colors.primary} />
+      </View>
+      <View style={{ flex: 1 }}>
+        <AppText variant="number" tone={value ? 'default' : 'subtle'} style={{ fontSize: 28 }}>
+          {value ?? '—'}
+        </AppText>
+        <AppText variant="caption" tone="muted" style={{ fontSize: 11 }} numberOfLines={1}>
+          {label}
+        </AppText>
+      </View>
+    </View>
+  );
+}
+
+function Action({ icon, label, onPress, primary, badge }: { icon: string; label: string; onPress: () => void; primary?: boolean; badge?: number }) {
+  const { colors } = useTheme();
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={({ pressed }) => ({
+        flex: 1,
+        height: 64,
+        borderRadius: radius.md,
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 4,
+        backgroundColor: primary ? colors.primary : colors.surface,
+        borderWidth: primary ? 0 : 1,
+        borderColor: colors.border,
+        transform: [{ scale: pressed ? 0.97 : 1 }],
+      })}>
+      <Icon name={icon} size={22} color={primary ? '#FFFFFF' : colors.primary} />
+      <AppText variant="caption" color={primary ? '#FFFFFF' : colors.text} numberOfLines={1} style={{ fontSize: 12 }}>
+        {label}
+      </AppText>
+      {badge ? (
+        <View style={{ position: 'absolute', top: 6, right: 10, minWidth: 18, height: 18, borderRadius: 9, paddingHorizontal: 4, backgroundColor: colors.warning, alignItems: 'center', justifyContent: 'center' }}>
+          <AppText variant="captionStrong" color="#FFFFFF" style={{ fontSize: 11 }}>
+            {badge}
+          </AppText>
+        </View>
+      ) : null}
+    </Pressable>
+  );
+}

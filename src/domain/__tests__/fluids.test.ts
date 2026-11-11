@@ -36,3 +36,11 @@ describe('mergeFluids', () => {
     expect(mergeFluids(catalog, { source: 'Gemini' })).toBe(catalog);
   });
 });
+
+describe('mergeFluids extras', () => {
+  it('keeps extra details (base, concentration, product) even when the core values were complete', () => {
+    const full: FluidData = { ...catalog, coolantLiters: 6 };
+    const r = mergeFluids(full, { source: 'Gemini', oilBrand: 'Selenia', coolantConcentration: 50 });
+    expect(r).toMatchObject({ oilBrand: 'Selenia', coolantConcentration: 50, source: 'Catálogo Careful' });
+  });
+});

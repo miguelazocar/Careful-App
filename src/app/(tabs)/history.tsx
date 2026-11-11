@@ -63,7 +63,7 @@ export default function HistoryScreen() {
           <View style={{ width: spacing.lg - 6 }} />
           <Chip label="Todos" selected={!vehicleId} onPress={() => setVehicleId(null)} />
           {vehicles.map((v) => (
-            <Chip key={v.id} label={v.nickname || v.model} selected={vehicleId === v.id} onPress={() => setVehicleId(v.id)} />
+            <Chip key={v.id} label={v.model} selected={vehicleId === v.id} onPress={() => setVehicleId(v.id)} />
           ))}
           <View style={{ width: spacing.lg - 6 }} />
         </ScrollView>

@@ -101,6 +101,30 @@ export const MIGRATIONS: string[] = [
     value TEXT NOT NULL
   );
   `,
+  // 2 — detailed oil & coolant data. oil_type / coolant_type keep the "versión" (grade, spec, color).
+  `
+  ALTER TABLE vehicles ADD COLUMN oil_base TEXT;
+  ALTER TABLE vehicles ADD COLUMN oil_brand TEXT;
+  ALTER TABLE vehicles ADD COLUMN oil_model TEXT;
+  ALTER TABLE vehicles ADD COLUMN coolant_base TEXT;
+  ALTER TABLE vehicles ADD COLUMN coolant_brand TEXT;
+  ALTER TABLE vehicles ADD COLUMN coolant_model TEXT;
+  ALTER TABLE vehicles ADD COLUMN coolant_concentration INTEGER;
+
+  UPDATE vehicles SET oil_base = CASE
+    WHEN oil_type LIKE '%15W%' OR oil_type LIKE '%20W%' OR oil_type LIKE '%25W%' THEN 'mineral'
+    WHEN oil_type LIKE '%10W%' THEN 'semisintetico'
+    WHEN oil_type LIKE '%0W%' OR oil_type LIKE '%5W%' THEN 'sintetico'
+    ELSE NULL END
+  WHERE oil_type IS NOT NULL;
+
+  UPDATE vehicles SET coolant_base = CASE
+    WHEN coolant_type LIKE '%HOAT%' OR coolant_type LIKE '%Si-OAT%' OR coolant_type LIKE '%brid%' OR coolant_type LIKE '%G13%' THEN 'hibrido'
+    WHEN coolant_type LIKE '%inorg%' OR coolant_type LIKE '%IAT%' OR coolant_type LIKE '%verde%' THEN 'inorganico'
+    WHEN coolant_type LIKE '%OAT%' OR coolant_type LIKE '%org%' OR coolant_type LIKE '%G12%' OR coolant_type LIKE '%rosa%' THEN 'organico'
+    ELSE NULL END
+  WHERE coolant_type IS NOT NULL;
+  `,
 ];
 
 export async function migrate(db: Db): Promise<number> {

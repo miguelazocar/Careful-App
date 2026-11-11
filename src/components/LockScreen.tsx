@@ -2,7 +2,7 @@ import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, Pressable, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSequence, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { authenticateWithDevice, cancelDeviceAuth, getDeviceAuthSupport, getPinLength, verifyPin } from '@/services/security';
@@ -31,7 +31,7 @@ export function PinPad({
   dark?: boolean;
 }) {
   const [pin, setPin] = useState('');
-  const shake = useSharedValue(0);
+  const wrong = useSharedValue(0);
   const fg = dark ? '#FFFFFF' : undefined;
 
   const [prevError, setPrevError] = useState(error);
@@ -43,10 +43,10 @@ export function PinPad({
   useEffect(() => {
     if (!error) return;
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    shake.value = withSequence(withTiming(-12, { duration: 50 }), withTiming(12, { duration: 50 }), withTiming(-8, { duration: 50 }), withTiming(0, { duration: 50 }));
-  }, [error, shake]);
+    wrong.value = withSequence(withTiming(1, { duration: 160 }), withDelay(1100, withTiming(0, { duration: 320 })));
+  }, [error, wrong]);
 
-  const dotsStyle = useAnimatedStyle(() => ({ transform: [{ translateX: shake.value }] }));
+  const wrongStyle = useAnimatedStyle(() => ({ opacity: wrong.value }));
 
   const press = (k: (typeof KEYS)[number]) => {
     if (k === 'bio') return onBiometric?.();
@@ -61,7 +61,8 @@ export function PinPad({
 
   return (
     <View style={{ alignItems: 'center', gap: spacing.xl }}>
-      <Animated.View style={[{ flexDirection: 'row', gap: 16 }, dotsStyle]}>
+      <View style={{ alignItems: 'center', gap: 10 }}>
+        <View style={{ flexDirection: 'row', gap: 16 }}>
         {Array.from({ length }).map((_, i) => (
           <View
             key={i}
@@ -75,7 +76,13 @@ export function PinPad({
             }}
           />
         ))}
-      </Animated.View>
+      </View>
+        <Animated.View style={wrongStyle} pointerEvents="none">
+          <AppText variant="captionStrong" color={dark ? '#FFB4B4' : '#D92D20'}>
+            PIN incorrecto
+          </AppText>
+        </Animated.View>
+      </View>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', width: 288, gap: 18, justifyContent: 'center' }}>
         {KEYS.map((k) => {
           if (k === 'bio' && !onBiometric) return <View key={k} style={{ width: 76, height: 76 }} />;

@@ -43,7 +43,7 @@ export function VehicleSelector({ vehicles, value, onChange }: { vehicles: Vehic
             </View>
             <View>
               <AppText variant="captionStrong" numberOfLines={1}>
-                {v.nickname || v.model}
+                {v.model}
               </AppText>
               <AppText variant="caption" tone="muted" style={{ fontSize: 12 }} numberOfLines={1}>
                 {v.plate ? formatPlate(v.plate, v.country) : v.brand}

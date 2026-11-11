@@ -6,6 +6,7 @@ import { Alert, Pressable, View } from 'react-native';
 import { PhotoViewer } from '@/components/pickers';
 import { recordTitle, recordVisual } from '@/components/rows';
 import { Header, Screen } from '@/components/ui/layout';
+import { confirmIdentity } from '@/components/AuthPrompt';
 import { AppText, Button, Card, Chip, Grid, Icon, IconButton, ListRow } from '@/components/ui/primitives';
 import { deleteRecord, getRecord } from '@/db/records';
 import { getVehicle } from '@/db/vehicles';
@@ -39,7 +40,12 @@ export default function RecordDetailScreen() {
   }
   const visual = recordVisual(r, colors.primary);
 
-  const remove = () =>
+  const edit = async () => {
+    if (await confirmIdentity('Confirmá que sos vos para editar este registro.')) router.push({ pathname: '/record/form', params: { id: r.id } });
+  };
+
+  const remove = async () => {
+    if (!(await confirmIdentity('Confirmá que sos vos para eliminar este registro.'))) return;
     Alert.alert('Eliminar registro', 'Se borrará este registro y sus fotos. Los próximos services se recalculan automáticamente.', [
       { text: 'Cancelar', style: 'cancel' },
       {
@@ -52,6 +58,7 @@ export default function RecordDetailScreen() {
         },
       },
     ]);
+  };
 
   return (
     <Screen
@@ -61,8 +68,8 @@ export default function RecordDetailScreen() {
           title="Detalle"
           right={
             <>
-              <IconButton icon="pencil" accessibilityLabel="Editar" onPress={() => router.push({ pathname: '/record/form', params: { id: r.id } })} />
-              <IconButton icon="delete-outline" accessibilityLabel="Eliminar" color={colors.danger} onPress={remove} />
+              <IconButton icon="pencil" accessibilityLabel="Editar" onPress={() => void edit()} />
+              <IconButton icon="delete-outline" accessibilityLabel="Eliminar" color={colors.danger} onPress={() => void remove()} />
             </>
           }
         />
@@ -131,7 +138,7 @@ export default function RecordDetailScreen() {
         </View>
       ) : null}
 
-      <Button label="Editar registro" icon="pencil" variant="secondary" onPress={() => router.push({ pathname: '/record/form', params: { id: r.id } })} />
+      <Button label="Editar registro" icon="pencil" variant="secondary" onPress={() => void edit()} />
       <PhotoViewer photos={r.photos.map((p) => p.path)} index={viewer} onClose={() => setViewer(null)} />
     </Screen>
   );

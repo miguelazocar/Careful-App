@@ -9,6 +9,10 @@ import { radius, spacing } from '@/theme/tokens';
 
 import { AppText, Icon } from './primitives';
 
+// Every motion in the app glides and decelerates to a stop: no springs, no bounce.
+const sheetEnter = SlideInDown.duration(320).easing(Easing.out(Easing.cubic));
+const sheetExit = SlideOutDown.duration(220).easing(Easing.in(Easing.cubic));
+
 /** Animated bottom sheet. */
 export function Sheet({ visible, onClose, children, title }: { visible: boolean; onClose: () => void; children: ReactNode; title?: string }) {
   const { colors } = useTheme();
@@ -35,8 +39,8 @@ export function Sheet({ visible, onClose, children, title }: { visible: boolean;
             <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityLabel="Cerrar" />
           </Animated.View>
           <Animated.View
-            entering={SlideInDown.springify().damping(20).stiffness(180)}
-            exiting={SlideOutDown.duration(180)}
+            entering={sheetEnter}
+            exiting={sheetExit}
             onLayout={() => undefined}
             style={{
               backgroundColor: colors.bg,

@@ -5,6 +5,7 @@ import * as SecureStore from 'expo-secure-store';
 import { getBrand, matchBrand, matchModel } from '@/data/catalog';
 import { VEHICLE_COLORS } from '@/domain/colors';
 import { normalizePlate } from '@/domain/plate';
+import { guessCoolantBase, guessOilBase } from '@/domain/vehicle-specs';
 import { normalizeVin } from '@/domain/vin';
 import { getSettings } from '@/stores/settings';
 
@@ -114,10 +115,19 @@ function fluidsPrompt(vehicle: string, fuel: string | null, withSearch: boolean)
     'Si no encontrás la versión exacta, usá los valores del mismo motor en otros mercados o años cercanos y aclaralo en "notes". ' +
     'Usá null solo si de verdad no tenés un dato razonable; no inventes. ' +
     'Respondé SOLO JSON: {"oilType": string|null (viscosidad SAE y norma, ej "5W-30 · ACEA C2"), ' +
-    '"oilLiters": number|null (capacidad con filtro, en litros), "coolantType": string|null (tipo y color, ej "Orgánico OAT · rosa"), ' +
-    '"coolantLiters": number|null (capacidad total del sistema, en litros), "notes": string (máximo 140 caracteres: fuente o aclaración)}'
+    '"oilBase": "mineral"|"semisintetico"|"sintetico"|null, "oilLiters": number|null (capacidad con filtro, en litros), ' +
+    '"oilBrand": string|null y "oilModel": string|null (aceite que recomienda el fabricante, ej "Selenia" y "K Pure Energy"), ' +
+    '"coolantType": string|null (norma y color, ej "G12+ · rosa"), "coolantBase": "inorganico"|"organico"|"hibrido"|null, ' +
+    '"coolantLiters": number|null (capacidad total del sistema, en litros), "coolantConcentration": 30|40|50|60|null (% de refrigerante recomendado; el resto es agua desmineralizada), ' +
+    '"coolantBrand": string|null y "coolantModel": string|null (refrigerante recomendado), "notes": string (máximo 140 caracteres: fuente o aclaración)}'
   );
 }
+
+const cleanText = (v: unknown) => (typeof v === 'string' && v.trim() && v.trim().toLowerCase() !== 'null' ? v.trim() : undefined);
+const oneOf = (v: unknown, allowed: string[]) => {
+  const k = typeof v === 'string' ? v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]/g, '') : '';
+  return allowed.includes(k) ? k : undefined;
+};
 
 export function extractJson<T>(text: string): T {
   const fenced = /```(?:json)?\s*([\s\S]*?)```/.exec(text);
@@ -230,9 +240,16 @@ export const geminiProvider: AiProvider = {
     }
     const raw = extractJson<{
       oilType?: string | null;
+      oilBase?: string | null;
       oilLiters?: number | string | null;
+      oilBrand?: string | null;
+      oilModel?: string | null;
       coolantType?: string | null;
+      coolantBase?: string | null;
       coolantLiters?: number | string | null;
+      coolantConcentration?: number | string | null;
+      coolantBrand?: string | null;
+      coolantModel?: string | null;
       notes?: string | null;
     }>(text);
     const num = (v: unknown) => {
@@ -244,6 +261,13 @@ export const geminiProvider: AiProvider = {
       oilLiters: num(raw.oilLiters),
       coolantType: raw.coolantType ?? undefined,
       coolantLiters: num(raw.coolantLiters),
+      oilBase: oneOf(raw.oilBase, ['mineral', 'semisintetico', 'sintetico']) ?? guessOilBase(raw.oilType) ?? undefined,
+      oilBrand: cleanText(raw.oilBrand),
+      oilModel: cleanText(raw.oilModel),
+      coolantBase: oneOf(raw.coolantBase, ['inorganico', 'organico', 'hibrido']) ?? guessCoolantBase(raw.coolantType) ?? undefined,
+      coolantConcentration: [30, 40, 50, 60].find((p) => p === Number(raw.coolantConcentration)),
+      coolantBrand: cleanText(raw.coolantBrand),
+      coolantModel: cleanText(raw.coolantModel),
       source: viaSearch ? 'Gemini + búsqueda web' : 'Gemini',
       notes: raw.notes?.trim() || 'Verificá siempre en el manual del vehículo.',
     };
