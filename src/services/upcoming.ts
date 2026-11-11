@@ -4,6 +4,7 @@ import type { Vehicle } from '@/db/types';
 import { listVehicles } from '@/db/vehicles';
 import { CORE_ITEM } from '@/domain/maintenance';
 import {
+  buildEstimatedItems,
   buildManualItems,
   buildServiceItems,
   currentOdometer,
@@ -20,7 +21,7 @@ export interface VehicleSnapshot {
   currentKm: number;
   dailyKm: number | null;
   lastReadingDate: string | null;
-  /** True when the vehicle has never logged an oil change (no baseline for reminders). */
+  /** True when the vehicle has never logged an oil change: its service is an estimate. */
   needsBaseline: boolean;
   ctx: ScheduleContext;
 }
@@ -59,6 +60,8 @@ export async function loadUpcoming(opts: { vehicleId?: string; warnKm?: number; 
       ctx,
     });
     items.push(...buildServiceItems(vehicle.id, occurrences, rules, ctx));
+    // the regular service is always scheduled, even before the first one is logged
+    items.push(...buildEstimatedItems(vehicle.id, occurrences, rules, ctx, vehicle.createdAt.slice(0, 10)));
   }
 
   const reminders = await listManualReminders({ vehicleId: opts.vehicleId });

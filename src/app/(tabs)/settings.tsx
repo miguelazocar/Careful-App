@@ -77,7 +77,7 @@ export default function SettingsScreen() {
           icon="bell-ring"
           iconColor="#E8930C"
           title="Notificaciones"
-          subtitle={notifications.enabled ? `Activas · ${String(notifications.hour).padStart(2, '0')}:${String(notifications.minute).padStart(2, '0')} h` : 'Desactivadas'}
+          subtitle={`Siempre activas · ${String(notifications.hour).padStart(2, '0')}:${String(notifications.minute).padStart(2, '0')} h`}
           onPress={() => router.push('/settings/notifications')}
         />
         <ListRow

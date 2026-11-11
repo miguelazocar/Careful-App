@@ -35,7 +35,18 @@ const COUNTRY_TITLES: Record<string, string> = {
 };
 
 /** License plate rendered like the real thing — Mercosur style when it applies. */
-export function PlateBadge({ plate, country = 'AR', size = 'md' }: { plate: string | null; country?: string; size?: 'sm' | 'md' | 'lg' }) {
+export function PlateBadge({
+  plate,
+  country = 'AR',
+  size = 'md',
+  align = 'start',
+}: {
+  plate: string | null;
+  country?: string;
+  size?: 'sm' | 'md' | 'lg';
+  /** Horizontal placement inside its parent. */
+  align?: 'start' | 'end';
+}) {
   const { colors } = useTheme();
   if (!plate) return null;
   const formatted = formatPlate(plate, country);
@@ -46,7 +57,8 @@ export function PlateBadge({ plate, country = 'AR', size = 'md' }: { plate: stri
     <View
       style={{
         flexDirection: 'row',
-        alignSelf: 'flex-start',
+        alignSelf: align === 'end' ? 'flex-end' : 'flex-start',
+        maxWidth: '100%',
         alignItems: 'center',
         borderRadius: 6 * scale,
         overflow: 'hidden',
@@ -65,7 +77,9 @@ export function PlateBadge({ plate, country = 'AR', size = 'md' }: { plate: stri
         ) : null}
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 8 * scale, paddingVertical: mercosur ? 1 : 3 * scale }}>
           {!mercosur ? <Text style={{ fontSize: fontSize * 0.85 }}>{flagEmoji(country)}</Text> : null}
-          <Text style={{ fontFamily: fonts.display, fontSize, color: '#111', letterSpacing: 1.2 }}>{formatted}</Text>
+          <Text numberOfLines={1} adjustsFontSizeToFit style={{ fontFamily: fonts.display, fontSize, color: '#111', letterSpacing: 1.2, flexShrink: 1 }}>
+            {formatted}
+          </Text>
         </View>
       </View>
     </View>

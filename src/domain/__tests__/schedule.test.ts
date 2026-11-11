@@ -1,6 +1,7 @@
 /// <reference types="jest" />
 /// <reference types="node" />
 import {
+  buildEstimatedItems,
   buildManualItems,
   buildServiceItems,
   computeDue,
@@ -155,5 +156,39 @@ describe('service items', () => {
     const sorted = sortUpcoming([...buildServiceItems('v1', occ, [], ctx()), ...manual]);
     expect(sorted[0].title).toBe('VTV');
     expect(sorted[0].due.status).toBe('overdue');
+  });
+});
+
+describe('buildEstimatedItems (service without history)', () => {
+  const since = '2026-05-01';
+
+  it('schedules the oil change at the next km milestone or one year after the vehicle was added', () => {
+    const [it] = buildEstimatedItems('v1', [], [], ctx({ currentKm: 49_200 }), since);
+    expect(it).toMatchObject({ key: 'svc:v1:motor.aceite', item: 'motor.aceite', title: 'Cambio de aceite', estimated: true });
+    expect(it.due.dueKm).toBe(50_000);
+    expect(it.due.remainingKm).toBe(800);
+    expect(it.due.dueDate).toBe('2027-05-01');
+    expect(it.due.status).toBe('soon');
+  });
+
+  it('a brand-new car gets its first service at the first interval', () => {
+    const [it] = buildEstimatedItems('v1', [], [], ctx({ currentKm: 0, dailyKm: null }), since);
+    expect(it.due.dueKm).toBe(10_000);
+    expect(it.due.status).toBe('ok');
+  });
+
+  it('exactly on a milestone, the next one is scheduled', () => {
+    expect(buildEstimatedItems('v1', [], [], ctx({ currentKm: 60_000 }), since)[0].due.dueKm).toBe(70_000);
+  });
+
+  it('disappears once the real service is logged, and respects a disabled or custom interval', () => {
+    const logged = [{ item: 'motor.aceite', category: 'motor', date: '2026-04-01', odometer: 48_000, recordId: 'r1' }];
+    expect(buildEstimatedItems('v1', logged, [], ctx(), since)).toEqual([]);
+    const off = [{ vehicleId: 'v1', item: 'motor.aceite', intervalKm: 10_000, intervalMonths: 12, enabled: false }];
+    expect(buildEstimatedItems('v1', [], off as never, ctx(), since)).toEqual([]);
+    const custom = [{ vehicleId: 'v1', item: 'motor.aceite', intervalKm: 15_000, intervalMonths: null, enabled: true }];
+    const [it] = buildEstimatedItems('v1', [], custom as never, ctx({ currentKm: 31_000 }), since);
+    expect(it.due.dueKm).toBe(45_000);
+    expect(it.due.dueDate).toBeNull();
   });
 });

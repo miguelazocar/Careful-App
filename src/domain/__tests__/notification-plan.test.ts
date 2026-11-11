@@ -43,10 +43,9 @@ describe('planNotifications', () => {
     expect(days(later)).toEqual(['dayBefore@2026-06-02', 'sameDay@2026-06-03']);
   });
 
-  it('respects disabled moments and the global switch', () => {
+  it('respects disabled moments', () => {
     const prefs = { ...DEFAULT_NOTIFICATION_PREFS, month: false, week: false, odometerNudgeDays: 0 };
     expect(days(planNotifications([item('2026-08-20')], vehicles, prefs, now))).toEqual(['dayBefore@2026-08-19', 'sameDay@2026-08-20']);
-    expect(planNotifications([item('2026-08-20')], vehicles, { ...prefs, enabled: false }, now)).toEqual([]);
   });
 
   it('adds the estimated "less than 1.000 km" alert', () => {

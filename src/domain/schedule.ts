@@ -4,13 +4,16 @@
  * A service is due by date (last service + N months) or by distance (last km + N km),
  * whichever comes first. Because the app has no live odometer, the distance-based due date is
  * *estimated* from the vehicle's average daily usage, computed from its odometer history.
+ *
+ * The regular service (oil change) is always scheduled: before the first one is logged, it is
+ * estimated from the next km milestone or the date the vehicle was added (see buildEstimatedItems).
  */
 import { addDaysTo, addMonthsTo, daysBetween, minDay } from '@/lib/dates';
 import { formatInt } from '@/lib/format';
 
 import type { ManualReminder, ServiceRule } from '@/db/types';
 
-import { findItem } from './maintenance';
+import { CORE_ITEM, findItem } from './maintenance';
 
 export interface Reading {
   date: string;
@@ -152,6 +155,8 @@ export interface UpcomingItem {
   lastKm?: number | null;
   intervalKm?: number | null;
   intervalMonths?: number | null;
+  /** First service estimated without history (never logged yet). */
+  estimated?: boolean;
   due: DueInfo;
 }
 
@@ -203,6 +208,41 @@ export function buildServiceItems(
       intervalKm: interval.intervalKm,
       intervalMonths: interval.intervalMonths,
       due: computeDue({ dueDate, dueKm, startDate: occ.date, startKm: occ.odometer }, ctx),
+    });
+  }
+  return out;
+}
+
+/** Items scheduled even before they are ever logged: the regular service. */
+export const ALWAYS_SCHEDULED: readonly string[] = [CORE_ITEM];
+
+/**
+ * First service for items that were never logged, so reminders work from day one:
+ * the next km milestone (a multiple of the interval, like manufacturer service plans: 10.000,
+ * 20.000…) or `since` (the date the vehicle was added) + the interval, whichever comes first.
+ * Logging the real service replaces the estimate.
+ */
+export function buildEstimatedItems(vehicleId: string, occurrences: Occurrence[], rules: ServiceRule[], ctx: ScheduleContext, since: string): UpcomingItem[] {
+  const out: UpcomingItem[] = [];
+  for (const item of ALWAYS_SCHEDULED) {
+    if (occurrences.some((o) => o.item === item)) continue;
+    const interval = resolveInterval(item, rules);
+    if (!interval.enabled || (!interval.intervalKm && !interval.intervalMonths)) continue;
+    const step = interval.intervalKm;
+    const dueKm = step ? (Math.floor(Math.max(0, ctx.currentKm) / step) + 1) * step : null;
+    const dueDate = interval.intervalMonths ? addMonthsTo(since, interval.intervalMonths) : null;
+    const meta = findItem(item);
+    out.push({
+      key: `svc:${vehicleId}:${item}`,
+      source: 'service',
+      vehicleId,
+      title: meta?.item.label ?? item,
+      item,
+      categoryKey: meta?.category.key,
+      intervalKm: interval.intervalKm,
+      intervalMonths: interval.intervalMonths,
+      estimated: true,
+      due: computeDue({ dueDate, dueKm, startDate: since, startKm: dueKm !== null && step ? dueKm - step : null }, ctx),
     });
   }
   return out;

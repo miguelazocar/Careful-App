@@ -19,8 +19,8 @@ import type { UpcomingItem } from './schedule';
 
 export type MomentKind = 'month' | 'week' | 'dayBefore' | 'sameDay' | 'km' | 'odometer';
 
+/** Service notifications are always on (only the OS permission can block them); these tune when. */
 export interface NotificationPrefs {
-  enabled: boolean;
   hour: number;
   minute: number;
   month: boolean;
@@ -34,7 +34,6 @@ export interface NotificationPrefs {
 }
 
 export const DEFAULT_NOTIFICATION_PREFS: NotificationPrefs = {
-  enabled: true,
   hour: 9,
   minute: 0,
   month: true,
@@ -79,7 +78,6 @@ export function planNotifications(
   prefs: NotificationPrefs,
   now: Date,
 ): PlannedNotification[] {
-  if (!prefs.enabled) return [];
   const labelOf = (id: string) => vehicles.find((v) => v.id === id)?.label ?? 'Tu auto';
   const out: PlannedNotification[] = [];
 

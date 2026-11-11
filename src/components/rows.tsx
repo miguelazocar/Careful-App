@@ -110,6 +110,7 @@ export function UpcomingRow({ item, vehicle, onPress, compact }: { item: Upcomin
           </AppText>
           <AppText variant="caption" tone="muted" numberOfLines={2}>
             {vehicle ? `${vehicle.nickname || `${vehicle.brand} ${vehicle.model}`} · ` : ''}
+            {item.estimated ? 'Estimado · ' : ''}
             {dueLabel(item)}
           </AppText>
         </View>

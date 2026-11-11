@@ -73,7 +73,7 @@ async function doSync(): Promise<void> {
   const prefs = getSettings().notifications;
   const status = await Notifications.getPermissionsAsync();
   await Notifications.cancelAllScheduledNotificationsAsync();
-  if (!prefs.enabled || !status.granted) return;
+  if (!status.granted) return;
 
   const { items, snapshots } = await loadUpcoming({ warnKm: prefs.warnKm });
   const vehicles = [...snapshots.values()].map((s) => ({

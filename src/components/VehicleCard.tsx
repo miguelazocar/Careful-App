@@ -3,10 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable, View } from 'react-native';
 
 import type { Vehicle } from '@/db/types';
-import { flagEmoji } from '@/domain/countries';
-import type { UpcomingItem } from '@/domain/schedule';
-import { relativeDays } from '@/lib/dates';
-import { formatInt, formatKm } from '@/lib/format';
+import { formatKm } from '@/lib/format';
 import { photoUri } from '@/services/photos';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
@@ -26,31 +23,23 @@ export function VehiclePhoto({ vehicle, style }: { vehicle: Pick<Vehicle, 'photo
   );
 }
 
-/** Short "when" for the card: the condition that makes it urgent (km or date) comes first. */
-function nextLabel(it: UpcomingItem): string {
-  const d = it.due;
-  if (d.status === 'overdue') return 'vencido';
-  const kmIsUrgent = d.status === 'soon' && d.remainingKm !== null && (d.daysLeft === null || d.daysLeft > 30);
-  if (kmIsUrgent || !d.effectiveDate) return `faltan ${formatInt(d.remainingKm ?? 0)} km`;
-  return relativeDays(d.effectiveDate);
-}
-
 /**
- * Garage card: photo on the left melting into the card through a diagonal gradient,
- * registration data on the right (brand, model, color, plate, country flag).
+ * Garage card: photo on the left melting into the card through a diagonal gradient; on the right,
+ * right-aligned and in this order: plate (prominent), brand, model, color and current odometer.
  */
-export function VehicleCard({ vehicle, currentKm, next, onPress }: { vehicle: Vehicle; currentKm: number; next?: UpcomingItem; onPress: () => void }) {
+export function VehicleCard({ vehicle, currentKm, onPress }: { vehicle: Vehicle; currentKm: number; onPress: () => void }) {
   const { colors, isDark } = useTheme();
   const surface = colors.surface;
-  const statusColor = next?.due.status === 'overdue' ? colors.danger : next?.due.status === 'soon' ? colors.warning : colors.success;
+  const modelLine = vehicle.nickname || vehicle.model;
+  const modelDetail = vehicle.nickname ? [vehicle.model, vehicle.variant].filter(Boolean).join(' ') : vehicle.variant;
 
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={`${vehicle.brand} ${vehicle.model}`}
+      accessibilityLabel={[vehicle.plate, vehicle.brand, vehicle.model, vehicle.color, formatKm(currentKm)].filter(Boolean).join(', ')}
       style={({ pressed }) => ({
-        height: 168,
+        height: 184,
         borderRadius: radius.xl,
         overflow: 'hidden',
         backgroundColor: surface,
@@ -76,48 +65,39 @@ export function VehicleCard({ vehicle, currentKm, next, onPress }: { vehicle: Ve
         style={{ position: 'absolute', inset: 0 }}
       />
       <View style={{ flex: 1, flexDirection: 'row' }}>
-        <View style={{ width: '44%', justifyContent: 'flex-end', padding: spacing.sm }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start', backgroundColor: 'rgba(7,11,20,0.55)', borderRadius: radius.pill, paddingHorizontal: 8, paddingVertical: 4 }}>
-            <Icon name="speedometer" size={13} color="#FFFFFF" />
-            <AppText variant="captionStrong" color="#FFFFFF" style={{ fontSize: 12 }}>
+        <View style={{ width: '44%' }} />
+        <View style={{ flex: 1, paddingVertical: spacing.md, paddingRight: spacing.md, paddingLeft: spacing.xs, alignItems: 'flex-end', justifyContent: 'space-between' }}>
+          <PlateBadge plate={vehicle.plate} country={vehicle.country} size="lg" align="end" />
+
+          <View style={{ alignItems: 'flex-end', alignSelf: 'stretch' }}>
+            <AppText variant="overline" tone="primary" align="right" numberOfLines={1}>
+              {vehicle.brand}
+              {vehicle.year ? ` · ${vehicle.year}` : ''}
+            </AppText>
+            <AppText variant="heading" align="right" numberOfLines={1} style={{ fontSize: 21, lineHeight: 26 }}>
+              {modelLine}
+            </AppText>
+            {modelDetail ? (
+              <AppText variant="caption" tone="muted" align="right" numberOfLines={1}>
+                {modelDetail}
+              </AppText>
+            ) : null}
+          </View>
+
+          {vehicle.color ? (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <AppText variant="caption" tone="muted" numberOfLines={1} style={{ flexShrink: 1 }}>
+                {vehicle.color}
+              </AppText>
+              <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: vehicle.colorHex ?? colors.textSubtle, borderWidth: 1, borderColor: colors.border }} />
+            </View>
+          ) : null}
+
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+            <AppText variant="bodyStrong" numberOfLines={1}>
               {formatKm(currentKm)}
             </AppText>
-          </View>
-        </View>
-        <View style={{ flex: 1, paddingVertical: spacing.md, paddingRight: spacing.md, paddingLeft: spacing.xs, justifyContent: 'space-between' }}>
-          <View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <AppText variant="overline" tone="primary" numberOfLines={1} style={{ flexShrink: 1 }}>
-                {vehicle.brand}
-                {vehicle.year ? ` · ${vehicle.year}` : ''}
-              </AppText>
-              <AppText style={{ fontSize: 13 }}>{flagEmoji(vehicle.country)}</AppText>
-            </View>
-            <AppText variant="heading" numberOfLines={1} style={{ fontSize: 21, lineHeight: 26 }}>
-              {vehicle.nickname || vehicle.model}
-            </AppText>
-            <AppText variant="caption" tone="muted" numberOfLines={1}>
-              {vehicle.nickname ? `${vehicle.model} ${vehicle.variant ?? ''}` : (vehicle.variant ?? ' ')}
-            </AppText>
-            {vehicle.color ? (
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: vehicle.colorHex ?? colors.textSubtle, borderWidth: 1, borderColor: colors.border }} />
-                <AppText variant="caption" tone="muted" numberOfLines={1}>
-                  {vehicle.color}
-                </AppText>
-              </View>
-            ) : null}
-          </View>
-          <View style={{ gap: 6 }}>
-            <PlateBadge plate={vehicle.plate} country={vehicle.country} size="sm" />
-            {next ? (
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: statusColor }} />
-                <AppText variant="caption" tone="muted" numberOfLines={1} style={{ flex: 1, fontSize: 12 }}>
-                  {next.title} · {nextLabel(next)}
-                </AppText>
-              </View>
-            ) : null}
+            <Icon name="speedometer" size={16} color={colors.primary} />
           </View>
         </View>
       </View>

@@ -63,40 +63,38 @@ export default function NotificationsScreen() {
       ) : null}
 
       <Card padded={false}>
-        <SwitchRow icon="bell-ring" title="Avisos de service" value={prefs.enabled} onChange={(v) => void patch({ enabled: v })} />
-        <ListRow icon="clock-outline" title="Hora del aviso" value={time} onPress={pickTime} last />
+        <ListRow icon="clock-outline" title="Hora del aviso" subtitle="Los avisos de service están siempre activos" value={time} onPress={pickTime} last />
       </Card>
       {iosPicker && Platform.OS === 'ios' ? (
         <DateTimePicker value={new Date(2000, 0, 1, prefs.hour, prefs.minute)} mode="time" display="spinner" onChange={(_, d) => d && void patch({ hour: d.getHours(), minute: d.getMinutes() })} />
       ) : null}
 
-      <View style={{ gap: spacing.sm, opacity: prefs.enabled ? 1 : 0.5 }}>
+      <View style={{ gap: spacing.sm }}>
         <AppText variant="overline" tone="muted">
           Cuándo avisarte
         </AppText>
         <Card padded={false}>
-          <SwitchRow title="Al comenzar el mes" subtitle="El día 1 del mes del service" value={prefs.month} disabled={!prefs.enabled} onChange={(v) => void patch({ month: v })} />
-          <SwitchRow title="Al comenzar la semana" subtitle="El lunes de esa semana" value={prefs.week} disabled={!prefs.enabled} onChange={(v) => void patch({ week: v })} />
-          <SwitchRow title="Un día antes" value={prefs.dayBefore} disabled={!prefs.enabled} onChange={(v) => void patch({ dayBefore: v })} />
-          <SwitchRow title="El mismo día" value={prefs.sameDay} disabled={!prefs.enabled} onChange={(v) => void patch({ sameDay: v })} last />
+          <SwitchRow title="Al comenzar el mes" subtitle="El día 1 del mes del service" value={prefs.month} onChange={(v) => void patch({ month: v })} />
+          <SwitchRow title="Al comenzar la semana" subtitle="El lunes de esa semana" value={prefs.week} onChange={(v) => void patch({ week: v })} />
+          <SwitchRow title="Un día antes" value={prefs.dayBefore} onChange={(v) => void patch({ dayBefore: v })} />
+          <SwitchRow title="El mismo día" value={prefs.sameDay} onChange={(v) => void patch({ sameDay: v })} last />
         </Card>
         <AppText variant="caption" tone="subtle">
           Si dos avisos caen el mismo día, enviamos solo uno (el más específico).
         </AppText>
       </View>
 
-      <View style={{ gap: spacing.sm, opacity: prefs.enabled ? 1 : 0.5 }}>
+      <View style={{ gap: spacing.sm }}>
         <AppText variant="overline" tone="muted">
           Kilometraje
         </AppText>
         <Card padded={false}>
-          <SwitchRow icon="speedometer" title="Aviso por kilometraje" subtitle="Cuando falten pocos km para el service" value={prefs.kmAlert} disabled={!prefs.enabled} onChange={(v) => void patch({ kmAlert: v })} />
+          <SwitchRow icon="speedometer" title="Aviso por kilometraje" subtitle="Cuando falten pocos km para el service" value={prefs.kmAlert} onChange={(v) => void patch({ kmAlert: v })} />
           <SwitchRow
             icon="counter"
             title="Recordarme actualizar el km"
             subtitle="Si pasan 30 días sin cargarlo"
             value={prefs.odometerNudgeDays > 0}
-            disabled={!prefs.enabled}
             onChange={(v) => void patch({ odometerNudgeDays: v ? 30 : 0 })}
             last
           />

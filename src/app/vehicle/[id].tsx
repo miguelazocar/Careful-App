@@ -143,17 +143,6 @@ export default function VehicleDetailScreen() {
 
           <View>
             <SectionTitle title="Próximos services" action="Plan" onAction={() => router.push({ pathname: '/vehicle/plan', params: { id: v.id } })} />
-            {snap.needsBaseline ? (
-              <Card onPress={() => router.push({ pathname: '/record/form', params: { kind: 'maintenance', vehicleId: v.id, item: 'motor.aceite' } })} style={{ marginBottom: spacing.sm }}>
-                <View style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'center' }}>
-                  <Icon name="oil" size={24} color={colors.primary} />
-                  <AppText variant="caption" tone="muted" style={{ flex: 1 }}>
-                    Registrá el último cambio de aceite para que Careful calcule el próximo.
-                  </AppText>
-                  <Icon name="chevron-right" size={20} color={colors.textSubtle} />
-                </View>
-              </Card>
-            ) : null}
             <View style={{ gap: spacing.sm }}>
               {data.upcoming.items.length ? (
                 data.upcoming.items.map((it) => (
@@ -167,11 +156,11 @@ export default function VehicleDetailScreen() {
                     }
                   />
                 ))
-              ) : !snap.needsBaseline ? (
+              ) : (
                 <AppText variant="caption" tone="muted">
                   No hay services programados.
                 </AppText>
-              ) : null}
+              )}
             </View>
           </View>
 
