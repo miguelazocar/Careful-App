@@ -5,58 +5,72 @@ import * as path from 'path';
 
 import { ACCESSORY_CATEGORY, ACCESSORY_ICONS, MAINTENANCE_CATEGORIES } from '@/domain/maintenance';
 
-import { BRANDS, matchBrand, matchModel, modelsFor, variantsFor, yearsForBrand } from '..';
+import { BRANDS, fuelFromVersion, matchBrand, matchModel, modelsFor, transmissionFromVersion, variantsFor, yearsForBrand } from '..';
+import { BRAND_LOGOS } from '../logos';
 
-const REQUIRED = ['ford', 'chevrolet', 'volkswagen', 'toyota', 'citroen', 'peugeot', 'fiat', 'ds', 'mercedes-benz', 'renault'];
+/** Brand ids persisted by vehicles created with the first catalog: they must keep resolving. */
+const LEGACY_IDS = ['ford', 'chevrolet', 'volkswagen', 'toyota', 'citroen', 'peugeot', 'fiat', 'ds', 'mercedes-benz', 'renault'];
+const JUNE_2026 = new Date(2026, 5, 1);
 
-describe('vehicle catalog integrity', () => {
-  it('includes the 10 brands from the spec', () => {
-    expect(BRANDS.map((b) => b.id).sort()).toEqual([...REQUIRED].sort());
+describe('vehicle catalog (CCA lists, Argentina)', () => {
+  it('covers the Argentine market: 80+ brands including every legacy id', () => {
+    expect(BRANDS.length).toBeGreaterThanOrEqual(80);
+    const ids = BRANDS.map((b) => b.id);
+    for (const id of LEGACY_IDS) expect(ids).toContain(id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const id of ['honda', 'hyundai', 'kia', 'nissan', 'jeep', 'byd', 'chery', 'audi', 'bmw', 'mini', 'land-rover']) expect(ids).toContain(id);
   });
 
-  it.each(REQUIRED)('%s: ids unique, engines resolve, years sane', (id) => {
-    const brand = BRANDS.find((b) => b.id === id)!;
-    expect(brand.models.length).toBeGreaterThan(5);
-    const modelIds = new Set<string>();
-    const engineIds = new Set(brand.engines.map((e) => e.id));
-    expect(engineIds.size).toBe(brand.engines.length);
-    for (const m of brand.models) {
-      expect(modelIds.has(m.id)).toBe(false);
-      modelIds.add(m.id);
-      expect(m.years[0]).toBeGreaterThanOrEqual(1990);
-      if (m.years[1] !== null) expect(m.years[1]).toBeGreaterThanOrEqual(m.years[0]);
-      expect(m.variants.length).toBeGreaterThan(0);
-      for (const v of m.variants) {
-        if (v.engineId) expect(engineIds.has(v.engineId)).toBe(true);
-        if (v.years) expect(v.years[0]).toBeLessThanOrEqual(v.years[1] ?? 9999);
-      }
-    }
-    for (const e of brand.engines) {
-      if (e.oil) {
-        expect(e.oil.liters).toBeGreaterThan(1);
-        expect(e.oil.liters).toBeLessThan(15);
-        expect(e.oil.viscosity).toMatch(/^\d{1,2}W-\d{2}$/);
+  it('ids are unique and years are sane in every brand', () => {
+    for (const brand of BRANDS) {
+      const modelIds = new Set<string>();
+      expect(brand.models.length).toBeGreaterThan(0);
+      for (const m of brand.models) {
+        expect(modelIds.has(m.id)).toBe(false);
+        modelIds.add(m.id);
+        expect(m.variants.length).toBeGreaterThan(0);
+        for (const v of m.variants) {
+          expect(v.years[0]).toBeGreaterThanOrEqual(1990);
+          expect(v.years[0]).toBeLessThanOrEqual(v.years[1] ?? 9999);
+          expect(v.name).not.toMatch(/sd+,d$/); // no price leaked into a name
+        }
       }
     }
   });
 
-  it('every catalog year has at least one model with variants (no dead ends in the wizard)', () => {
+  it('every year offered leads to models and versions (no dead ends in the wizard)', () => {
     for (const b of BRANDS) {
-      for (const y of yearsForBrand(b.id, new Date(2026, 5, 1))) {
-        const models = modelsFor(b.id, y, new Date(2026, 5, 1));
+      for (const y of yearsForBrand(b.id, JUNE_2026)) {
+        const models = modelsFor(b.id, y, JUNE_2026);
         expect(models.length).toBeGreaterThan(0);
+        for (const m of models) expect(variantsFor(m, y, JUNE_2026).length).toBeGreaterThan(0);
       }
     }
   });
 
-  it('supports the brand → year → model → variant flow', () => {
-    const years = yearsForBrand('fiat', new Date(2026, 5, 1));
+  it('supports brand → year → model → version, with the right model years', () => {
+    const years = yearsForBrand('fiat', JUNE_2026);
     expect(years[0]).toBe(2027);
-    expect(years).toContain(2000);
+    expect(years).toContain(1997);
     const cronos = modelsFor('fiat', 2021).find((m) => m.id === 'cronos');
     expect(cronos).toBeDefined();
-    expect(variantsFor(cronos!, 2021).length).toBeGreaterThan(0);
-    expect(modelsFor('fiat', 2005).some((m) => m.id === 'cronos')).toBe(false);
+    expect(variantsFor(cronos!, 2021).some((v) => /PRECISION/.test(v.name))).toBe(true);
+    expect(modelsFor('fiat', 2015).some((m) => m.id === 'cronos')).toBe(false);
+    expect(modelsFor('volkswagen', 2005).some((m) => m.id === 'gol')).toBe(true);
+    expect(modelsFor('toyota', 2026).map((m) => m.id)).toEqual(expect.arrayContaining(['hilux', 'corolla', 'yaris']));
+  });
+
+  it('infers fuel and transmission from the version name', () => {
+    expect(fuelFromVersion('5P 1,9 SD 3G DH / FORMAT')).toBe('diesel');
+    expect(fuelFromVersion('D/C 2,8 TDI 4X4 SRV')).toBe('diesel');
+    expect(fuelFromVersion('D/C 2,7 SR 4X2 NAFTA')).toBe('nafta');
+    expect(fuelFromVersion('4P 1,8 HYBRID XEI eCVT')).toBe('hibrido');
+    expect(fuelFromVersion('5P 1,6 GNC')).toBe('gnc');
+    expect(fuelFromVersion('4P 1,3 DRIVE GSE')).toBe('nafta');
+    expect(transmissionFromVersion('4P 1,3 DRIVE GSE CVT')).toBe('cvt');
+    expect(transmissionFromVersion('4P 1,8 PRECISION AT')).toBe('automatica');
+    expect(transmissionFromVersion('5P 1,6 HIGHLINE DSG')).toBe('dsg');
+    expect(transmissionFromVersion('4P 1,3 DRIVE GSE')).toBeUndefined();
   });
 
   it('matches free text to brands and models', () => {
@@ -64,6 +78,11 @@ describe('vehicle catalog integrity', () => {
     expect(matchBrand('Mercedes Benz Sprinter')?.id).toBe('mercedes-benz');
     expect(matchBrand('CITROËN C4')?.id).toBe('citroen');
     expect(matchModel('volkswagen', 'GOL TREND 1.6')?.name).toMatch(/Gol Trend/i);
+  });
+
+  it('logos only reference catalog brands', () => {
+    const ids = new Set(BRANDS.map((b) => b.id));
+    for (const id of Object.keys(BRAND_LOGOS)) expect(ids.has(id)).toBe(true);
   });
 });
 

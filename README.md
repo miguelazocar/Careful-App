@@ -44,7 +44,7 @@
 - Detalle por vehículo: kilometraje, uso promedio, próximos services con barra de progreso, ficha técnica e historial.
 
 ### 🧭 Alta de vehículo (wizard de 3 pasos)
-1. **Tu auto** — foto + selector **marca → año → modelo → versión → color** con catálogo offline de **10 marcas** (Ford, Chevrolet, Volkswagen, Toyota, Citroën, Peugeot, Fiat, DS, Mercedes-Benz y Renault) desde el año 2000. Cada toque avanza solo y siempre hay "Otro".
+1. **Tu auto** — foto + **marca → año → modelo → versión → color**, con el catálogo del mercado argentino: **88 marcas, unos 1.000 modelos y casi 12.000 versiones de 1997 a 2026**, tomados de las listas de la CCA ([detalle](docs/CATALOG.md)). Elegís marca y año y aparecen solo los modelos de ese año, y después sus versiones. «Otro modelo» permite escribirlo a mano si no está.
 2. **Registro** — patente, país, **kilometraje actual**, VIN (validado y decodificado), N° de motor y apodo.
 3. **Fluidos** — tipo y cantidad de aceite y refrigerante, con **"Investigar automáticamente"**, y opcionalmente el último cambio de aceite.
 

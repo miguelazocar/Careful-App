@@ -18,6 +18,7 @@ Usar siempre `npx expo install <paquete>` para dependencias nativas.
 - Lógica de negocio **pura** en `src/domain/` y `src/lib/` (sin imports de Expo/RN) y con tests en `__tests__/`.
 - Acceso a datos solo vía repositorios de `src/db/`; toda escritura llama a `notifyDataChanged()`.
 - Las claves de ítems (`motor.aceite`, …) se persisten: **no renombrarlas**, agregar nuevas.
+- El catálogo de vehículos (`src/data/catalog/brands/`) se **genera** desde las listas de la CCA con `scripts/catalog/`: no editarlo a mano (ver `docs/CATALOG.md`).
 - Migraciones: solo agregar al final de `MIGRATIONS` en `src/db/migrations.ts`.
 - `android/` e `ios/` se generan (CNG): configurar en `app.json` o en `plugins/`.
 - Código nativo propio: módulos Expo locales en `modules/` (autolinking). Hoy: `careful-google-auth` (autorización de Google para Drive, ver `docs/GOOGLE-DRIVE.md`).

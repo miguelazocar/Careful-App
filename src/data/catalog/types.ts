@@ -1,33 +1,44 @@
 /**
  * Vehicle catalog schema.
  *
- * One JSON file per brand lives in `./brands/<brand-id>.json`.
- * The catalog powers the wizard selector: brand → year → model → variant → color,
- * and the offline "Investigar automáticamente" fluid lookup (oil / coolant).
+ * Source: the Cámara del Comercio Automotor (CCA) price lists for cars, pick-ups, SUVs and vans
+ * sold in Argentina — editions 2011, 2016, 2021 and 2026, which together cover model years
+ * 1997–2026. `scripts/catalog/` parses them into one JSON per brand in `./brands/`; only names and
+ * the years each version was on the market are kept, never prices.
  *
- * Data rules:
- *  - Market focus: Argentina (plus models commonly sold in the region), year 2000 onwards.
- *  - `years` are model years, inclusive. `null` as the end year means "still on sale".
- *  - Fluid data is optional. When a value is not reliably known it is omitted rather than guessed.
+ * Wizard flow: brand → year → models of that year → versions of that model in that year.
+ * `years` are model years, inclusive; `null` as the end year means "still on sale".
  */
 
 export type FuelType = 'nafta' | 'diesel' | 'gnc' | 'hibrido' | 'electrico';
 
-export type BodyType =
-  | 'hatchback'
-  | 'sedan'
-  | 'suv'
-  | 'pickup'
-  | 'van'
-  | 'minivan'
-  | 'coupe'
-  | 'wagon'
-  | 'convertible';
+export type BodyType = 'hatchback' | 'sedan' | 'suv' | 'pickup' | 'van' | 'minivan' | 'coupe' | 'wagon' | 'convertible';
 
 export type Transmission = 'manual' | 'automatica' | 'cvt' | 'dsg';
 
 /** Inclusive model-year range. `null` end = still produced. */
 export type YearRange = [from: number, to: number | null];
+
+/* ------------------------------ Stored data ------------------------------ */
+
+/** Compact version entry as stored: [name, first model year, last model year | null]. */
+export type CatalogVariantData = [name: string, from: number, to: number | null];
+
+export interface CatalogModelData {
+  id: string;
+  name: string;
+  body: BodyType;
+  variants: CatalogVariantData[];
+}
+
+export interface CatalogBrandData {
+  /** kebab-case, e.g. "mercedes-benz". Persisted in vehicles: never rename. */
+  id: string;
+  name: string;
+  models: CatalogModelData[];
+}
+
+/* ------------------------------- Runtime view ------------------------------- */
 
 export interface CatalogOilSpec {
   /** SAE viscosity, e.g. "5W-30". */
@@ -39,18 +50,14 @@ export interface CatalogOilSpec {
 }
 
 export interface CatalogCoolantSpec {
-  /** Coolant technology/brand spec, e.g. "Orgánico OAT (G12+)", "Toyota Super Long Life". */
   type: string;
-  /** Total system capacity in liters. */
   liters?: number;
-  /** Typical color, e.g. "rosa", "verde", "azul". */
   color?: string;
 }
 
+/** Engines with fluid data (none in the CCA-based catalog yet; fluids come from the AI). */
 export interface CatalogEngine {
-  /** Unique within the brand file, kebab-case. e.g. "ea211-1.6-msi". */
   id: string;
-  /** Human label, e.g. "1.6 MSI 16v 110 CV". */
   name: string;
   fuel: FuelType;
   oil?: CatalogOilSpec;
@@ -58,17 +65,18 @@ export interface CatalogEngine {
 }
 
 export interface CatalogVariant {
-  /** Trim + engine label as sold, e.g. "1.3 Drive", "1.8 Precision AT". */
+  /** Version as listed in Argentina, e.g. "4P 1,3 DRIVE GSE CVT". */
   name: string;
-  /** Optional narrower range than the model's range. */
-  years?: YearRange;
-  /** References `CatalogEngine.id` in the same brand file. */
-  engineId?: string;
+  years: YearRange;
+  /** Inferred from the version name ("TDI", "GNC", "HYBRID"…); gasoline when nothing says otherwise. */
+  fuel: FuelType;
+  /** Only when the name says it (AT, CVT, DSG…). */
   transmission?: Transmission;
+  engineId?: string;
 }
 
 export interface CatalogModel {
-  /** Unique within the brand file, kebab-case. e.g. "cronos". */
+  /** Unique within the brand, kebab-case, e.g. "cronos". Persisted: never rename. */
   id: string;
   name: string;
   body: BodyType;
@@ -77,7 +85,6 @@ export interface CatalogModel {
 }
 
 export interface CatalogBrand {
-  /** kebab-case, e.g. "mercedes-benz". */
   id: string;
   name: string;
   engines: CatalogEngine[];

@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { BackHandler, Modal, Pressable, View } from 'react-native';
-import Animated, { Easing, FadeIn, FadeOut, SlideInDown, SlideInUp, SlideOutDown, SlideOutUp } from 'react-native-reanimated';
+import { BackHandler, Modal, Pressable, useWindowDimensions, View } from 'react-native';
+import Animated, { Easing, SlideInUp, SlideOutUp, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useToast } from '@/stores/ui';
@@ -9,17 +10,30 @@ import { radius, spacing } from '@/theme/tokens';
 
 import { AppText, Icon } from './primitives';
 
-// Every motion in the app glides and decelerates to a stop: no springs, no bounce.
-const sheetEnter = SlideInDown.duration(320).easing(Easing.out(Easing.cubic));
-const sheetExit = SlideOutDown.duration(220).easing(Easing.in(Easing.cubic));
+const SHEET_IN = { duration: 320, easing: Easing.out(Easing.cubic) };
+const SHEET_OUT = { duration: 220, easing: Easing.in(Easing.cubic) };
 
-/** Animated bottom sheet. */
+/**
+ * Bottom sheet that glides up and eases to a stop (no spring). Driven by a shared value instead
+ * of a layout animation. The modal window doesn't shrink for the keyboard (edge-to-edge), so the
+ * sheet is lifted by the keyboard height itself; otherwise a short sheet ends up behind it.
+ */
 export function Sheet({ visible, onClose, children, title }: { visible: boolean; onClose: () => void; children: ReactNode; title?: string }) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const { height: windowHeight } = useWindowDimensions();
   const [mounted, setMounted] = useState(visible);
-  // mount immediately when opened; unmount after the exit animation (SheetUnmounter)
   if (visible && !mounted) setMounted(true);
+  const progress = useSharedValue(0);
+  const keyboard = useReanimatedKeyboardAnimation();
+
+  useEffect(() => {
+    if (!mounted) return;
+    progress.value = withTiming(visible ? 1 : 0, visible ? SHEET_IN : SHEET_OUT);
+    if (visible) return;
+    const t = setTimeout(() => setMounted(false), SHEET_OUT.duration + 30);
+    return () => clearTimeout(t);
+  }, [visible, mounted, progress]);
 
   useEffect(() => {
     if (!visible) return;
@@ -30,19 +44,22 @@ export function Sheet({ visible, onClose, children, title }: { visible: boolean;
     return () => sub.remove();
   }, [visible, onClose]);
 
+  const backdropStyle = useAnimatedStyle(() => ({ opacity: progress.value }));
+  const sheetStyle = useAnimatedStyle(() => ({ transform: [{ translateY: (1 - progress.value) * windowHeight }] }));
+  // keyboard.height is negative while the keyboard is open
+  const liftStyle = useAnimatedStyle(() => ({ paddingBottom: Math.max(0, -keyboard.height.value) }));
+
   if (!mounted) return null;
   return (
     <Modal transparent visible={mounted} onRequestClose={onClose} statusBarTranslucent navigationBarTranslucent animationType="none">
-      {visible ? (
-        <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-          <Animated.View entering={FadeIn.duration(180)} exiting={FadeOut.duration(160)} style={{ position: 'absolute', inset: 0, backgroundColor: colors.overlay }}>
-            <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityLabel="Cerrar" />
-          </Animated.View>
-          <Animated.View
-            entering={sheetEnter}
-            exiting={sheetExit}
-            onLayout={() => undefined}
-            style={{
+      <Animated.View style={[{ flex: 1, justifyContent: 'flex-end' }, liftStyle]}>
+        <Animated.View style={[{ position: 'absolute', inset: 0, backgroundColor: colors.overlay }, backdropStyle]}>
+          <Pressable style={{ flex: 1 }} onPress={onClose} disabled={!visible} accessibilityLabel="Cerrar" />
+        </Animated.View>
+        <Animated.View
+          pointerEvents={visible ? 'auto' : 'none'}
+          style={[
+            {
               backgroundColor: colors.bg,
               borderTopLeftRadius: radius.xxl,
               borderTopRightRadius: radius.xxl,
@@ -50,29 +67,20 @@ export function Sheet({ visible, onClose, children, title }: { visible: boolean;
               paddingTop: spacing.sm,
               paddingBottom: insets.bottom + spacing.lg,
               maxHeight: '88%',
-            }}>
-            <View style={{ alignSelf: 'center', width: 42, height: 5, borderRadius: 3, backgroundColor: colors.border, marginBottom: spacing.md }} />
-            {title ? (
-              <AppText variant="heading" style={{ marginBottom: spacing.md }}>
-                {title}
-              </AppText>
-            ) : null}
-            {children}
-          </Animated.View>
-        </View>
-      ) : (
-        <SheetUnmounter onDone={() => setMounted(false)} />
-      )}
+            },
+            sheetStyle,
+          ]}>
+          <View style={{ alignSelf: 'center', width: 42, height: 5, borderRadius: 3, backgroundColor: colors.border, marginBottom: spacing.md }} />
+          {title ? (
+            <AppText variant="heading" style={{ marginBottom: spacing.md }}>
+              {title}
+            </AppText>
+          ) : null}
+          {children}
+        </Animated.View>
+      </Animated.View>
     </Modal>
   );
-}
-
-function SheetUnmounter({ onDone }: { onDone: () => void }) {
-  useEffect(() => {
-    const t = setTimeout(onDone, 200);
-    return () => clearTimeout(t);
-  }, [onDone]);
-  return null;
 }
 
 /** How long a toast stays on screen once it has slid in. */

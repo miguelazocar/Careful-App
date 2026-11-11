@@ -77,6 +77,7 @@ export function OptionSheet({
   onClose,
   onCustom,
   placeholder = 'Buscar',
+  extraOption,
 }: {
   visible: boolean;
   title: string;
@@ -86,6 +87,8 @@ export function OptionSheet({
   onClose: () => void;
   onCustom?: (text: string) => void;
   placeholder?: string;
+  /** Always-visible last row, e.g. "Otro modelo". */
+  extraOption?: { label: string; sub?: string; icon?: string; onPress: () => void };
 }) {
   const [query, setQuery] = useState('');
   const [prevVisible, setPrevVisible] = useState(visible);
@@ -117,6 +120,7 @@ export function OptionSheet({
             Sin resultados
           </AppText>
         ) : null}
+        {extraOption ? <OptionRow icon={extraOption.icon ?? 'pencil'} label={extraOption.label} sub={extraOption.sub} selected={false} onPress={extraOption.onPress} /> : null}
       </ScrollView>
     </Sheet>
   );
@@ -152,7 +156,10 @@ function OptionRow({ icon, label, sub, selected, onPress }: { icon?: string; lab
   );
 }
 
-/** Brand grid with logos, plus "Otra marca". */
+/** Best-selling brands in Argentina, shown first. */
+const POPULAR_BRANDS = ['volkswagen', 'fiat', 'chevrolet', 'toyota', 'ford', 'renault', 'peugeot', 'citroen', 'jeep', 'nissan', 'honda', 'hyundai'];
+
+/** Searchable brand grid with logos: best sellers first, then every brand; a brand not listed can be typed. */
 export function BrandSheet({
   visible,
   selected,
@@ -166,55 +173,81 @@ export function BrandSheet({
   onCustom: (name: string) => void;
   onClose: () => void;
 }) {
-  const { colors } = useTheme();
-  const [custom, setCustom] = useState('');
+  const [query, setQuery] = useState('');
+  const [prevVisible, setPrevVisible] = useState(visible);
+  if (visible !== prevVisible) {
+    setPrevVisible(visible);
+    if (visible) setQuery('');
+  }
+  const q = normalizeText(query);
+  const matches = q ? BRANDS.filter((b) => normalizeText(b.name).includes(q)) : BRANDS;
+  const popular = q ? [] : POPULAR_BRANDS.map((id) => BRANDS.find((b) => b.id === id)).filter((b): b is (typeof BRANDS)[number] => !!b);
+  const exact = BRANDS.some((b) => normalizeText(b.name) === q);
+
+  const tiles = (list: typeof BRANDS) => (
+    <Grid columns={3} gap={spacing.xs}>
+      {list.map((b) => (
+        <BrandTile key={b.id} id={b.id} name={b.name} active={selected === b.id} onPress={() => onSelect(b.id)} />
+      ))}
+    </Grid>
+  );
+
   return (
     <Sheet visible={visible} onClose={onClose} title="Marca">
-      <ScrollView style={{ flexShrink: 1 }} keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: spacing.md }}>
-        <Grid columns={3} gap={spacing.xs}>
-          {BRANDS.map((b) => {
-            const active = selected === b.id;
-            return (
-              <Pressable
-                key={b.id}
-                onPress={() => onSelect(b.id)}
-                accessibilityLabel={b.name}
-                style={({ pressed }) => ({
-                  alignItems: 'center',
-                  gap: 6,
-                  paddingVertical: spacing.sm,
-                  borderRadius: radius.md,
-                  borderWidth: 1.5,
-                  borderColor: active ? colors.primary : colors.border,
-                  backgroundColor: active ? colors.primarySoft : pressed ? colors.surfaceAlt : colors.surface,
-                })}>
-                <BrandLogo brandId={b.id} brand={b.name} size={40} />
-                <AppText variant="captionStrong" numberOfLines={1}>
-                  {b.name}
-                </AppText>
-              </Pressable>
-            );
-          })}
-        </Grid>
+      <View style={{ marginBottom: spacing.sm }}>
         <TextField
-          value={custom}
-          onChangeText={setCustom}
-          placeholder="Otra marca"
-          icon="pencil"
+          value={query}
+          onChangeText={setQuery}
+          placeholder={`Buscar entre ${BRANDS.length} marcas`}
+          icon="magnify"
+          autoCorrect={false}
           returnKeyType="done"
-          onSubmitEditing={() => custom.trim() && onCustom(custom.trim())}
-          right={
-            custom.trim() ? (
-              <Pressable onPress={() => onCustom(custom.trim())} hitSlop={8}>
-                <AppText variant="captionStrong" tone="primary">
-                  Usar
-                </AppText>
-              </Pressable>
-            ) : undefined
-          }
+          onSubmitEditing={() => {
+            if (matches.length === 1) onSelect(matches[0].id);
+            else if (query.trim() && !matches.length) onCustom(query.trim());
+          }}
         />
+      </View>
+      <ScrollView style={{ flexShrink: 1 }} keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: spacing.sm, paddingBottom: spacing.xs }}>
+        {popular.length ? (
+          <>
+            <AppText variant="overline" tone="muted">
+              Más elegidas
+            </AppText>
+            {tiles(popular)}
+            <AppText variant="overline" tone="muted" style={{ marginTop: spacing.xs }}>
+              Todas las marcas
+            </AppText>
+          </>
+        ) : null}
+        {tiles(matches)}
+        {query.trim() && !exact ? <OptionRow icon="pencil" label={`Usar «${query.trim()}»`} sub="La marca no está en la lista" selected={false} onPress={() => onCustom(query.trim())} /> : null}
       </ScrollView>
     </Sheet>
+  );
+}
+
+function BrandTile({ id, name, active, onPress }: { id: string; name: string; active: boolean; onPress: () => void }) {
+  const { colors } = useTheme();
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityLabel={name}
+      style={({ pressed }) => ({
+        alignItems: 'center',
+        gap: 6,
+        paddingVertical: spacing.sm,
+        paddingHorizontal: 4,
+        borderRadius: radius.md,
+        borderWidth: 1.5,
+        borderColor: active ? colors.primary : colors.border,
+        backgroundColor: active ? colors.primarySoft : pressed ? colors.surfaceAlt : colors.surface,
+      })}>
+      <BrandLogo brandId={id} brand={name} size={40} />
+      <AppText variant="captionStrong" numberOfLines={1} adjustsFontSizeToFit>
+        {name}
+      </AppText>
+    </Pressable>
   );
 }
 

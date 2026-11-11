@@ -10,7 +10,7 @@ import { Header, Screen } from '@/components/ui/layout';
 import { Sheet } from '@/components/ui/overlays';
 import { AppText, Button, Icon, ListRow, Segmented } from '@/components/ui/primitives';
 import { BrandSheet, ColorSheet, OptionSheet, SelectField } from '@/components/vehicle-fields';
-import { getBrand, getEngine, getModel, matchBrand, maxCatalogYear, modelsFor, variantsFor, yearsForBrand } from '@/data/catalog';
+import { getBrand, getModel, matchBrand, maxCatalogYear, modelsFor, variantsFor, yearsForBrand } from '@/data/catalog';
 import { createRecord, getOdometerReadings } from '@/db/records';
 import { createVehicle, getVehicle, updateVehicle, type VehicleInput } from '@/db/vehicles';
 import { colorHexFor } from '@/domain/colors';
@@ -18,7 +18,7 @@ import { COUNTRIES, flagEmoji } from '@/domain/countries';
 import { describeMissing, mergeFluids, missingFluidFields } from '@/domain/fluids';
 import { formatPlate, normalizePlate } from '@/domain/plate';
 import { currentOdometer } from '@/domain/schedule';
-import { COOLANT_BASES, COOLANT_CONCENTRATIONS, coolantMix, FUEL_OPTIONS, OIL_BASES, type CoolantBase, type FuelKey, type OilBase } from '@/domain/vehicle-specs';
+import { COOLANT_BASES, COOLANT_CONCENTRATIONS, coolantMix, FUEL_OPTIONS, fuelLabel, OIL_BASES, type CoolantBase, type FuelKey, type OilBase } from '@/domain/vehicle-specs';
 import { isValidVin, normalizeVin, vinBrandId, vinModelYear } from '@/domain/vin';
 import { today } from '@/lib/dates';
 import { formatInt, parseIntInput } from '@/lib/format';
@@ -58,6 +58,8 @@ interface Draft {
   coolantBrand: string;
   coolantModel: string;
   coolantType: string;
+  /** "Otro modelo": model and version typed by hand instead of picked from the catalog. */
+  manualModel: boolean;
   /** Not editable anymore; kept so editing doesn't erase it. */
   nickname: string | null;
   notes: string | null;
@@ -91,6 +93,7 @@ const EMPTY: Draft = {
   coolantBrand: '',
   coolantModel: '',
   coolantType: '',
+  manualModel: false,
   nickname: null,
   notes: null,
 };
@@ -159,6 +162,8 @@ export default function VehicleFormScreen() {
         coolantBrand: v.coolantBrand ?? '',
         coolantModel: v.coolantModel ?? '',
         coolantType: v.coolantType ?? '',
+        // a model that isn't in the catalog was typed by hand
+        manualModel: !!v.model && !getModel(v.brandId, v.modelId),
         nickname: v.nickname,
         notes: v.notes,
       });
@@ -183,10 +188,11 @@ export default function VehicleFormScreen() {
       }
       if (g.variant) {
         next.variant = g.variant;
-        next.engineId = g.engineId ?? null;
-        const eng = getEngine(next.brandId, next.engineId);
-        if (eng) next.fuel = eng.fuel;
+        next.engineId = null;
+        const v = getModel(next.brandId, next.modelId)?.variants.find((x) => x.name === g.variant);
+        if (v) next.fuel = v.fuel;
       }
+      next.manualModel = !!next.model && !getModel(next.brandId, next.modelId);
       if (g.color) {
         next.color = g.color;
         next.colorHex = colorHexFor(g.color);
@@ -392,7 +398,12 @@ type StepProps = { draft: Draft; set: (p: Partial<Draft>) => void };
 
 /* ============================== 1. Auto ============================== */
 
-type AutoSheet = null | 'photo' | 'brand' | 'model' | 'variant' | 'year' | 'color';
+type AutoSheet = null | 'photo' | 'brand' | 'year' | 'model' | 'variant' | 'color';
+/** Brand and year first: they decide which models and versions exist. */
+const AUTO_ORDER: AutoSheet[] = ['brand', 'year', 'model', 'variant', 'color'];
+
+/** The model (and version) are typed by hand only for "Otro modelo" or a brand outside the catalog. */
+const isManual = (d: Draft) => d.manualModel || (!!d.brand && !getBrand(d.brandId));
 
 function AutoStep({ draft, set, onGuess }: StepProps & { onGuess: (g: VehicleGuess) => void }) {
   const { colors } = useTheme();
@@ -401,27 +412,22 @@ function AutoStep({ draft, set, onGuess }: StepProps & { onGuess: (g: VehicleGue
 
   const brand = getBrand(draft.brandId);
   const model = getModel(draft.brandId, draft.modelId);
+  const manual = isManual(draft);
   const models = useMemo(() => (brand ? modelsFor(brand.id, draft.year) : []), [brand, draft.year]);
   const variants = useMemo(() => (model ? variantsFor(model, draft.year) : []), [model, draft.year]);
   const years = useMemo(() => {
+    if (brand) return yearsForBrand(brand.id);
     const max = maxCatalogYear();
-    if (model) {
-      const out: number[] = [];
-      for (let y = Math.min(model.years[1] ?? max, max); y >= Math.max(model.years[0], 1980); y--) out.push(y);
-      return out;
-    }
-    if (brand) return [...yearsForBrand(brand.id)].sort((a, b) => b - a);
     return Array.from({ length: max - 1979 }, (_, i) => max - i);
-  }, [brand, model]);
+  }, [brand]);
 
   /** After a choice, open the next empty field so the flow feels like one gesture. */
   const advance = (from: AutoSheet, d: Partial<Draft>) => {
     const merged = { ...draft, ...d };
-    const order: AutoSheet[] = ['brand', 'model', 'variant', 'year', 'color'];
-    const empty = (k: AutoSheet) => (k === 'brand' ? !merged.brand : k === 'model' ? !merged.model : k === 'variant' ? !merged.variant : k === 'year' ? !merged.year : !merged.color);
-    const nextSheet = order.slice(order.indexOf(from) + 1).find(empty) ?? null;
-    // variants only make sense when the catalog knows the model
-    setSheet(nextSheet === 'variant' && !getModel(merged.brandId, merged.modelId) ? (order.slice(3).find(empty) ?? null) : nextSheet);
+    const empty = (k: AutoSheet) => (k === 'brand' ? !merged.brand : k === 'year' ? !merged.year : k === 'model' ? !merged.model : k === 'variant' ? !merged.variant : !merged.color);
+    const next = AUTO_ORDER.slice(AUTO_ORDER.indexOf(from) + 1).find(empty) ?? null;
+    // typed by hand: stop the chain so the user can write the model
+    setSheet(isManual(merged) && (next === 'model' || next === 'variant') ? null : next);
   };
 
   const choosePhoto = async (src: 'camera' | 'library') => {
@@ -469,6 +475,14 @@ function AutoStep({ draft, set, onGuess }: StepProps & { onGuess: (g: VehicleGue
   };
 
   const uri = photoUri(draft.photo);
+  const listLink = (
+    <Pressable onPress={() => set({ manualModel: false, modelId: null, model: '', variant: null })} hitSlop={8}>
+      <AppText variant="captionStrong" tone="primary">
+        Elegir de la lista
+      </AppText>
+    </Pressable>
+  );
+
   return (
     <View style={{ gap: spacing.md }}>
       <View style={{ flexDirection: 'row', gap: spacing.sm, height: 112 }}>
@@ -490,25 +504,53 @@ function AutoStep({ draft, set, onGuess }: StepProps & { onGuess: (g: VehicleGue
         </View>
       </View>
 
-      <SelectField
-        label="Marca"
-        value={draft.brand}
-        placeholder="Elegí la marca"
-        left={draft.brand ? <BrandLogo brandId={draft.brandId} brand={draft.brand} size={28} /> : <Icon name="car-info" size={20} color={colors.textSubtle} />}
-        onPress={() => setSheet('brand')}
-      />
-      <SelectField label="Modelo" value={draft.model} placeholder={draft.brand ? 'Elegí el modelo' : 'Primero la marca'} onPress={() => setSheet('model')} disabled={!draft.brand} />
-      <SelectField label="Variante / versión" value={draft.variant} placeholder="Ej. 1.3 Drive" onPress={() => setSheet('variant')} disabled={!draft.model} />
       <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-        <SelectField label="Año" value={draft.year ? String(draft.year) : null} placeholder="Año" onPress={() => setSheet('year')} />
-        <SelectField
-          label="Color"
-          value={draft.color}
-          placeholder="Color"
-          left={draft.color ? <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: draft.colorHex ?? colors.textSubtle, borderWidth: 1, borderColor: colors.border }} /> : undefined}
-          onPress={() => setSheet('color')}
-        />
+        <View style={{ flex: 1.7 }}>
+          <SelectField
+            label="Marca"
+            value={draft.brand}
+            placeholder="Elegí la marca"
+            left={draft.brand ? <BrandLogo brandId={draft.brandId} brand={draft.brand} size={28} /> : <Icon name="car-info" size={20} color={colors.textSubtle} />}
+            onPress={() => setSheet('brand')}
+          />
+        </View>
+        <View style={{ flex: 1 }}>
+          <SelectField label="Año" value={draft.year ? String(draft.year) : null} placeholder="Año" onPress={() => setSheet('year')} disabled={!draft.brand} />
+        </View>
       </View>
+
+      {manual ? (
+        <>
+          <TextField
+            label="Modelo"
+            labelRight={brand ? listLink : undefined}
+            value={draft.model}
+            onChangeText={(t) => set({ model: t, modelId: null })}
+            placeholder="Escribí el modelo"
+            icon="pencil"
+          />
+          <TextField label="Variante / versión" value={draft.variant ?? ''} onChangeText={(t) => set({ variant: t })} placeholder="Ej. 1.6 Highline" icon="pencil" />
+        </>
+      ) : (
+        <>
+          <SelectField
+            label="Modelo"
+            value={draft.model}
+            placeholder={!draft.brand ? 'Primero la marca' : !draft.year ? 'Primero el año' : 'Elegí el modelo'}
+            onPress={() => setSheet('model')}
+            disabled={!draft.brand || !draft.year}
+          />
+          <SelectField label="Variante / versión" value={draft.variant} placeholder={model ? 'Elegí la versión' : 'Primero el modelo'} onPress={() => setSheet('variant')} disabled={!model} />
+        </>
+      )}
+
+      <SelectField
+        label="Color"
+        value={draft.color}
+        placeholder="Elegí el color"
+        left={draft.color ? <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: draft.colorHex ?? colors.textSubtle, borderWidth: 1, borderColor: colors.border }} /> : undefined}
+        onPress={() => setSheet('color')}
+      />
 
       <Sheet visible={sheet === 'photo'} onClose={() => setSheet(null)} title="Foto del vehículo">
         <View style={{ borderRadius: radius.lg, overflow: 'hidden' }}>
@@ -535,79 +577,85 @@ function AutoStep({ draft, set, onGuess }: StepProps & { onGuess: (g: VehicleGue
         onClose={() => setSheet(null)}
         onSelect={(brandId) => {
           const b = getBrand(brandId)!;
-          const patch = draft.brandId === brandId ? { brandId, brand: b.name } : { brandId, brand: b.name, modelId: null, model: '', variant: null, engineId: null };
+          const patch: Partial<Draft> =
+            draft.brandId === brandId ? { brandId, brand: b.name } : { brandId, brand: b.name, modelId: null, model: '', variant: null, engineId: null, manualModel: false };
           set(patch);
           advance('brand', patch);
         }}
         onCustom={(name) => {
           const match = matchBrand(name);
-          const patch = { brandId: match?.id ?? null, brand: match?.name ?? name, modelId: null, model: '', variant: null, engineId: null };
+          const patch: Partial<Draft> = { brandId: match?.id ?? null, brand: match?.name ?? name, modelId: null, model: '', variant: null, engineId: null, manualModel: !match };
           set(patch);
           advance('brand', patch);
         }}
       />
 
       <OptionSheet
+        visible={sheet === 'year'}
+        title={draft.brand ? `Año del ${draft.brand}` : 'Año'}
+        placeholder="Buscar el año"
+        options={years.map((y) => ({ key: String(y), label: String(y) }))}
+        selected={draft.year ? String(draft.year) : null}
+        onClose={() => setSheet(null)}
+        onSelect={(key) => {
+          const y = Number(key);
+          const patch: Partial<Draft> = { year: y };
+          // keep the chosen model / version only if they existed that year
+          if (!manual && brand && model) {
+            if (!modelsFor(brand.id, y).some((m) => m.id === model.id)) Object.assign(patch, { modelId: null, model: '', variant: null });
+            else if (draft.variant && !variantsFor(model, y).some((v) => v.name === draft.variant)) patch.variant = null;
+          }
+          set(patch);
+          advance('year', patch);
+        }}
+        onCustom={
+          brand
+            ? undefined
+            : (text) => {
+                const y = parseIntInput(text);
+                if (!y || y < 1950 || y > maxCatalogYear()) return toast('Año inválido', 'error');
+                set({ year: y });
+                advance('year', { year: y });
+              }
+        }
+      />
+
+      <OptionSheet
         visible={sheet === 'model'}
-        title={`Modelo${draft.brand ? ` de ${draft.brand}` : ''}`}
-        placeholder="Buscar o escribir el modelo"
+        title={`Modelos ${draft.brand}${draft.year ? ` ${draft.year}` : ''}`}
+        placeholder="Buscar el modelo"
         options={models.map((m) => ({ key: m.id, label: m.name, sub: `${variantsFor(m, draft.year).length} versiones`, icon: BODY_ICON[m.body] ?? 'car' }))}
         selected={draft.modelId}
         onClose={() => setSheet(null)}
         onSelect={(modelId) => {
           const m = getModel(draft.brandId, modelId)!;
-          const patch = { modelId, model: m.name, ...(draft.modelId === modelId ? {} : { variant: null, engineId: null }) };
+          const patch: Partial<Draft> = { modelId, model: m.name, manualModel: false, ...(draft.modelId === modelId ? {} : { variant: null, engineId: null }) };
           set(patch);
           advance('model', patch);
         }}
-        onCustom={(name) => {
-          const patch = { modelId: null, model: name, variant: null, engineId: null };
-          set(patch);
-          advance('model', patch);
+        extraOption={{
+          label: 'Otro modelo',
+          sub: 'No está en la lista: escribilo a mano',
+          icon: 'pencil-plus',
+          onPress: () => {
+            set({ manualModel: true, modelId: null, model: '', variant: null, engineId: null });
+            setSheet(null);
+          },
         }}
       />
 
       <OptionSheet
         visible={sheet === 'variant'}
-        title="Variante / versión"
-        placeholder="Buscar o escribir la versión"
-        options={variants.map((v) => {
-          const engine = getEngine(draft.brandId, v.engineId);
-          return { key: v.name, label: v.name, sub: [engine?.name, v.transmission ? TRANSMISSION[v.transmission] : null].filter(Boolean).join(' · '), icon: 'engine' };
-        })}
+        title={`Versiones ${draft.model}${draft.year ? ` ${draft.year}` : ''}`}
+        placeholder="Buscar la versión"
+        options={variants.map((v) => ({ key: v.name, label: v.name, sub: [fuelLabel(v.fuel), v.transmission ? TRANSMISSION[v.transmission] : null].filter(Boolean).join(' · '), icon: 'engine' }))}
         selected={draft.variant}
         onClose={() => setSheet(null)}
         onSelect={(name) => {
           const v = variants.find((x) => x.name === name);
-          const engine = getEngine(draft.brandId, v?.engineId);
-          const patch = { variant: name, engineId: v?.engineId ?? null, fuel: engine?.fuel ?? draft.fuel };
+          const patch: Partial<Draft> = { variant: name, engineId: null, fuel: v?.fuel ?? draft.fuel };
           set(patch);
           advance('variant', patch);
-        }}
-        onCustom={(name) => {
-          const patch = { variant: name, engineId: null };
-          set(patch);
-          advance('variant', patch);
-        }}
-      />
-
-      <OptionSheet
-        visible={sheet === 'year'}
-        title="Año"
-        placeholder="Buscar o escribir el año"
-        options={years.map((y) => ({ key: String(y), label: String(y) }))}
-        selected={draft.year ? String(draft.year) : null}
-        onClose={() => setSheet(null)}
-        onSelect={(y) => {
-          const patch = { year: Number(y) };
-          set(patch);
-          advance('year', patch);
-        }}
-        onCustom={(text) => {
-          const y = parseIntInput(text);
-          if (!y || y < 1950 || y > maxCatalogYear()) return toast('Año inválido', 'error');
-          set({ year: y });
-          advance('year', { year: y });
         }}
       />
 

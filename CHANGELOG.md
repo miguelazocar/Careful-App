@@ -5,6 +5,11 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
 ## [Sin publicar]
 
 ### Agregado
+- **Catálogo del mercado argentino completo**: 88 marcas, unos 1.000 modelos y casi 12.000 versiones, de 1997 a 2026.
+  - Los nombres y años salen de cuatro ediciones de las listas de la Cámara del Comercio Automotor (2011, 2016, 2021 y 2026).
+  - Se eligen primero la marca y el año. Después aparecen solo los modelos de ese año y las versiones de ese modelo en ese año.
+  - «Otro modelo» es la única forma de escribir el modelo y la versión a mano.
+  - Ver [docs/CATALOG.md](docs/CATALOG.md).
 - **Ficha del vehículo nueva**: foto arriba y un recuadro con pestañas (**Vehículo**, **Aceite**, **Refrigerante**) que se ve completo, sin scroll. Abajo hay accesos a Registrar, Kilometraje, Services e Historial.
 - **Datos de aceite**:
   - tipo (mineral, semi-sintético o sintético);

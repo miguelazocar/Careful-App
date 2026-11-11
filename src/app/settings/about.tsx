@@ -22,7 +22,7 @@ export default function AboutScreen() {
         </AppText>
       </View>
       <Card padded={false}>
-        <ListRow icon="database" title="Catálogo incluido" subtitle={`${BRANDS.length} marcas · ${models} modelos desde el año 2000`} />
+        <ListRow icon="database" title="Catálogo incluido" subtitle={`${BRANDS.length} marcas · ${models} modelos · 1997–2026 (listas CCA)`} />
         <ListRow icon="shield-lock" title="Privacidad" subtitle="Sin cuentas ni servidores: los datos quedan en tu teléfono." />
         <ListRow icon="github" title="Código fuente" subtitle="github.com/miguelazocar/Careful-App" onPress={() => void Linking.openURL('https://github.com/miguelazocar/Careful-App')} last />
       </Card>

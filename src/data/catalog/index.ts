@@ -1,22 +1,9 @@
-import citroen from './brands/citroen.json';
-import chevrolet from './brands/chevrolet.json';
-import ds from './brands/ds.json';
-import fiat from './brands/fiat.json';
-import ford from './brands/ford.json';
-import mercedesBenz from './brands/mercedes-benz.json';
-import peugeot from './brands/peugeot.json';
-import renault from './brands/renault.json';
-import toyota from './brands/toyota.json';
-import volkswagen from './brands/volkswagen.json';
-import type { CatalogBrand, CatalogEngine, CatalogModel, CatalogVariant, YearRange } from './types';
+import { BRAND_DATA, CATALOG_FIRST_YEAR } from './brands';
+import type { CatalogBrand, CatalogEngine, CatalogModel, CatalogModelData, CatalogVariant, FuelType, Transmission, YearRange } from './types';
 
-export type { CatalogBrand, CatalogEngine, CatalogModel, CatalogVariant } from './types';
+export type { CatalogBrand, CatalogEngine, CatalogModel, CatalogVariant, FuelType } from './types';
 
-export const CATALOG_MIN_YEAR = 2000;
-
-export const BRANDS: CatalogBrand[] = (
-  [chevrolet, citroen, ds, fiat, ford, mercedesBenz, peugeot, renault, toyota, volkswagen] as unknown as CatalogBrand[]
-).sort((a, b) => a.name.localeCompare(b.name, 'es'));
+export const CATALOG_MIN_YEAR = CATALOG_FIRST_YEAR;
 
 export function normalizeText(s: string): string {
   return s
@@ -26,6 +13,39 @@ export function normalizeText(s: string): string {
     .replace(/[^a-z0-9]+/g, ' ')
     .trim();
 }
+
+/** Fuel from the version name as listed in Argentina ("1,9 TDI", "GNC", "HYBRID"…). */
+export function fuelFromVersion(name: string): FuelType {
+  const u = ` ${name.toUpperCase()} `;
+  if (/\b(ELECTRICO|ELÉCTRICO|ELECTRIC|EV|BEV|E-TECH ELECTRIC)\b/.test(u) && !/\bHEV\b|HYBRID|HIBRID/.test(u)) return 'electrico';
+  if (/HYBRID|HIBRID|\bHEV\b|\bPHEV\b|\bMHEV\b|E-TECH/.test(u)) return 'hibrido';
+  if (/\bGNC\b/.test(u)) return 'gnc';
+  // (a lone "D" is not diesel: "D/C" means doble cabina)
+  if (/\b(TDI|TD|TDS|TDCI|HDI|BLUEHDI|DSL|DIESEL|CRDI|JTD|JTDM|MULTIJET|DCI|DID|D-4D|D4D|CDI|BLUETEC|TURBO DIESEL|SD)\b/.test(u)) return 'diesel';
+  return 'nafta';
+}
+
+export function transmissionFromVersion(name: string): Transmission | undefined {
+  const u = ` ${name.toUpperCase()} `;
+  if (/\bDSG\b/.test(u)) return 'dsg';
+  if (/\bCVT\b|\bIVT\b|\bX-TRONIC\b|\bXTRONIC\b/.test(u)) return 'cvt';
+  if (/\b(AT|A\/T|\d?AT\d?|AUT|AUTO|AUTOMATICO|AUTOMATICA|TIPTRONIC|STEPTRONIC|TCT|EDC|DCT|EAT\d?|PDK|S-TRONIC|STRONIC|MULTITRONIC|7G-TRONIC|9G-TRONIC)\b/.test(u)) return 'automatica';
+  return undefined;
+}
+
+function hydrate(data: CatalogModelData): CatalogModel {
+  const variants: CatalogVariant[] = data.variants.map(([name, from, to]) => {
+    const transmission = transmissionFromVersion(name);
+    return { name, years: [from, to], fuel: fuelFromVersion(name), ...(transmission ? { transmission } : {}) };
+  });
+  const from = Math.min(...variants.map((v) => v.years[0]));
+  const to = variants.some((v) => v.years[1] === null) ? null : Math.max(...variants.map((v) => v.years[1] as number));
+  return { id: data.id, name: data.name, body: data.body, years: [from, to], variants };
+}
+
+export const BRANDS: CatalogBrand[] = BRAND_DATA.map((b) => ({ id: b.id, name: b.name, engines: [], models: b.models.map(hydrate) })).sort((a, b) =>
+  a.name.localeCompare(b.name, 'es'),
+);
 
 export function maxCatalogYear(now = new Date()): number {
   return now.getFullYear() + 1;
@@ -55,24 +75,28 @@ export function yearsForBrand(brandId: string, now = new Date()): number[] {
   if (!brand) return [];
   const years = new Set<number>();
   const max = maxCatalogYear(now);
+  // from the versions (not the model's span): a year must lead to at least one version
   for (const m of brand.models) {
-    const from = Math.max(m.years[0], CATALOG_MIN_YEAR);
-    const to = Math.min(m.years[1] ?? max, max);
-    for (let y = from; y <= to; y++) years.add(y);
+    for (const v of m.variants) {
+      const from = Math.max(v.years[0], CATALOG_MIN_YEAR);
+      const to = Math.min(v.years[1] ?? max, max);
+      for (let y = from; y <= to; y++) years.add(y);
+    }
   }
   return [...years].sort((a, b) => b - a);
 }
 
+/** Models with at least one version in that model year. */
 export function modelsFor(brandId: string, year: number | null, now = new Date()): CatalogModel[] {
   const brand = getBrand(brandId);
   if (!brand) return [];
   return brand.models
-    .filter((m) => year === null || inRange(m.years, year, now))
+    .filter((m) => year === null || m.variants.some((v) => inRange(v.years, year, now)))
     .sort((a, b) => a.name.localeCompare(b.name, 'es'));
 }
 
 export function variantsFor(model: CatalogModel, year: number | null, now = new Date()): CatalogVariant[] {
-  return model.variants.filter((v) => year === null || inRange(v.years ?? model.years, year, now));
+  return model.variants.filter((v) => year === null || inRange(v.years, year, now));
 }
 
 const BRAND_ALIASES: Record<string, string[]> = {
@@ -81,6 +105,10 @@ const BRAND_ALIASES: Record<string, string[]> = {
   chevrolet: ['chevrolet', 'chevy', 'gm'],
   citroen: ['citroen'],
   ds: ['ds automobiles', 'ds'],
+  mini: ['mini cooper', 'mini'],
+  'land-rover': ['land rover', 'landrover'],
+  'great-wall': ['great wall', 'gwm'],
+  'alfa-romeo': ['alfa romeo', 'alfa'],
 };
 
 /** Finds a brand mentioned in free text (OCR, AI output, user input). */

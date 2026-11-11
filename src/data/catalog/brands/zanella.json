@@ -1,0 +1,1 @@
+{"id":"zanella","name":"Zanella","models":[{"id":"force-truck","name":"Force Truck","body":"pickup","variants":[["C/S 1,2 MT",2018,2020],["CHASIS 1,2 MT",2018,2020],["D/C 1,2 MT",2018,2020]]},{"id":"z-truck","name":"Z Truck","body":"pickup","variants":[["C/S 1,2 MT",2021,2025]]}]}
