@@ -24,6 +24,7 @@ import { formatPlate } from '@/domain/plate';
 import { resolveInterval, type Interval, type UpcomingItem } from '@/domain/schedule';
 import { COOLANT_BASES, coolantMix, fuelLabel, OIL_BASES } from '@/domain/vehicle-specs';
 import { useQuery } from '@/hooks/useQuery';
+import { formatDay } from '@/lib/dates';
 import { formatAmount, formatKm } from '@/lib/format';
 import { deletePhotoFiles } from '@/services/photos';
 import { shareVehicleReport } from '@/services/report';
@@ -181,7 +182,7 @@ export default function VehicleDetailScreen() {
           </View>
           <Animated.View key={tab} entering={FadeIn.duration(180)} style={{ height: TAB_HEIGHT, paddingHorizontal: spacing.sm, paddingBottom: spacing.sm }}>
             {tab === 'vehiculo' ? (
-              <VehicleTab v={v} km={snap.currentKm} />
+              <VehicleTab v={v} km={snap.currentKm} spentCents={total} nextOil={data.upcoming.items.find((i) => i.item === CORE_ITEM)} />
             ) : tab === 'aceite' ? (
               <OilTab v={v} plan={data.oilPlan} next={data.upcoming.items.find((i) => i.item === CORE_ITEM)} />
             ) : (
@@ -259,32 +260,38 @@ export default function VehicleDetailScreen() {
 
 /* --------------------------------- Tabs --------------------------------- */
 
-function VehicleTab({ v, km }: { v: Vehicle; km: number }) {
+function VehicleTab({ v, km, spentCents, nextOil }: { v: Vehicle; km: number; spentCents: number; nextOil?: UpcomingItem }) {
   const { colors } = useTheme();
+  const oil = nextOil?.due;
+  const oilTone = oil?.status === 'overdue' ? colors.danger : oil?.status === 'soon' ? colors.warning : colors.primary;
+  // the next oil change by km (what the odometer shows); by date when the plan has no km interval
+  const oilValue = oil ? (oil.dueKm !== null ? formatKm(oil.dueKm) : oil.dueDate ? formatDay(oil.dueDate) : null) : null;
   return (
     <View style={{ flex: 1, gap: spacing.xs }}>
       <Row>
+        <Cell label="Total gastado" value={formatAmount(spentCents)} accent={colors.primary} />
+        <Cell label="Kilometraje" value={formatKm(km)} accent={colors.primary} />
+        <Cell label={oil?.status === 'overdue' ? 'Aceite vencido' : 'Próximo aceite'} value={oilValue} accent={oilTone} />
+      </Row>
+      <Row>
         <Cell label="Patente / placa" value={v.plate ? `${flagEmoji(v.country)} ${formatPlate(v.plate, v.country)}` : null} />
-        <Cell label="Kilometraje actual" value={formatKm(km)} />
-      </Row>
-      <Row>
         <Cell label="Marca" value={v.brand} left={<BrandLogo brandId={v.brandId} brand={v.brand} size={20} />} />
+      </Row>
+      <Row>
         <Cell label="Modelo" value={v.model} />
-      </Row>
-      <Row>
         <Cell label="Variante / versión" value={v.variant} />
-        <Cell label="Año" value={v.year ? String(v.year) : null} />
       </Row>
       <Row>
+        <Cell label="Serial de chasis" value={v.vin} />
+        <Cell label="Serial de motor" value={v.engineNumber} />
+      </Row>
+      <Row>
+        <Cell label="Año" value={v.year ? String(v.year) : null} />
         <Cell
           label="Color"
           value={v.color}
           left={v.color ? <View style={{ width: 14, height: 14, borderRadius: 7, backgroundColor: v.colorHex ?? colors.textSubtle, borderWidth: 1, borderColor: colors.border }} /> : undefined}
         />
-        <Cell label="Serial de chasis" value={v.vin} />
-      </Row>
-      <Row>
-        <Cell label="Serial de motor" value={v.engineNumber} />
         <Cell label="Combustible" value={fuelLabel(v.fuel)} />
       </Row>
     </View>
@@ -385,11 +392,12 @@ function Row({ children }: { children: ReactNode }) {
   return <View style={{ flex: 1, flexDirection: 'row', gap: spacing.xs }}>{children}</View>;
 }
 
-function Cell({ label, value, left, big }: { label: string; value: string | null | undefined; left?: ReactNode; big?: boolean }) {
+/** A label / value box. `accent` highlights it (tinted background, value in that color). */
+function Cell({ label, value, left, big, accent }: { label: string; value: string | null | undefined; left?: ReactNode; big?: boolean; accent?: string }) {
   const { colors } = useTheme();
   return (
-    <View style={{ flex: 1, justifyContent: 'center', paddingHorizontal: spacing.sm, paddingVertical: 6, borderRadius: radius.sm, backgroundColor: colors.surfaceAlt }}>
-      <AppText variant="caption" tone="muted" numberOfLines={1} style={{ fontSize: 11 }}>
+    <View style={{ flex: 1, justifyContent: 'center', paddingHorizontal: spacing.sm, paddingVertical: 6, borderRadius: radius.sm, backgroundColor: accent ? accent + '1A' : colors.surfaceAlt }}>
+      <AppText variant="caption" tone="muted" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85} style={{ fontSize: 11 }}>
         {label}
       </AppText>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -397,6 +405,7 @@ function Cell({ label, value, left, big }: { label: string; value: string | null
         <AppText
           variant={big ? 'number' : 'bodyStrong'}
           tone={value ? 'default' : 'subtle'}
+          color={value && accent ? accent : undefined}
           numberOfLines={1}
           adjustsFontSizeToFit
           minimumFontScale={0.75}

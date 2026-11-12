@@ -24,7 +24,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
   - Se eligen primero la marca y el año. Después aparecen solo los modelos de ese año y las versiones de ese modelo en ese año.
   - «Otro modelo» es la única forma de escribir el modelo y la versión a mano.
   - Ver [docs/CATALOG.md](docs/CATALOG.md).
-- **Ficha del vehículo nueva**: foto arriba y un recuadro con pestañas (**Vehículo**, **Aceite**, **Refrigerante**) que se ve completo, sin scroll. Abajo hay accesos a **＋ Evento**, Kilometraje, Services e Historial.
+- **Ficha del vehículo nueva**: foto arriba y un recuadro con pestañas (**Vehículo**, **Aceite**, **Refrigerante**) que se ve completo, sin scroll. La pestaña Vehículo arranca con **total gastado, kilometraje actual y próximo cambio de aceite (en km)**. Abajo hay accesos a **＋ Evento**, Kilometraje, Services e Historial.
 - **Datos de aceite**:
   - tipo (mineral, semi-sintético o sintético);
   - cantidad;

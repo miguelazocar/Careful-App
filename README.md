@@ -41,7 +41,7 @@
 ### 🚗 Garage
 - Tarjetas grandes por auto: foto con **degradado diagonal**, marca, modelo, color, **patente estilo Mercosur** y **bandera del país**.
 - Resumen: vehículos, services que requieren atención y gastos del año.
-- Detalle por vehículo: kilometraje, uso promedio, próximos services con barra de progreso, ficha técnica e historial.
+- Detalle por vehículo: total gastado, kilometraje actual y próximo cambio de aceite a la vista, uso promedio, próximos services con barra de progreso, ficha técnica e historial.
 
 ### 🧭 Alta de vehículo (asistente de 4 pasos, sin scroll)
 1. **Tu auto** — foto + **marca → año → modelo → versión → color**, con el catálogo del mercado argentino: **88 marcas, unos 1.000 modelos y unas 11.500 versiones de 1997 a 2026**, tomados de las listas de la CCA ([detalle](docs/CATALOG.md)). Elegís marca y año y aparecen solo los modelos de ese año, y después sus versiones. «Otro modelo» permite escribirlo a mano si no está.
