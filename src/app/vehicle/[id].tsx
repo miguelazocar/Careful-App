@@ -147,11 +147,11 @@ export default function VehicleDetailScreen() {
             <IconButton icon="dots-vertical" tone="glass" accessibilityLabel="Más opciones" onPress={() => setSheet('menu')} />
           </View>
         </View>
-        <View style={{ position: 'absolute', left: spacing.lg, right: spacing.lg, bottom: spacing.xl + 8, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-          <BrandLogo brandId={v.brandId} brand={v.brand} size={48} />
-          <View style={{ flex: 1 }}>
+        <View style={{ position: 'absolute', left: spacing.lg, right: spacing.lg, bottom: spacing.xl + 8 }}>
+          {/* status and plate sit above the title, aligned with its text (past the logo) */}
+          <View style={{ marginLeft: 48 + spacing.sm, gap: 6, marginBottom: 6, alignItems: 'flex-start' }}>
             {archived ? (
-              <View style={{ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6, paddingHorizontal: 10, paddingVertical: 4, borderRadius: radius.pill, backgroundColor: 'rgba(7,11,20,0.6)', maxWidth: '100%' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 4, borderRadius: radius.pill, backgroundColor: 'rgba(7,11,20,0.6)', maxWidth: '100%' }}>
                 <Icon name={archiveReasonIcon(v.archivedReason)} size={14} color="#FFFFFF" />
                 <AppText variant="captionStrong" color="#FFFFFF" numberOfLines={1} style={{ flexShrink: 1 }}>
                   Archivado · {archiveReasonLabel(v.archivedReason)} · {formatDay(v.archivedAt!.slice(0, 10))}
@@ -159,18 +159,24 @@ export default function VehicleDetailScreen() {
                 </AppText>
               </View>
             ) : null}
-            <AppText variant="overline" color="rgba(255,255,255,0.85)" numberOfLines={1}>
-              {v.brand}
-              {v.year ? ` · ${v.year}` : ''}
-            </AppText>
-            <AppText variant="display" color="#FFFFFF" numberOfLines={1} adjustsFontSizeToFit style={{ fontSize: 30, lineHeight: 36 }}>
-              {v.model}
-            </AppText>
-            {v.variant ? (
-              <AppText variant="caption" color="rgba(255,255,255,0.85)" numberOfLines={1}>
-                {v.variant}
+            <PlateBadge plate={v.plate} plateStyle={v.plateStyle} country={v.country} />
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+            <BrandLogo brandId={v.brandId} brand={v.brand} size={48} />
+            <View style={{ flex: 1 }}>
+              <AppText variant="overline" color="rgba(255,255,255,0.85)" numberOfLines={1}>
+                {v.brand}
+                {v.year ? ` · ${v.year}` : ''}
               </AppText>
-            ) : null}
+              <AppText variant="display" color="#FFFFFF" numberOfLines={1} adjustsFontSizeToFit style={{ fontSize: 30, lineHeight: 36 }}>
+                {v.model}
+              </AppText>
+              {v.variant ? (
+                <AppText variant="caption" color="rgba(255,255,255,0.85)" numberOfLines={1}>
+                  {v.variant}
+                </AppText>
+              ) : null}
+            </View>
           </View>
         </View>
       </View>
@@ -315,7 +321,7 @@ function VehicleTab({ v, km, spentCents, nextOil }: { v: Vehicle; km: number; sp
         <Cell label={oil?.status === 'overdue' ? 'Aceite vencido' : 'Próximo aceite'} value={oilValue} accent={oilTone} />
       </Row>
       <Row>
-        <Cell label="Patente / placa" value={v.plate ? formatPlate(v.plate, v.country) : null} content={v.plate ? <PlateBadge plate={v.plate} plateStyle={v.plateStyle} country={v.country} size="sm" /> : undefined} />
+        <Cell label="Patente / placa" value={v.plate ? formatPlate(v.plate, v.country) : null} />
         <Cell label="Marca" value={v.brand} left={<BrandLogo brandId={v.brandId} brand={v.brand} size={20} />} />
       </Row>
       <Row>
@@ -433,21 +439,15 @@ function Row({ children }: { children: ReactNode }) {
   return <View style={{ flex: 1, flexDirection: 'row', gap: spacing.xs }}>{children}</View>;
 }
 
-/**
- * A label / value box. `accent` highlights it (tinted background, value in that color); `content`
- * replaces the value (e.g. the drawn plate).
- */
-function Cell({ label, value, left, big, accent, content }: { label: string; value: string | null | undefined; left?: ReactNode; big?: boolean; accent?: string; content?: ReactNode }) {
+/** A label / value box. `accent` highlights it (tinted background, value in that color). */
+function Cell({ label, value, left, big, accent }: { label: string; value: string | null | undefined; left?: ReactNode; big?: boolean; accent?: string }) {
   const { colors } = useTheme();
   return (
     <View style={{ flex: 1, justifyContent: 'center', paddingHorizontal: spacing.sm, paddingVertical: 6, borderRadius: radius.sm, backgroundColor: accent ? accent + '1A' : colors.surfaceAlt }}>
       <AppText variant="caption" tone="muted" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85} style={{ fontSize: 11 }}>
         {label}
       </AppText>
-      {content ? (
-        <View style={{ marginTop: 2 }}>{content}</View>
-      ) : (
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
         {left}
         <AppText
           variant={big ? 'number' : 'bodyStrong'}
@@ -459,8 +459,7 @@ function Cell({ label, value, left, big, accent, content }: { label: string; val
           style={[{ flexShrink: 1 }, big ? { fontSize: 22 } : null]}>
           {value || '—'}
         </AppText>
-        </View>
-      )}
+      </View>
     </View>
   );
 }

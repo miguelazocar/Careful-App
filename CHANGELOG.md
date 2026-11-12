@@ -37,7 +37,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
   - cantidad total y concentración (30, 40, 50 o 60 %);
   - **cuánto refrigerante y cuánta agua desmineralizada usar** (por ejemplo, 6 L al 40 % = 2,4 L + 3,6 L);
   - marca, modelo y versión.
-- **Tipo de patente** en el paso Registro: Mercosur (Argentina, Brasil, Uruguay y Paraguay, con «MERCOSUR» y la bandera del país), Argentina 1995–2016 (negra), Chile, Perú y los 27 países de la Unión Europea (franja azul con las estrellas y la bandera), más «Otro país». La patente se dibuja con ese diseño en el garage, en la ficha, en el selector y en el reporte PDF; ya no se muestra la bandera suelta al lado del número. Los autos cargados antes toman el diseño según su país y el formato de la patente.
+- **Tipo de patente** en el paso Registro: Mercosur (Argentina, Brasil, Uruguay y Paraguay, con «MERCOSUR» y la bandera del país), Argentina 1995–2016 (negra), Chile, Perú y los 27 países de la Unión Europea (franja azul con las estrellas y la bandera), más «Otro país». La patente se dibuja con ese diseño en el garage, en el encabezado de la ficha (arriba de la marca y el año), en el selector y en el reporte PDF; el campo «Patente / placa» muestra solo los caracteres. Los autos cargados antes toman el diseño según su país y el formato de la patente.
 - **Logos de las marcas**, de [Simple Icons](https://simpleicons.org) (CC0), en la ficha y en el asistente.
 - **Editar o borrar datos ya guardados pide la seguridad activa** (PIN de App o desbloqueo del teléfono).
 - Se puede probar en **Expo Go**. Las funciones que necesitan módulos nativos propios (OCR del teléfono, Google Drive) avisan que no están disponibles en lugar de cerrar la app.
