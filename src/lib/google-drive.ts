@@ -10,13 +10,15 @@ export const DRIVE_FILE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
 const API = 'https://www.googleapis.com/drive/v3';
 const UPLOAD_API = 'https://www.googleapis.com/upload/drive/v3';
 export const FOLDER_MIME = 'application/vnd.google-apps.folder';
-const FILE_FIELDS = 'id,name,size,createdTime';
+const FILE_FIELDS = 'id,name,size,createdTime,modifiedTime';
 
 export interface DriveFile {
   id: string;
   name: string;
   size: number;
   createdTime: string;
+  /** Last content update (the single backup is updated in place). */
+  modifiedTime: string;
 }
 
 export interface DriveUser {
@@ -123,12 +125,22 @@ export function createDriveClient(deps: DriveClientDeps) {
     return JSON.parse(await res.text()) as T;
   }
 
-  const toFile = (f: { id: string; name: string; size?: string | number; createdTime?: string }): DriveFile => ({
+  type RawFile = { id: string; name: string; size?: string | number; createdTime?: string; modifiedTime?: string };
+  const toFile = (f: RawFile): DriveFile => ({
     id: f.id,
     name: f.name,
     size: Number(f.size ?? 0),
     createdTime: f.createdTime ?? '',
+    modifiedTime: f.modifiedTime ?? f.createdTime ?? '',
   });
+
+  /** Sends the bytes to a resumable session opened by `start` (one PUT, any size). */
+  async function sendResumable(start: HttpResponse, bytes: Uint8Array, mimeType: string): Promise<DriveFile> {
+    const session = start.headers.get('location');
+    if (!session) throw new DriveError('Google Drive no devolvió la sesión de subida.', start.status, null);
+    const res = await call(session, 'PUT', { 'Content-Type': mimeType }, bytes);
+    return toFile(JSON.parse(await res.text()) as RawFile);
+  }
 
   return {
     async about(): Promise<DriveUser> {
@@ -151,7 +163,7 @@ export function createDriveClient(deps: DriveClientDeps) {
 
     async listFiles(folderId: string): Promise<DriveFile[]> {
       const q = `'${escapeQuery(folderId)}' in parents and trashed=false and mimeType!='${FOLDER_MIME}'`;
-      const r = await json<{ files?: { id: string; name: string; size?: string; createdTime?: string }[] }>(
+      const r = await json<{ files?: RawFile[] }>(
         `${API}/files?${queryString({ q, spaces: 'drive', orderBy: 'createdTime desc', pageSize: 100, fields: `files(${FILE_FIELDS})` })}`,
       );
       return (r.files ?? []).map(toFile);
@@ -169,10 +181,22 @@ export function createDriveClient(deps: DriveClientDeps) {
         },
         JSON.stringify({ name, parents: [folderId], mimeType }),
       );
-      const session = start.headers.get('location');
-      if (!session) throw new DriveError('Google Drive no devolvió la sesión de subida.', start.status, null);
-      const res = await call(session, 'PUT', { 'Content-Type': mimeType }, bytes);
-      return toFile(JSON.parse(await res.text()) as { id: string; name: string; size?: string; createdTime?: string });
+      return sendResumable(start, bytes, mimeType);
+    },
+
+    /** Replaces the content of an existing file (same id, same name). */
+    async update(fileId: string, bytes: Uint8Array, mimeType: string): Promise<DriveFile> {
+      const start = await call(
+        `${UPLOAD_API}/files/${encodeURIComponent(fileId)}?${queryString({ uploadType: 'resumable', fields: FILE_FIELDS })}`,
+        'PATCH',
+        {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'X-Upload-Content-Type': mimeType,
+          'X-Upload-Content-Length': String(bytes.length),
+        },
+        '{}',
+      );
+      return sendResumable(start, bytes, mimeType);
     },
 
     async download(fileId: string): Promise<Uint8Array> {

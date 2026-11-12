@@ -326,7 +326,7 @@ export default function BackupScreen() {
           </AppText>
         ) : null}
         <AppText variant="caption" tone="subtle">
-          Se conservan las 5 copias más recientes y una por día de las últimas 2 semanas.
+          Hay una sola copia, «careful-respaldo.zip», que se reemplaza en cada respaldo.
         </AppText>
       </View>
 
@@ -354,7 +354,7 @@ export default function BackupScreen() {
             ) : null}
             <Card padded={false}>
               {driveFiles.map((f, i) => {
-                const when = backupDateFromName(f.name)?.toISOString() ?? f.createdTime;
+                const when = backupDateFromName(f.name)?.toISOString() ?? f.modifiedTime;
                 return (
                   <ListRow
                     key={f.id}

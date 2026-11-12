@@ -8,7 +8,7 @@
 import { fetch as expoFetch } from 'expo/fetch';
 import { Platform } from 'react-native';
 
-import { backupFileName, backupsToPrune } from '@/domain/backup-policy';
+import { BACKUP_FILE_NAME, staleBackups } from '@/domain/backup-policy';
 import { createDriveClient, DRIVE_FILE_SCOPE, describeDriveError, type DriveFile, type HttpFetch } from '@/lib/google-drive';
 import { getSettings, useSettings } from '@/stores/settings';
 import { withExternalActivity } from '@/stores/ui';
@@ -106,17 +106,21 @@ export async function disconnectDrive(): Promise<void> {
   await useSettings.getState().patch('drive', { email: null, name: null, lastAt: null, lastError: null, pending: false });
 }
 
-/** Uploads a backup zip to "Careful Respaldos" and prunes old copies. */
+/**
+ * Saves the backup in "Careful Respaldos" as a single file: updates it when it exists (same file,
+ * Drive keeps it in place) and removes any other backup left there (older dated copies).
+ */
 export async function uploadBackupToDrive(bytes: Uint8Array, opts: { interactive: boolean }): Promise<DriveFile> {
   const drive = driveClient(opts.interactive);
   try {
     const folderId = await drive.ensureFolder(DRIVE_FOLDER_NAME);
-    const file = await drive.upload(folderId, backupFileName(), bytes, 'application/zip');
+    const files = await drive.listFiles(folderId);
+    const current = files.find((f) => f.name === BACKUP_FILE_NAME) ?? null;
+    const file = current ? await drive.update(current.id, bytes, 'application/zip') : await drive.upload(folderId, BACKUP_FILE_NAME, bytes, 'application/zip');
     try {
-      const old = backupsToPrune(await drive.listFiles(folderId));
-      for (const f of old) await drive.remove(f.id);
+      for (const f of staleBackups(files, current)) if (f.id !== file.id) await drive.remove(f.id);
     } catch {
-      // pruning is best effort
+      // cleaning up old copies is best effort
     }
     await useSettings.getState().patch('drive', { lastAt: new Date().toISOString(), lastError: null, pending: false });
     return file;

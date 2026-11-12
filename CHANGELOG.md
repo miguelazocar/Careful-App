@@ -42,6 +42,8 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
 - Se puede probar en **Expo Go**. Las funciones que necesitan módulos nativos propios (OCR del teléfono, Google Drive) avisan que no están disponibles en lugar de cerrar la app.
 
 ### Cambiado
+- **Reporte del vehículo en PDF**: botón **«Descargar reporte PDF»** a la vista en la ficha del auto, que lo genera y abre el menú para compartirlo o guardarlo. El reporte va en este orden: 1) datos del vehículo (ficha, uso y plan de mantenimiento), 2) historial completo de servicios, reparaciones y accesorios, 3) resumen de servicios y mantenimientos (cantidad, gasto, promedio y desglose por rubro), 4) resumen de accesorios (desglose por etiqueta) y 5) total general (gasto total, km recorridos y costo por km).
+- **Pantalla de bloqueo**: el fondo azul lleva un mosaico de íconos de servicios (aceite, filtros, batería, cubiertas, frenos, lavado…) casi transparente.
 - **Agenda en lista cronológica**, sin el calendario mensual: primero los vencidos y después mes por mes, con la fecha de cada service a la izquierda. Filtros por auto y por tipo de mantenimiento (y recordatorios).
 - **Historial**: se quitó el gráfico de gastos de los últimos 6 meses. Queda el registro completo por mes, con filtros por auto y por tipo (servicio, accesorios, kilometraje); al filtrar accesorios aparecen sus etiquetas en uso para filtrar por cada una.
 - **Nombres del catálogo corregidos**:
@@ -65,7 +67,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
   - Además, se guarda una copia por día, después de la medianoche.
   - Al conectar Drive o elegir una carpeta, ese destino queda activo sin más interruptores.
 - **Respaldo**: la pantalla tiene dos secciones, **Nube** y **Local**, y arriba una explicación breve de qué hace y cómo.
-- **Respaldo**: se conservan las 5 copias más recientes y una por día de las últimas 2 semanas, en lugar de las últimas 10. Así, muchos cambios seguidos no borran el historial.
+- **Respaldo en un solo archivo**: cada respaldo reemplaza al anterior, `careful-respaldo.zip`, en lugar de acumular una copia por fecha. En Google Drive se actualiza el mismo archivo; en la carpeta local se reescribe. Las copias con fecha que había se borran en el siguiente respaldo.
 - **Seguridad**: "PIN de Careful" pasa a llamarse "PIN de App".
 - **Apariencia**: la opción "Sistema" pasa a llamarse "Automático" y es la predeterminada.
 

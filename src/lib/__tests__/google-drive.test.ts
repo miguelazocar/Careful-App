@@ -90,11 +90,22 @@ describe('Drive client', () => {
       (c) => (c.method === 'POST' && c.url.includes('uploadType=resumable') ? response(200, '', { location: 'https://upload.example/session1' }) : undefined),
       (c) => (c.method === 'PUT' && c.url === 'https://upload.example/session1' ? response(200, { id: 'Z1', name: 'b.zip', size: '4', createdTime: '2026-11-07T00:00:00Z' }) : undefined),
     ]);
-    await expect(client.upload('F1', 'b.zip', bytes, 'application/zip')).resolves.toEqual({ id: 'Z1', name: 'b.zip', size: 4, createdTime: '2026-11-07T00:00:00Z' });
+    await expect(client.upload('F1', 'b.zip', bytes, 'application/zip')).resolves.toEqual({ id: 'Z1', name: 'b.zip', size: 4, createdTime: '2026-11-07T00:00:00Z', modifiedTime: '2026-11-07T00:00:00Z' });
     expect(calls[0].headers['X-Upload-Content-Length']).toBe('4');
     expect(JSON.parse(String(calls[0].body))).toEqual({ name: 'b.zip', parents: ['F1'], mimeType: 'application/zip' });
     expect(calls[1].body).toBe(bytes);
     expect(calls[1].headers['Content-Type']).toBe('application/zip');
+  });
+
+  it('updates an existing file in place (PATCH session on the same id, then PUT)', async () => {
+    const bytes = new Uint8Array([80, 75, 5, 6, 7]);
+    const { client, calls } = harness([
+      (c) => (c.method === 'PATCH' && c.url.includes('/files/Z1?') && c.url.includes('uploadType=resumable') ? response(200, '', { location: 'https://upload.example/session2' }) : undefined),
+      (c) => (c.method === 'PUT' && c.url === 'https://upload.example/session2' ? response(200, { id: 'Z1', name: 'careful-respaldo.zip', size: '5', createdTime: '2026-11-07T00:00:00Z', modifiedTime: '2026-11-12T03:00:00Z' }) : undefined),
+    ]);
+    await expect(client.update('Z1', bytes, 'application/zip')).resolves.toMatchObject({ id: 'Z1', size: 5, modifiedTime: '2026-11-12T03:00:00Z' });
+    expect(calls[0].headers['X-Upload-Content-Length']).toBe('5');
+    expect(calls[1].body).toBe(bytes);
   });
 
   it('lists files with numeric sizes and downloads bytes', async () => {
@@ -102,7 +113,7 @@ describe('Drive client', () => {
       (c) => (c.url.includes('alt=media') ? response(200, 'PK') : undefined),
       (c) => (c.url.includes('/files?') ? response(200, { files: [{ id: '1', name: 'x.zip', size: '2048', createdTime: 't' }] }) : undefined),
     ]);
-    await expect(client.listFiles('F1')).resolves.toEqual([{ id: '1', name: 'x.zip', size: 2048, createdTime: 't' }]);
+    await expect(client.listFiles('F1')).resolves.toEqual([{ id: '1', name: 'x.zip', size: 2048, createdTime: 't', modifiedTime: 't' }]);
     await expect(client.download('1')).resolves.toEqual(new Uint8Array([80, 75]));
   });
 });

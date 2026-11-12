@@ -8,7 +8,7 @@ Careful sube respaldos `.zip` (datos + fotos) a una carpeta **«Careful Respaldo
 |---|---|---|
 | Autorización | [`modules/careful-google-auth`](../modules/careful-google-auth) (Kotlin) | Pide el permiso con el `AuthorizationClient` de Google Identity Services, que reemplaza a la API GoogleSignIn, hoy deprecada. No hace falta "iniciar sesión": solo se autoriza el acceso a Drive. |
 | Cliente de Drive | [`src/lib/google-drive.ts`](../src/lib/google-drive.ts) | Cliente REST v3 mínimo y puro (con tests): carpeta, subida reanudable, listado, descarga, borrado y reintento con token nuevo ante un 401. |
-| Política | [`src/domain/backup-policy.ts`](../src/domain/backup-policy.ts) | Cuándo toca respaldar, qué red se permite ("Solo con Wi-Fi") y qué copias viejas se borran. |
+| Política | [`src/domain/backup-policy.ts`](../src/domain/backup-policy.ts) | Cuándo toca respaldar, qué red se permite ("Solo con Wi-Fi") y qué archivos son respaldos de Careful (para reemplazarlos). |
 | Servicio | [`src/services/drive.ts`](../src/services/drive.ts) y [`backup.ts`](../src/services/backup.ts) | Conectar y desconectar, subir, listar, restaurar, y los disparadores automáticos. |
 
 **Permiso `drive.file`**: la app solo ve los archivos que creó ella; el resto del Drive del usuario es invisible para Careful. Google lo clasifica como permiso **no sensible**, así que no requiere verificación de la app.
@@ -20,7 +20,7 @@ Careful sube respaldos `.zip` (datos + fotos) a una carpeta **«Careful Respaldo
 
 En el uso diario no aparece ninguna pantalla: si Google pide autorizar de nuevo, la subida queda pendiente, la app lo muestra como error en *Ajustes › Respaldo* y el usuario toca «Subir ahora» para autorizar.
 
-**Retención**: se conservan las **5 copias más recientes** y, además, **la última de cada día de las 2 últimas semanas**. Así, muchos cambios seguidos no borran el historial de días anteriores. Una base vacía (instalación nueva o "Borrar todos los datos") **nunca** se sube automáticamente, para no desplazar respaldos buenos.
+**Una sola copia**: el respaldo es siempre el mismo archivo, `careful-respaldo.zip`. En Drive se actualiza el contenido de ese archivo (mismo id); en la carpeta local se reemplaza. Las copias con fecha que dejaban versiones anteriores (`careful-respaldo-AAAA-MM-DD_HHMM.zip`) se borran en el siguiente respaldo. Una base vacía (instalación nueva o "Borrar todos los datos") **nunca** se sube automáticamente, para no desplazar respaldos buenos.
 
 ## Configurar Google Cloud (una sola vez)
 

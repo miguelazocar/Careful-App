@@ -76,7 +76,7 @@ IA en el alta: **escanear la cédula verde** completa los datos, y la **foto del
 - **Sin cuentas ni servidores**: los datos viven en tu teléfono.
 
 ### ☁️ Respaldo y sincronización
-- **Siempre automático**: una copia `.zip` (datos + fotos) **después de cada cambio** (una sola aunque hagas varios seguidos) y **una por día después de la medianoche**. Se conservan las 5 más recientes y una por día de las últimas 2 semanas.
+- **Siempre automático**: una copia `.zip` (datos + fotos) **después de cada cambio** (una sola aunque hagas varios seguidos) y **una por día después de la medianoche**. Es **un solo archivo**, `careful-respaldo.zip`, que se reemplaza en cada respaldo.
 - **Nube (Google Drive)**: carpeta «Careful Respaldos», **solo con Wi-Fi** o también con datos móviles, y restauración desde la lista de copias.
 - Permiso mínimo `drive.file`: Careful solo ve los archivos que crea.
 - **Copia de seguridad de Android** (Google One) con reglas propias.
@@ -96,7 +96,7 @@ En modo **Automático** usa Gemini si está configurado y cae a la IA local si n
 
 ### 📄 Más
 - Historial completo agrupado por mes, con **filtros por auto y por tipo** (servicio, accesorios, kilometraje) y, en accesorios, **por etiqueta**.
-- **Informe del vehículo en PDF** para la venta: resumen (km recorridos, gastos por rubro, costo por km, servicios), ficha técnica, estado de cada servicio e historial detallado con fotos.
+- **Reporte del vehículo en PDF** (botón «Descargar reporte PDF» en la ficha), listo para compartir o vender: datos del auto, historial completo con fotos y archivos, resumen de servicios por rubro, resumen de accesorios por etiqueta y total general (gasto, km recorridos y costo por km).
 - **Archivar** un auto que ya no tenés indicando el motivo (venta, pérdida, robo, cedido, embargado, siniestro, baja u otro): sale del garage y de los avisos, y queda en **Archivados** con todo su historial e informe PDF, listo para restaurar.
 - Tema **automático / claro / oscuro** (automático por defecto).
 

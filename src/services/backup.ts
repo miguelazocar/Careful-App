@@ -8,7 +8,7 @@ import { AppState } from 'react-native';
 import { onDataChanged } from '@/db/connection';
 import { exportSnapshot, importSnapshot, referencedPhotos, validatePayload, type BackupPayload } from '@/db/snapshot';
 import { listVehicles } from '@/db/vehicles';
-import { backupFileName, backupsToPrune, CHANGE_DEBOUNCE_MS, connectionAllowsUpload, isDailyBackupDue, type ConnectionKind } from '@/domain/backup-policy';
+import { BACKUP_FILE_NAME, backupFileName, CHANGE_DEBOUNCE_MS, connectionAllowsUpload, isBackupFileName, isDailyBackupDue, type ConnectionKind } from '@/domain/backup-policy';
 import { getSettings, useSettings } from '@/stores/settings';
 import { withExternalActivity } from '@/stores/ui';
 
@@ -47,29 +47,32 @@ export async function hasLocalData(): Promise<boolean> {
   return (await listVehicles({ includeArchived: true })).length > 0;
 }
 
-/** Writes a backup into the user-chosen folder (Android Storage Access Framework). */
+/**
+ * Writes the backup into the user-chosen folder (Android Storage Access Framework) as a single
+ * file, `careful-respaldo.zip`, replacing the previous one (and older dated copies).
+ * SAF can't rename and doesn't always truncate on write, so the old file is removed and written anew.
+ */
 export async function backupToFolder(zip?: Uint8Array): Promise<BackupResult> {
   const { folderUri } = getSettings().backup;
   if (!folderUri) throw new Error('Elegí una carpeta para los respaldos automáticos.');
   const bytes = zip ?? (await buildBackupZip()).bytes;
   const dir = new Directory(folderUri);
-  const name = backupFileName();
-  const file = dir.createFile(name, 'application/zip');
+  removeFolderBackups(dir);
+  const file = dir.createFile(BACKUP_FILE_NAME, 'application/zip');
   await file.write(bytes);
-  pruneOldBackups(dir);
   await useSettings.getState().patch('backup', { lastBackupAt: new Date().toISOString(), lastError: null });
-  return { name, size: bytes.length };
+  return { name: BACKUP_FILE_NAME, size: bytes.length };
 }
 
-function pruneOldBackups(dir: Directory): void {
+function removeFolderBackups(dir: Directory): void {
   try {
-    const files = dir
-      .list()
-      .filter((e): e is File => e instanceof File)
-      .map((file) => ({ file, name: decodeURIComponent(file.name).split('/').pop() ?? '' }));
-    for (const old of backupsToPrune(files)) old.file.delete();
+    for (const entry of dir.list()) {
+      if (!(entry instanceof File)) continue;
+      const name = decodeURIComponent(entry.name).split('/').pop() ?? '';
+      if (isBackupFileName(name)) entry.delete();
+    }
   } catch {
-    // listing SAF folders can fail on some providers — pruning is best effort
+    // listing SAF folders can fail on some providers — cleaning up is best effort
   }
 }
 
