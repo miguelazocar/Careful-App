@@ -11,6 +11,7 @@ import { toast, useLock } from '@/stores/ui';
 import { brand, radius, spacing } from '@/theme/tokens';
 
 import { Wordmark } from './brand';
+import { IconMosaic } from './IconMosaic';
 import { AppText, Icon } from './ui/primitives';
 
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'bio', '0', 'del'] as const;
@@ -185,6 +186,7 @@ export function LockScreen() {
   return (
     <View style={{ position: 'absolute', inset: 0, zIndex: 999 }}>
       <LinearGradient colors={['#0B1B3F', '#0547C9']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1, paddingTop: insets.top + 48, paddingBottom: insets.bottom + 24, alignItems: 'center', justifyContent: 'space-between' }}>
+        <IconMosaic />
         <View style={{ alignItems: 'center', gap: spacing.md }}>
           <View style={{ backgroundColor: '#FFFFFF', paddingHorizontal: 18, paddingVertical: 10, borderRadius: radius.lg }}>
             <Wordmark height={30} variant="light" />
