@@ -132,7 +132,20 @@ export default function VehicleDetailScreen() {
         <LinearGradient colors={['rgba(7,11,20,0.55)', 'rgba(7,11,20,0)', 'rgba(7,11,20,0.75)']} locations={[0, 0.35, 1]} style={{ position: 'absolute', inset: 0 }} />
         <View style={{ position: 'absolute', top: insets.top + 8, left: spacing.lg, right: spacing.lg, flexDirection: 'row', justifyContent: 'space-between' }}>
           <IconButton icon="arrow-left" tone="glass" accessibilityLabel="Volver" onPress={() => router.back()} />
-          <IconButton icon="dots-vertical" tone="glass" accessibilityLabel="Más opciones" onPress={() => setSheet('menu')} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+            <Pressable
+              onPress={() => void exportPdf()}
+              disabled={exporting}
+              accessibilityRole="button"
+              accessibilityLabel="Descargar reporte PDF"
+              style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 6, height: 44, paddingHorizontal: 14, borderRadius: radius.pill, backgroundColor: pressed ? 'rgba(7,11,20,0.75)' : 'rgba(7,11,20,0.55)' })}>
+              <Icon name={exporting ? 'progress-clock' : 'file-pdf-box'} size={20} color="#FFFFFF" />
+              <AppText variant="captionStrong" color="#FFFFFF">
+                {exporting ? 'Generando…' : 'Descargar reporte PDF'}
+              </AppText>
+            </Pressable>
+            <IconButton icon="dots-vertical" tone="glass" accessibilityLabel="Más opciones" onPress={() => setSheet('menu')} />
+          </View>
         </View>
         <View style={{ position: 'absolute', left: spacing.lg, right: spacing.lg, bottom: spacing.xl + 8, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
           <BrandLogo brandId={v.brandId} brand={v.brand} size={48} />
@@ -200,7 +213,6 @@ export default function VehicleDetailScreen() {
         {archived ? (
           <View style={{ flexDirection: 'row', gap: spacing.xs }}>
             <Action icon="history" label="Historial" primary onPress={() => setSheet('history')} />
-            <Action icon="file-pdf-box" label={exporting ? 'Generando…' : 'Informe PDF'} onPress={() => void exportPdf()} />
             <Action icon="archive-arrow-up-outline" label="Restaurar" onPress={() => void restore()} />
           </View>
         ) : (
@@ -260,7 +272,7 @@ export default function VehicleDetailScreen() {
 
       <Sheet visible={sheet === 'menu'} onClose={() => setSheet(null)} title={`${v.brand} ${v.model}`}>
         <View style={{ borderRadius: radius.lg, overflow: 'hidden', backgroundColor: colors.surface }}>
-          <ListRow icon="file-pdf-box" title={exporting ? 'Generando…' : 'Informe del vehículo (PDF)'} subtitle="Resumen, ficha técnica e historial: ideal para vender" onPress={() => void exportPdf()} />
+          <ListRow icon="file-pdf-box" title={exporting ? 'Generando…' : 'Descargar reporte PDF'} subtitle="Datos, historial, resúmenes y totales: para compartir o vender" onPress={() => void exportPdf()} />
           {archived ? (
             <ListRow icon="archive-arrow-up-outline" title="Restaurar al garage" subtitle="Vuelve a la lista, la agenda y los avisos" onPress={() => void restore()} />
           ) : (

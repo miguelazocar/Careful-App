@@ -6,7 +6,7 @@ import { daysBetween, minDay } from '@/lib/dates';
 
 import type { LogRecordFull, Vehicle } from '@/db/types';
 
-import { ACCESSORY_CATEGORY, CORE_ITEM, findCategory } from './maintenance';
+import { ACCESSORY_CATEGORY, accessoryTag, CORE_ITEM, findCategory } from './maintenance';
 
 export interface SpendGroup {
   key: string;
@@ -36,12 +36,38 @@ export interface ReportSummary {
   odometerUpdates: number;
   oilChanges: number;
   lastOilChange: { date: string; km: number | null } | null;
+  firstService: string | null;
   lastService: string | null;
+  firstAccessory: string | null;
+  lastAccessory: string | null;
   /** Spending per category, biggest first. */
   byGroup: SpendGroup[];
+  /** Services and maintenance per category (every record, with or without amount), biggest first. */
+  serviceGroups: SpendGroup[];
+  /** Accessories per tag ("Sin etiqueta" when none), biggest first. */
+  accessoryTags: SpendGroup[];
 }
 
 const DAYS_PER_MONTH = 30.44;
+
+const biggestFirst = (a: SpendGroup, b: SpendGroup) => b.cents - a.cents || b.count - a.count || a.label.localeCompare(b.label, 'es');
+
+function groupBy(records: LogRecordFull[], keyOf: (r: LogRecordFull) => Omit<SpendGroup, 'cents' | 'count'>): SpendGroup[] {
+  const groups = new Map<string, SpendGroup>();
+  for (const r of records) {
+    const k = keyOf(r);
+    const g = groups.get(k.key) ?? { ...k, cents: 0, count: 0 };
+    g.cents += r.amountCents ?? 0;
+    g.count += 1;
+    groups.set(k.key, g);
+  }
+  return [...groups.values()].sort(biggestFirst);
+}
+
+const dateRange = (list: LogRecordFull[]) => ({
+  first: list.reduce<string | null>((m, r) => (!m || r.date < m ? r.date : m), null),
+  last: list.reduce<string | null>((m, r) => (!m || r.date > m ? r.date : m), null),
+});
 
 export function summarizeHistory(
   vehicle: Pick<Vehicle, 'createdAt' | 'initialOdometer'>,
@@ -75,6 +101,17 @@ export function summarizeHistory(
     groups.set(key, g);
   }
 
+  const serviceDates = dateRange(services);
+  const accessoryDates = dateRange(accessories);
+  const serviceGroups = groupBy(services, (r) => {
+    const cat = findCategory(r.items[0]?.category ?? '');
+    return { key: cat?.key ?? 'otros', label: cat?.label ?? 'Otros', color: cat?.color ?? '#64748B' };
+  });
+  const accessoryTags = groupBy(accessories, (r) => {
+    const tag = r.items[0] ? accessoryTag(r.items[0].item) : undefined;
+    return { key: tag?.key ?? 'sin-etiqueta', label: tag?.label ?? 'Sin etiqueta', color: ACCESSORY_CATEGORY.color };
+  });
+
   const kmPerMonth = current.dailyKm ? current.dailyKm * DAYS_PER_MONTH : days >= 30 && kmDriven > 0 ? (kmDriven / days) * DAYS_PER_MONTH : null;
 
   return {
@@ -94,7 +131,12 @@ export function summarizeHistory(
     odometerUpdates: records.filter((r) => r.kind === 'odometer').length,
     oilChanges: oil.length,
     lastOilChange: oil[0] ? { date: oil[0].date, km: oil[0].odometer } : null,
-    lastService: services.reduce<string | null>((m, r) => (!m || r.date > m ? r.date : m), null),
+    firstService: serviceDates.first,
+    lastService: serviceDates.last,
+    firstAccessory: accessoryDates.first,
+    lastAccessory: accessoryDates.last,
     byGroup: [...groups.values()].sort((a, b) => b.cents - a.cents),
+    serviceGroups,
+    accessoryTags,
   };
 }

@@ -9,11 +9,12 @@ import { getServiceRules } from '@/db/reminders';
 import type { LogRecordFull, Vehicle } from '@/db/types';
 import { getVehicle } from '@/db/vehicles';
 import { isLightColor } from '@/domain/colors';
-import { countryName, flagEmoji } from '@/domain/countries';
+import { archiveReasonLabel } from '@/domain/archive';
+import { countryName } from '@/domain/countries';
 import { accessoryTag, CORE_ITEM, findCategory, itemName } from '@/domain/maintenance';
 import { dueText } from '@/domain/notification-plan';
 import { formatPlate } from '@/domain/plate';
-import { summarizeHistory, type ReportSummary } from '@/domain/report-summary';
+import { summarizeHistory, type SpendGroup } from '@/domain/report-summary';
 import { resolveInterval, type UpcomingItem } from '@/domain/schedule';
 import { coolantBaseLabel, coolantMix, fuelLabel, oilBaseLabel } from '@/domain/vehicle-specs';
 import { formatDay, today } from '@/lib/dates';
@@ -26,9 +27,11 @@ import { loadUpcoming, vehicleLabel } from './upcoming';
 
 /**
  * Vehicle report (PDF) to hand to a buyer or a workshop:
- *  1. Resumen — photo, technical sheet, key figures since the vehicle was added, spending by
- *     category and the state of every scheduled service.
- *  2. Historial — every record with date, km, amount, what was done, notes and photos.
+ *  1. Datos del vehículo — photo, technical sheet, usage and the state of the maintenance plan.
+ *  2. Historial — every service, repair and accessory with date, km, amount, notes and files.
+ *  3. Resumen de servicios y mantenimientos — counts, spending and a breakdown per category.
+ *  4. Resumen de accesorios — counts, spending and a breakdown per tag.
+ *  5. Total general — everything added up, km driven and cost per km.
  */
 
 const esc = (s: string | null | undefined) =>
@@ -88,21 +91,6 @@ function kpi(label: string, value: string, sub?: string | null): string {
   return `<div class="kpi"><span>${esc(label)}</span><b>${esc(value)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</div>`;
 }
 
-function spendBars(s: ReportSummary): string {
-  if (!s.byGroup.length) return '';
-  const max = Math.max(...s.byGroup.map((g) => g.cents));
-  const rows = s.byGroup
-    .slice(0, 8)
-    .map((g) => {
-      const pct = Math.max(2, Math.round((g.cents / max) * 100));
-      const share = s.totalCents ? Math.round((g.cents / s.totalCents) * 100) : 0;
-      return `<div class="bar"><div class="bl"><i style="background:${g.color}"></i>${esc(g.label)}<small>${g.count} ${g.count === 1 ? 'registro' : 'registros'}</small></div>
-        <div class="bt"><div style="width:${pct}%"></div></div><div class="bv">${esc(formatAmount(g.cents))}<small>${share}%</small></div></div>`;
-    })
-    .join('');
-  return `<section class="keep"><h2>Gastos por rubro</h2><div class="bars">${rows}</div></section>`;
-}
-
 function serviceTable(items: UpcomingItem[]): string {
   const services = items.filter((i) => i.source === 'service' || i.source === 'manual');
   if (!services.length) return '';
@@ -116,8 +104,8 @@ function serviceTable(items: UpcomingItem[]): string {
         <td><span class="chip" style="color:${st.color};background:${st.bg}">${st.mark} ${st.label}</span></td></tr>`;
     })
     .join('');
-  return `<section class="keep"><h2>Estado del mantenimiento</h2>
-    <table class="grid"><thead><tr><th>Servicio</th><th>Último</th><th>Próximo</th><th>Estado</th></tr></thead><tbody>${rows}</tbody></table></section>`;
+  return `<div class="keep"><h3 class="sub">Plan de mantenimiento</h3>
+    <table class="grid"><thead><tr><th>Servicio</th><th>Último</th><th>Próximo</th><th>Estado</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
 function recordCard(r: LogRecordFull, thumbs: string[]): string {
@@ -158,7 +146,7 @@ export async function buildVehicleReportHtml(vehicleId: string): Promise<string>
   const cover = await imageData(v.photo, 1000, 0.75);
   let budget = MAX_THUMBS;
   const thumbsBy = new Map<string, string[]>();
-  for (const r of records) {
+  for (const r of records.filter((x) => x.kind !== 'odometer')) {
     if (budget <= 0) break;
     const list: string[] = [];
     // documents (PDF, Word…) can't be embedded: they are listed by name in the card
@@ -175,9 +163,14 @@ export async function buildVehicleReportHtml(vehicleId: string): Promise<string>
   const mix = coolantMix(v.coolantLiters, v.coolantConcentration);
   const plate = v.plate ? formatPlate(v.plate, v.country) : null;
 
-  const history = records.length
-    ? records.map((r) => recordCard(r, thumbsBy.get(r.id) ?? [])).join('')
-    : '<p class="muted">Todavía no hay registros.</p>';
+  // the history lists what was done to the car; odometer readings only feed the km figures
+  const done = records.filter((r) => r.kind !== 'odometer');
+  const history = done.length
+    ? done.map((r) => recordCard(r, thumbsBy.get(r.id) ?? [])).join('')
+    : '<p class="muted">Todavía no hay servicios ni accesorios registrados.</p>';
+  const period = (first: string | null, last: string | null) => (first && last ? (first === last ? formatDay(first) : `${formatDay(first)} – ${formatDay(last)}`) : null);
+  const avg = (cents: number, count: number) => (count ? formatAmount(Math.round(cents / count)) : '—');
+  const archived = v.archivedAt ? `Archivado · ${archiveReasonLabel(v.archivedReason)} · ${formatDay(v.archivedAt.slice(0, 10))}${v.archivedNote ? ` · ${v.archivedNote}` : ''}` : 'En uso';
 
   return `<!doctype html><html lang="es"><head><meta charset="utf-8"/>
 <style>
@@ -197,26 +190,26 @@ export async function buildVehicleReportHtml(vehicleId: string): Promise<string>
   h1 { font-size: 26px; line-height: 1.1; margin: 0; letter-spacing: -0.5px; }
   .ver { color: #3B4A60; font-size: 12px; }
   .plate { display: inline-block; align-self: flex-start; margin-top: 4px; padding: 3px 12px; border: 2px solid #141C2B; border-radius: 6px; font-weight: 800; font-size: 15px; letter-spacing: 2px; }
-  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 4px 0 10px; } .kpis.k3 { grid-template-columns: repeat(3, 1fr); }
   .kpi { background: #F2F6FC; border-radius: 10px; padding: 9px 11px; }
   .kpi span { display: block; color: #5F6E85; font-size: 9px; text-transform: uppercase; letter-spacing: .6px; font-weight: 700; }
-  .kpi b { display: block; font-size: 17px; color: #0547C9; margin-top: 2px; letter-spacing: -0.3px; }
-  h2 { font-size: 11px; margin: 18px 0 8px; color: #0547C9; text-transform: uppercase; letter-spacing: 1.2px; }
+  .kpi b { display: block; font-size: 16px; color: #0547C9; margin-top: 2px; letter-spacing: -0.3px; }
+  h2 { font-size: 12px; margin: 20px 0 8px; color: #0547C9; text-transform: uppercase; letter-spacing: 1.2px; display: flex; align-items: center; gap: 8px; }
+  h2 .num { display: inline-flex; width: 20px; height: 20px; border-radius: 10px; background: #0B63F6; color: #fff; align-items: center; justify-content: center; font-size: 11px; letter-spacing: 0; }
+  h2, h3.sub { break-after: avoid; page-break-after: avoid; }
+  h3.sub { font-size: 10px; margin: 12px 0 6px; color: #3B4A60; text-transform: uppercase; letter-spacing: .8px; }
   .sheet { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border: 1px solid #E1E7F0; border-radius: 12px; overflow: hidden; }
   .sheet h4 { grid-column: 1 / -1; margin: 0; padding: 6px 12px; background: #F7F9FC; font-size: 10px; color: #3B4A60; text-transform: uppercase; letter-spacing: .8px; border-top: 1px solid #E1E7F0; }
   .sheet h4:first-child { border-top: 0; }
   .field { padding: 6px 12px; border-top: 1px solid #EEF1F6; } .field.wide { grid-column: span 2; }
   .field span { display: block; color: #5F6E85; font-size: 9px; text-transform: uppercase; letter-spacing: .5px; }
   .field b { font-size: 11.5px; } .field b.empty { color: #A3AEC0; font-weight: 400; }
-  .bars { display: grid; gap: 6px; }
-  .bar { display: grid; grid-template-columns: 34% 1fr 22%; gap: 10px; align-items: center; }
-  .bl { font-weight: 600; } .bl i { display: inline-block; width: 8px; height: 8px; border-radius: 4px; margin-right: 6px; }
-  .bl small { display: inline; margin-left: 6px; }
-  .bt { height: 10px; background: #EEF2F8; border-radius: 5px; overflow: hidden; } .bt div { height: 10px; background: #0B63F6; border-radius: 5px; }
-  .bv { text-align: right; font-weight: 700; } .bv small { display: inline; margin-left: 6px; }
   table.grid { width: 100%; border-collapse: collapse; }
   table.grid th { text-align: left; font-size: 9px; text-transform: uppercase; letter-spacing: .6px; color: #5F6E85; border-bottom: 1px solid #E1E7F0; padding: 5px 6px; }
   table.grid td { border-bottom: 1px solid #EEF1F6; padding: 6px; vertical-align: top; }
+  table.grid .n { text-align: right; white-space: nowrap; }
+  table.grid tfoot td { font-weight: 800; border-bottom: 0; border-top: 1.5px solid #C9D3E1; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 4px; margin-right: 6px; }
   .chip { display: inline-block; padding: 2px 8px; border-radius: 10px; font-weight: 700; font-size: 10px; white-space: nowrap; }
   .keep { break-inside: avoid; page-break-inside: avoid; }
   .rec { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid #EEF1F6; break-inside: avoid; page-break-inside: avoid; }
@@ -225,17 +218,22 @@ export async function buildVehicleReportHtml(vehicleId: string): Promise<string>
   .top { display: flex; justify-content: space-between; align-items: center; }
   .kind { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; border: 1px solid; border-radius: 8px; padding: 1px 7px; }
   .amount { font-weight: 800; font-size: 12.5px; }
-  h3 { margin: 4px 0 2px; font-size: 13px; }
+  .rec h3 { margin: 4px 0 2px; font-size: 13px; }
   .meta { display: flex; gap: 14px; color: #3B4A60; font-size: 10.5px; }
   .body p { margin: 5px 0 0; color: #2A3446; }
   .next { margin-top: 5px; padding: 5px 8px; background: #F2F6FC; border-radius: 6px; color: #0547C9; font-size: 10px; }
   .docs { margin-top: 6px; font-size: 11px; color: #475569; }
   .thumbs { display: flex; gap: 6px; margin-top: 7px; } .thumbs img { width: 120px; height: 86px; object-fit: cover; border-radius: 8px; }
+  table.totals { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+  table.totals td { padding: 9px 12px; border-bottom: 1px solid #E1E7F0; font-size: 12px; }
+  table.totals td:last-child { text-align: right; font-weight: 700; white-space: nowrap; }
+  table.totals tr.grand td { background: #0B63F6; color: #fff; font-size: 15px; font-weight: 800; border-bottom: 0; }
+  table.totals tr.grand td small { color: rgba(255,255,255,.8); }
   .foot { margin-top: 18px; padding-top: 8px; border-top: 1px solid #E1E7F0; color: #94A0B4; font-size: 9px; text-align: center; }
 </style></head><body>
 
 <div class="hdr"><div class="logo"><span class="c">Car</span><span class="t">eful</span></div>
-  <div class="doc"><b>Informe del vehículo</b>Generado el ${esc(formatDay(now, "d 'de' MMMM 'de' yyyy"))}</div></div>
+  <div class="doc"><b>Reporte del vehículo</b>Generado el ${esc(formatDay(now, "d 'de' MMMM 'de' yyyy"))}</div></div>
 
 <div class="hero">
   ${cover ? `<div class="photo" style="background-image:url('${cover}')"></div>` : ''}
@@ -247,24 +245,16 @@ export async function buildVehicleReportHtml(vehicleId: string): Promise<string>
   </div>
 </div>
 
-<div class="kpis">
-  ${kpi('Km recorridos', formatKm(s.kmDriven), `desde el alta: ${formatInt(s.kmStart)} → ${formatInt(s.kmNow)} km`)}
-  ${kpi('Kilometraje actual', formatKm(s.kmNow), s.kmPerMonth ? `uso promedio ${formatInt(s.kmPerMonth)} km/mes` : null)}
-  ${kpi('Gasto total', formatAmount(s.totalCents), `servicios ${formatAmount(s.serviceCents)} · accesorios ${formatAmount(s.accessoryCents)}`)}
-  ${kpi('Costo por km', s.costPerKmCents !== null ? formatAmount(s.costPerKmCents) : '—', 'gasto total ÷ km recorridos')}
-  ${kpi('Servicios realizados', formatInt(s.services), s.lastService ? `último: ${formatDay(s.lastService)}` : null)}
-  ${kpi('Cambios de aceite', formatInt(s.oilChanges), s.lastOilChange ? `último: ${formatDay(s.lastOilChange.date)}${s.lastOilChange.km !== null ? ` · ${formatKm(s.lastOilChange.km)}` : ''}` : null)}
-  ${kpi('Accesorios', formatInt(s.accessories), s.accessories ? formatAmount(s.accessoryCents) : null)}
-  ${kpi('Historial', s.months >= 1 ? months(s.months) : 'menos de 1 mes', `desde ${formatDay(s.since)} · ${s.records} registros`)}
-</div>
-
-<section class="keep"><h2>Ficha técnica</h2>
-<div class="sheet">
+<section><h2><span class="num">1</span>Datos del vehículo</h2>
+<div class="sheet keep">
   <h4>Vehículo</h4>
   ${field('Marca', v.brand)}${field('Modelo', v.model)}${field('Año', v.year)}
   ${field('Versión', v.variant, true)}${field('Color', v.color)}
-  ${field('Patente', plate ? `${flagEmoji(v.country)} ${plate}` : null)}${field('País', countryName(v.country))}${field('Combustible', fuelLabel(v.fuel))}
+  ${field('Patente', plate)}${field('País', countryName(v.country))}${field('Combustible', fuelLabel(v.fuel))}
   ${field('N° de chasis (VIN)', v.vin, true)}${field('N° de motor', v.engineNumber)}
+  <h4>Uso</h4>
+  ${field('Kilometraje actual', formatKm(s.kmNow))}${field('Km recorridos desde el alta', formatKm(s.kmDriven))}${field('Uso promedio', s.kmPerMonth ? `${formatInt(s.kmPerMonth)} km/mes` : null)}
+  ${field('En Careful desde', formatDay(s.since))}${field('Estado', archived, true)}
   <h4>Aceite de motor</h4>
   ${field('Tipo', oilBaseLabel(v.oilBase))}${field('Marca y modelo', [v.oilBrand, v.oilModel].filter(Boolean).join(' ') || null)}${field('Versión', v.oilType)}
   ${field('Cantidad (con filtro)', liters(v.oilLiters))}${field('Cambio cada', oilEvery || null, true)}
@@ -272,15 +262,68 @@ export async function buildVehicleReportHtml(vehicleId: string): Promise<string>
   ${field('Tipo', coolantBaseLabel(v.coolantBase))}${field('Marca y modelo', [v.coolantBrand, v.coolantModel].filter(Boolean).join(' ') || null)}${field('Versión', v.coolantType)}
   ${field('Cantidad total', liters(v.coolantLiters))}${field('Concentración', v.coolantConcentration ? `${v.coolantConcentration}%` : null)}
   ${field('Mezcla', mix ? `${liters(mix.coolant)} refrigerante + ${liters(mix.water)} agua desmineralizada` : null)}
-</div></section>
+</div>
+${v.archivedAt ? '' : serviceTable(upcoming.items)}
+</section>
 
-${spendBars(s)}
-${serviceTable(upcoming.items)}
+<section><h2><span class="num">2</span>Historial · ${done.length} ${done.length === 1 ? 'registro' : 'registros'}</h2>${history}</section>
 
-<section><h2>Historial detallado · ${s.records} registros</h2>${history}</section>
+<section class="keep"><h2><span class="num">3</span>Resumen de servicios y mantenimientos</h2>
+${
+  s.services
+    ? `<div class="kpis">
+  ${kpi('Servicios realizados', formatInt(s.services), period(s.firstService, s.lastService))}
+  ${kpi('Gastado en servicios', formatAmount(s.serviceCents), `promedio ${avg(s.serviceCents, s.services)} por servicio`)}
+  ${kpi('Cambios de aceite', formatInt(s.oilChanges), s.lastOilChange ? `último: ${formatDay(s.lastOilChange.date)}${s.lastOilChange.km !== null ? ` · ${formatKm(s.lastOilChange.km)}` : ''}` : null)}
+  ${kpi('Último servicio', s.lastService ? formatDay(s.lastService) : '—', null)}
+</div>
+${breakdown(s.serviceGroups, s.serviceCents, 'Rubro', 'Servicios')}`
+    : '<p class="muted">No hay servicios ni mantenimientos registrados.</p>'
+}
+</section>
 
-<div class="foot">Informe generado con Careful el ${esc(formatDay(now))}. Los registros fueron cargados por el propietario del vehículo.</div>
+<section class="keep"><h2><span class="num">4</span>Resumen de accesorios</h2>
+${
+  s.accessories
+    ? `<div class="kpis k3">
+  ${kpi('Accesorios instalados', formatInt(s.accessories), period(s.firstAccessory, s.lastAccessory))}
+  ${kpi('Gastado en accesorios', formatAmount(s.accessoryCents), `promedio ${avg(s.accessoryCents, s.accessories)} por accesorio`)}
+  ${kpi('Último accesorio', s.lastAccessory ? formatDay(s.lastAccessory) : '—', null)}
+</div>
+${breakdown(s.accessoryTags, s.accessoryCents, 'Etiqueta', 'Cantidad')}`
+    : '<p class="muted">No hay accesorios registrados.</p>'
+}
+</section>
+
+<section class="keep"><h2><span class="num">5</span>Total general</h2>
+<table class="totals">
+  <tr><td>Servicios y mantenimientos<small>${s.services} ${s.services === 1 ? 'registro' : 'registros'}</small></td><td>${esc(formatAmount(s.serviceCents))}</td></tr>
+  <tr><td>Accesorios<small>${s.accessories} ${s.accessories === 1 ? 'registro' : 'registros'}</small></td><td>${esc(formatAmount(s.accessoryCents))}</td></tr>
+  <tr class="grand"><td>Total gastado<small>${s.services + s.accessories} registros · ${esc(period(s.since, now) ?? '')}</small></td><td>${esc(formatAmount(s.totalCents))}</td></tr>
+</table>
+<div class="kpis k3">
+  ${kpi('Km recorridos desde el alta', formatKm(s.kmDriven), `${formatInt(s.kmStart)} → ${formatInt(s.kmNow)} km`)}
+  ${kpi('Costo por km', s.costPerKmCents !== null ? formatAmount(s.costPerKmCents) : '—', 'total gastado ÷ km recorridos')}
+  ${kpi('Período del historial', s.months >= 1 ? months(s.months) : 'menos de 1 mes', `desde ${formatDay(s.since)}`)}
+</div>
+</section>
+
+<div class="foot">Reporte generado con Careful el ${esc(formatDay(now))}. Los registros fueron cargados por el propietario del vehículo.</div>
 </body></html>`;
+}
+
+/** Summary table of a breakdown (rubros or etiquetas) with a total row. */
+function breakdown(groups: SpendGroup[], totalCents: number, firstCol: string, countCol: string): string {
+  if (!groups.length) return '';
+  const count = groups.reduce((n, g) => n + g.count, 0);
+  const rows = groups
+    .map((g) => {
+      const share = totalCents ? Math.round((g.cents / totalCents) * 100) : 0;
+      return `<tr><td><i class="dot" style="background:${g.color}"></i>${esc(g.label)}</td><td class="n">${g.count}</td><td class="n">${esc(formatAmount(g.cents))}</td><td class="n">${share}%</td></tr>`;
+    })
+    .join('');
+  return `<table class="grid"><thead><tr><th>${esc(firstCol)}</th><th class="n">${esc(countCol)}</th><th class="n">Gastado</th><th class="n">% del gasto</th></tr></thead>
+    <tbody>${rows}</tbody><tfoot><tr><td>Total</td><td class="n">${count}</td><td class="n">${esc(formatAmount(totalCents))}</td><td class="n">${totalCents ? '100%' : '—'}</td></tr></tfoot></table>`;
 }
 
 export async function shareVehicleReport(vehicleId: string): Promise<void> {
@@ -288,10 +331,10 @@ export async function shareVehicleReport(vehicleId: string): Promise<void> {
   const { uri } = await Print.printToFileAsync({ html });
   const vehicle = await getVehicle(vehicleId);
   const safe = (vehicle ? vehicleLabel(vehicle) : 'vehiculo').replace(/[^\w\- ]+/g, '').replace(/\s+/g, '-');
-  const target = new File(Paths.cache, `Careful-${safe}-informe.pdf`);
+  const target = new File(Paths.cache, `Careful-${safe}-reporte.pdf`);
   if (target.exists) target.delete();
   new File(uri).moveSync(target);
   await withExternalActivity(() =>
-    Sharing.shareAsync(target.uri, { mimeType: 'application/pdf', dialogTitle: 'Compartir informe del vehículo', UTI: 'com.adobe.pdf' }),
+    Sharing.shareAsync(target.uri, { mimeType: 'application/pdf', dialogTitle: 'Compartir reporte del vehículo', UTI: 'com.adobe.pdf' }),
   );
 }

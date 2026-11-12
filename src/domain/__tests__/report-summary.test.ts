@@ -59,6 +59,26 @@ describe('summarizeHistory', () => {
     ]);
   });
 
+  it('breaks services down by category and accessories by tag, with their date range', () => {
+    const extra = [
+      ...records,
+      rec('maintenance', '2025-08-01', 46_000, null, [['frenos', 'frenos.liquido']]),
+      rec('accessory', '2025-10-01', 48_000, 5_000_00, [['accesorios', 'accesorios.otro']]),
+      rec('accessory', '2026-02-01', 53_000, 20_000_00, [['accesorios', 'accesorios.polarizado']]),
+    ];
+    const s = summarizeHistory(vehicle, extra, { km: 55_000, dailyKm: null }, '2026-03-10');
+    expect(s.serviceGroups.map((g) => [g.label, g.count, g.cents])).toEqual([
+      ['Motor', 2, 220_000_00],
+      ['Ruedas', 1, 30_000_00],
+      ['Frenos', 1, 0],
+    ]);
+    expect(s.accessoryTags.map((g) => [g.label, g.count, g.cents])).toEqual([
+      ['Polarizado', 2, 100_000_00],
+      ['Sin etiqueta', 1, 5_000_00],
+    ]);
+    expect([s.firstService, s.lastService, s.firstAccessory, s.lastAccessory]).toEqual(['2025-02-01', '2026-01-15', '2025-09-01', '2026-02-01']);
+  });
+
   it('uses the usage estimate for km per month when available', () => {
     expect(summarizeHistory(vehicle, records, { km: 55_000, dailyKm: 40 }, '2026-03-10').kmPerMonth).toBe(1_218);
     expect(summarizeHistory(vehicle, records, { km: 55_000, dailyKm: null }, '2026-03-10').kmPerMonth).toBe(1_077); // 15.000 km in 424 days
