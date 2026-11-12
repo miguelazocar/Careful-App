@@ -55,7 +55,7 @@ IA en el alta: **escanear la cédula verde** completa los datos, y la **foto del
 
 ### 🔧 Registro de actividad (botón ＋ central)
 - **Servicio / Mantenimiento**: «¿Qué se hizo?» con las categorías (Motor, Caja, Frenos, Tren delantero, Ruedas, Sistema eléctrico, Climatización, Lavado…) y sus tareas; se pueden elegir varias. Las tareas del plan de mantenimiento piden **cada cuántos km y meses toca la próxima**, precargado con el plan del auto. La ficha del auto lo abre con **＋ Evento**.
-- **Accesorios**: panel rápido con qué pusiste, una **etiqueta** (Luces, Estéreo, Alarma…) para filtrar, descripción, monto, km y foto.
+- **Accesorios**: panel rápido con qué pusiste, una **etiqueta** (Luces, Estéreo, Alarma…) para filtrar, descripción, monto, km, fecha y foto.
 - **Kilometraje**: panel rápido con el km actual y una descripción.
 - Km (validado contra el historial), monto **sin símbolo de moneda**, descripción con **"Mejorar texto"**, taller y foto opcional.
 

@@ -4,7 +4,7 @@ import { Alert, Pressable, ScrollView, View } from 'react-native';
 import { create } from 'zustand';
 
 import { PhotoStrip, VehicleSelector } from '@/components/pickers';
-import { FieldLabel, TextField } from '@/components/ui/inputs';
+import { DateField, FieldLabel, TextField } from '@/components/ui/inputs';
 import { Sheet } from '@/components/ui/overlays';
 import { AppText, Button, Icon } from '@/components/ui/primitives';
 import { createRecord, getOdometerReadings, getRecord, updateRecord, type RecordInput } from '@/db/records';
@@ -24,7 +24,7 @@ import { radius, spacing } from '@/theme/tokens';
 /**
  * Quick modals for the two light records:
  *  - Accesorio: qué se puso, una etiqueta opcional (luces, estéreo…) para filtrar, descripción,
- *    monto, km y foto.
+ *    monto, km, fecha (hoy por defecto) y foto.
  *  - Kilometraje: km actual y descripción, nada más.
  * Opened from anywhere with `openQuickRecord`; `QuickRecordHost` lives in the root layout.
  */
@@ -225,6 +225,7 @@ function QuickRecordSheet({ req, visible, onClose }: { req: QuickRequest; visibl
               </View>
               <View style={{ flex: 1 }}>{kmField}</View>
             </View>
+            <DateField label="Fecha" value={date} onChange={setDate} />
             <View>
               <FieldLabel label="Foto" hint="Opcional" />
               <PhotoStrip
