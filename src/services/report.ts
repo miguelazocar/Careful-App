@@ -10,7 +10,7 @@ import type { LogRecordFull, Vehicle } from '@/db/types';
 import { getVehicle } from '@/db/vehicles';
 import { isLightColor } from '@/domain/colors';
 import { countryName, flagEmoji } from '@/domain/countries';
-import { CORE_ITEM, findCategory, findItem, isOtherItem } from '@/domain/maintenance';
+import { accessoryTag, CORE_ITEM, findCategory, itemName } from '@/domain/maintenance';
 import { dueText } from '@/domain/notification-plan';
 import { formatPlate } from '@/domain/plate';
 import { summarizeHistory, type ReportSummary } from '@/domain/report-summary';
@@ -49,7 +49,6 @@ const STATUS: Record<string, { label: string; mark: string; color: string; bg: s
   overdue: { label: 'Vencido', mark: '✕', color: '#B42332', bg: '#FDE7EA' },
 };
 
-const itemLabel = (i: { item: string; label: string }) => (isOtherItem(i.item) ? i.label : (findItem(i.item)?.item.label ?? i.label));
 const liters = (n: number | null | undefined) => (n ? `${String(Math.round(n * 100) / 100).replace('.', ',')} L` : null);
 const months = (n: number) => `${n} ${n === 1 ? 'mes' : 'meses'}`;
 
@@ -123,15 +122,17 @@ function serviceTable(items: UpcomingItem[]): string {
 function recordCard(r: LogRecordFull, thumbs: string[]): string {
   const kind = KIND[r.kind] ?? KIND.maintenance;
   const d = r.date.split('-');
-  const title = r.kind === 'odometer' ? 'Actualización de kilometraje' : r.items.map(itemLabel).join(' · ') || kind.label;
-  const cat = r.items[0] ? findCategory(r.items[0].category) : undefined;
+  const title = r.kind === 'odometer' ? 'Actualización de kilometraje' : r.items.map(itemName).join(' · ') || kind.label;
+  const first = r.items[0];
+  // maintenance shows its category; an accessory, its tag
+  const sub = !first ? null : r.kind === 'accessory' ? (accessoryTag(first.item)?.label ?? null) : r.kind === 'maintenance' ? (findCategory(first.category)?.label ?? null) : null;
   const intervals = r.items
     .filter((i) => i.intervalKm || i.intervalMonths)
-    .map((i) => `${itemLabel(i)}: próximo cada ${[i.intervalKm ? formatKm(i.intervalKm) : null, i.intervalMonths ? months(i.intervalMonths) : null].filter(Boolean).join(' o ')}`);
+    .map((i) => `${itemName(i)}: próximo cada ${[i.intervalKm ? formatKm(i.intervalKm) : null, i.intervalMonths ? months(i.intervalMonths) : null].filter(Boolean).join(' o ')}`);
   return `<article class="rec">
     <div class="when"><b>${d[2]}</b><span>${esc(formatDay(r.date, 'MMM yyyy'))}</span></div>
     <div class="body">
-      <div class="top"><span class="kind" style="color:${kind.color};border-color:${kind.color}">${kind.label}${cat && r.kind === 'maintenance' ? ` · ${esc(cat.label)}` : ''}</span>
+      <div class="top"><span class="kind" style="color:${kind.color};border-color:${kind.color}">${kind.label}${sub ? ` · ${esc(sub)}` : ''}</span>
         <span class="amount">${r.amountCents !== null ? esc(formatAmount(r.amountCents)) : ''}</span></div>
       <h3>${esc(title)}</h3>
       <div class="meta">${r.odometer !== null ? `<span>⏱ ${esc(formatKm(r.odometer))}</span>` : ''}${r.workshop ? `<span>🔧 ${esc(r.workshop)}</span>` : ''}</div>

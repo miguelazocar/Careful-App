@@ -55,7 +55,7 @@ IA en el alta: **escanear la cédula verde** completa los datos, y la **foto del
 
 ### 🔧 Registro de actividad (botón ＋ central)
 - **Servicio / Mantenimiento**: «¿Qué se hizo?» con las categorías (Motor, Caja, Frenos, Tren delantero, Ruedas, Sistema eléctrico, Climatización, Lavado…) y sus tareas; se pueden elegir varias. Las tareas del plan de mantenimiento piden **cada cuántos km y meses toca la próxima**, precargado con el plan del auto. La ficha del auto lo abre con **＋ Evento**.
-- **Accesorios**: panel rápido con título, descripción, monto, km y foto.
+- **Accesorios**: panel rápido con qué pusiste, una **etiqueta** (Luces, Estéreo, Alarma…) para filtrar, descripción, monto, km y foto.
 - **Kilometraje**: panel rápido con el km actual y una descripción.
 - Km (validado contra el historial), monto **sin símbolo de moneda**, descripción con **"Mejorar texto"**, taller y foto opcional.
 
@@ -95,7 +95,7 @@ IA en el alta: **escanear la cédula verde** completa los datos, y la **foto del
 En modo **Automático** usa Gemini si está configurado y cae a la IA local si no hay conexión.
 
 ### 📄 Más
-- Historial completo agrupado por mes, con **filtros por auto y por tipo** (servicio, accesorios, kilometraje).
+- Historial completo agrupado por mes, con **filtros por auto y por tipo** (servicio, accesorios, kilometraje) y, en accesorios, **por etiqueta**.
 - **Informe del vehículo en PDF** para la venta: resumen (km recorridos, gastos por rubro, costo por km, servicios), ficha técnica, estado de cada servicio e historial detallado con fotos.
 - Archivar vehículos vendidos sin perder su historia.
 - Tema **automático / claro / oscuro** (automático por defecto).

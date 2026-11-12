@@ -7,11 +7,10 @@ import { PhotoStrip, VehicleSelector } from '@/components/pickers';
 import { FieldLabel, TextField } from '@/components/ui/inputs';
 import { Sheet } from '@/components/ui/overlays';
 import { AppText, Button, Icon } from '@/components/ui/primitives';
-import { normalizeText } from '@/data/catalog';
 import { createRecord, getOdometerReadings, getRecord, updateRecord, type RecordInput } from '@/db/records';
 import type { Vehicle } from '@/db/types';
 import { listVehicles } from '@/db/vehicles';
-import { ACCESSORY_CATEGORY, ACCESSORY_ICONS, isOtherItem } from '@/domain/maintenance';
+import { ACCESSORY_CATEGORY, ACCESSORY_ICONS, ACCESSORY_TAGS, accessoryTag, NO_ACCESSORY_TAG } from '@/domain/maintenance';
 import { currentOdometer, odometerError, validateOdometer } from '@/domain/schedule';
 import { today } from '@/lib/dates';
 import { formatAmount, formatInt, formatKm, parseAmountInput, parseIntInput } from '@/lib/format';
@@ -24,7 +23,8 @@ import { radius, spacing } from '@/theme/tokens';
 
 /**
  * Quick modals for the two light records:
- *  - Accesorio: título, descripción, monto, km y foto.
+ *  - Accesorio: qué se puso, una etiqueta opcional (luces, estéreo…) para filtrar, descripción,
+ *    monto, km y foto.
  *  - Kilometraje: km actual y descripción, nada más.
  * Opened from anywhere with `openQuickRecord`; `QuickRecordHost` lives in the root layout.
  */
@@ -55,9 +55,6 @@ export function QuickRecordHost() {
   return <QuickRecordSheet key={shown.seq} req={shown} visible={req === shown} onClose={() => useQuickRecord.setState({ req: null })} />;
 }
 
-/** Accessory suggestions (tap to fill the title). */
-const SUGGESTIONS = ACCESSORY_CATEGORY.items.filter((i) => !isOtherItem(i.key));
-
 function QuickRecordSheet({ req, visible, onClose }: { req: QuickRequest; visible: boolean; onClose: () => void }) {
   const { colors } = useTheme();
   const accessory = req.kind === 'accessory';
@@ -65,6 +62,8 @@ function QuickRecordSheet({ req, visible, onClose }: { req: QuickRequest; visibl
   const [vehicleId, setVehicleId] = useState<string | null>(req.vehicleId ?? null);
   const [date, setDate] = useState(today());
   const [title, setTitle] = useState(req.title ?? '');
+  /** Accessory tag (an `accesorios.*` key), or null for none. */
+  const [tag, setTag] = useState<string | null>(null);
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [odometer, setOdometer] = useState('');
@@ -85,6 +84,7 @@ function QuickRecordSheet({ req, visible, onClose }: { req: QuickRequest; visibl
         setVehicleId(r.vehicleId);
         setDate(r.date);
         setTitle(r.items[0]?.label ?? '');
+        setTag(r.items[0] && accessoryTag(r.items[0].item) ? r.items[0].item : null);
         setDescription(r.description ?? '');
         setAmount(r.amountCents !== null ? formatAmount(r.amountCents) : '');
         setOdometer(r.odometer !== null ? formatInt(r.odometer) : '');
@@ -116,8 +116,6 @@ function QuickRecordSheet({ req, visible, onClose }: { req: QuickRequest; visibl
     if (!vehicleId) return;
     setSaving(true);
     try {
-      const name = title.trim();
-      const match = SUGGESTIONS.find((i) => normalizeText(i.label) === normalizeText(name));
       const input: RecordInput = {
         vehicleId,
         kind: req.kind,
@@ -126,7 +124,8 @@ function QuickRecordSheet({ req, visible, onClose }: { req: QuickRequest; visibl
         amountCents: accessory ? parseAmountInput(amount) : null,
         workshop: null,
         description: description.trim() || null,
-        items: accessory ? [{ category: ACCESSORY_CATEGORY.key, item: match?.key ?? `${ACCESSORY_CATEGORY.key}.otro`, label: match?.label ?? name }] : [],
+        // the key is the tag; the label, what the user wrote
+        items: accessory ? [{ category: ACCESSORY_CATEGORY.key, item: tag ?? NO_ACCESSORY_TAG, label: title.trim() }] : [],
         photos: accessory ? photos : [],
       };
       if (req.recordId) {
@@ -186,15 +185,19 @@ function QuickRecordSheet({ req, visible, onClose }: { req: QuickRequest; visibl
 
         {accessory ? (
           <>
-            <View style={{ gap: spacing.xs }}>
-              <TextField label="¿Qué pusiste?" value={title} onChangeText={setTitle} placeholder="Ej. Polarizado, estéreo, alarma…" icon="star-four-points" />
+            <TextField label="¿Qué pusiste?" value={title} onChangeText={setTitle} placeholder="Ej. Estéreo Pioneer con CarPlay" icon="star-four-points" />
+            <View>
+              <FieldLabel label="Etiqueta" hint={tag ? undefined : 'Opcional: para encontrarlo y filtrar el historial'} />
               <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: 6 }}>
-                {SUGGESTIONS.map((s) => {
-                  const active = normalizeText(s.label) === normalizeText(title);
+                {ACCESSORY_TAGS.map((s) => {
+                  const active = tag === s.key;
                   return (
                     <Pressable
                       key={s.key}
-                      onPress={() => setTitle(s.label)}
+                      onPress={() => setTag(active ? null : s.key)}
+                      accessibilityRole="radio"
+                      accessibilityState={{ selected: active }}
+                      accessibilityLabel={`Etiqueta ${s.label}`}
                       style={{
                         flexDirection: 'row',
                         alignItems: 'center',

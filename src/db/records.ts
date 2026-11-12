@@ -119,6 +119,8 @@ async function hydrate(rows: RecordRow[]): Promise<LogRecordFull[]> {
 export interface RecordQuery {
   vehicleId?: string | null;
   kinds?: RecordKind[];
+  /** Only records with one of these item keys (e.g. an accessory tag). */
+  items?: string[];
   from?: string;
   to?: string;
   limit?: number;
@@ -136,6 +138,10 @@ export async function listRecords(q: RecordQuery = {}): Promise<LogRecordFull[]>
     where.push(`kind IN (${q.kinds.map(() => '?').join(', ')})`);
     params.push(...q.kinds);
   }
+  if (q.items?.length) {
+    where.push(`id IN (SELECT record_id FROM record_items WHERE item IN (${q.items.map(() => '?').join(', ')}))`);
+    params.push(...q.items);
+  }
   if (q.from) {
     where.push('date >= ?');
     params.push(q.from);
@@ -149,6 +155,17 @@ export async function listRecords(q: RecordQuery = {}): Promise<LogRecordFull[]>
     ${q.limit ? `LIMIT ${Math.floor(q.limit)} OFFSET ${Math.floor(q.offset ?? 0)}` : ''}`;
   const rows = await getDb().getAllAsync<RecordRow>(sql, params);
   return hydrate(rows);
+}
+
+/** How many accessory records use each tag (item key), optionally for one vehicle. */
+export async function getAccessoryTagCounts(vehicleId?: string | null): Promise<{ item: string; count: number }[]> {
+  return getDb().getAllAsync<{ item: string; count: number }>(
+    `SELECT i.item AS item, COUNT(DISTINCT r.id) AS count
+       FROM records r JOIN record_items i ON i.record_id = r.id
+      WHERE r.kind = 'accessory' ${vehicleId ? 'AND r.vehicle_id = ?' : ''}
+      GROUP BY i.item ORDER BY count DESC`,
+    vehicleId ? [vehicleId] : [],
+  );
 }
 
 export async function getRecord(id: string): Promise<LogRecordFull | null> {

@@ -244,6 +244,18 @@ export const ACCESSORY_CATEGORY: Category = {
   ],
 };
 
+/**
+ * Accessory tags. In an accessory record, `item` is the tag (what kind of thing it is, to filter
+ * by) and `label` is what the user wrote they installed ("Estéreo Pioneer con CarPlay").
+ * `accesorios.otro` means "sin etiqueta".
+ */
+export const ACCESSORY_TAGS: CatalogItem[] = ACCESSORY_CATEGORY.items.filter((i) => !isOtherItem(i.key));
+export const NO_ACCESSORY_TAG = `${ACCESSORY_CATEGORY.key}.${OTHER_ITEM_SUFFIX}`;
+
+export function accessoryTag(item: string): CatalogItem | undefined {
+  return ACCESSORY_TAGS.find((t) => t.key === item);
+}
+
 export const ACCESSORY_ICONS: Record<string, IconName> = {
   'accesorios.luces': 'car-light-high',
   'accesorios.alfombras': 'rug',
@@ -318,6 +330,15 @@ export function findCategory(key: string): Category | undefined {
 
 export function isOtherItem(key: string): boolean {
   return key.endsWith(`.${OTHER_ITEM_SUFFIX}`);
+}
+
+/**
+ * How a logged item is named: the catalog label, except a custom job ("otro") and accessories,
+ * which keep what the user wrote (an accessory's key is only its tag).
+ */
+export function itemName(i: { category: string; item: string; label: string }): string {
+  if (isOtherItem(i.item) || i.category === ACCESSORY_CATEGORY.key) return i.label;
+  return findItem(i.item)?.item.label ?? i.label;
 }
 
 /** The plan items with their catalog entry, in plan order. */

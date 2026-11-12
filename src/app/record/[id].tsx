@@ -11,7 +11,7 @@ import { openQuickRecord } from '@/components/QuickRecord';
 import { AppText, Button, Card, Chip, Grid, Icon, IconButton, ListRow } from '@/components/ui/primitives';
 import { deleteRecord, getRecord } from '@/db/records';
 import { getVehicle } from '@/db/vehicles';
-import { findItem, isOtherItem } from '@/domain/maintenance';
+import { accessoryTag, findItem, itemName } from '@/domain/maintenance';
 import { useQuery } from '@/hooks/useQuery';
 import { formatDayLong } from '@/lib/dates';
 import { formatAmount, formatKm } from '@/lib/format';
@@ -40,6 +40,7 @@ export default function RecordDetailScreen() {
     );
   }
   const visual = recordVisual(r, colors.primary);
+  const tag = r.kind === 'accessory' && r.items[0] ? accessoryTag(r.items[0].item) : undefined;
 
   const edit = async () => {
     if (!(await confirmIdentity('Confirmá que sos vos para editar este registro.'))) return;
@@ -107,14 +108,22 @@ export default function RecordDetailScreen() {
         {r.workshop ? <ListRow icon="store-outline" title={r.kind === 'accessory' ? 'Comercio' : 'Taller'} subtitle={r.workshop} last /> : null}
       </Card>
 
-      {r.items.length ? (
+      {r.kind === 'maintenance' && r.items.length ? (
         <View style={{ gap: spacing.xs }}>
           <AppText variant="subheading">Trabajos</AppText>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-            {r.items.map((i) => {
-              const meta = findItem(i.item);
-              return <Chip key={i.id} size="sm" selected color={meta?.category.color ?? colors.primary} label={isOtherItem(i.item) ? i.label : (meta?.item.label ?? i.label)} />;
-            })}
+            {r.items.map((i) => (
+              <Chip key={i.id} size="sm" selected color={findItem(i.item)?.category.color ?? colors.primary} label={itemName(i)} />
+            ))}
+          </View>
+        </View>
+      ) : null}
+
+      {tag ? (
+        <View style={{ gap: spacing.xs }}>
+          <AppText variant="subheading">Etiqueta</AppText>
+          <View style={{ flexDirection: 'row' }}>
+            <Chip size="sm" selected icon="tag" color={visual.color} label={tag.label} />
           </View>
         </View>
       ) : null}

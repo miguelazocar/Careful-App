@@ -4,7 +4,7 @@ import { loadUpcoming } from '@/services/upcoming';
 
 import { onDataChanged } from '../connection';
 import { migrate, MIGRATIONS } from '../migrations';
-import { createRecord, deleteRecord, getLatestItemOccurrences, getMonthlySpend, getOdometerReadings, getVehicleStats, listRecords, updateRecord, type RecordInput } from '../records';
+import { createRecord, deleteRecord, getAccessoryTagCounts, getLatestItemOccurrences, getMonthlySpend, getOdometerReadings, getVehicleStats, listRecords, updateRecord, type RecordInput } from '../records';
 import { createManualReminder, listManualReminders, markNotified, saveServiceRule, setManualReminderDone, wasNotified } from '../reminders';
 import { getAllSettings, setSetting } from '../settings';
 import { exportSnapshot, importSnapshot, referencedPhotos, validatePayload } from '../snapshot';
@@ -191,6 +191,28 @@ describe('repositories on real SQLite', () => {
       { month: '2026-01', cents: 1000, count: 1 },
       { month: '2026-02', cents: 500, count: 2 },
     ]);
+  });
+
+  it('filters accessories by tag and counts the tags in use', async () => {
+    const v = await createVehicle(baseVehicle);
+    const w = await createVehicle({ ...baseVehicle, plate: 'AA000AA' });
+    const accessory = (vehicleId: string, item: string, label: string) =>
+      record(vehicleId, { kind: 'accessory', workshop: null, photos: [], items: [{ category: 'accesorios', item, label }] });
+    await createRecord(accessory(v.id, 'accesorios.estereo', 'Pioneer con CarPlay'));
+    await createRecord(accessory(v.id, 'accesorios.luces', 'LED interiores'));
+    await createRecord(accessory(w.id, 'accesorios.luces', 'Faros auxiliares'));
+    await createRecord(accessory(w.id, 'accesorios.otro', 'Porta celular'));
+    await createRecord(record(v.id));
+
+    const lights = await listRecords({ kinds: ['accessory'], items: ['accesorios.luces'] });
+    expect(lights.map((r) => r.items[0].label).sort()).toEqual(['Faros auxiliares', 'LED interiores']);
+    expect((await listRecords({ vehicleId: v.id, items: ['accesorios.luces'] })).map((r) => r.items[0].label)).toEqual(['LED interiores']);
+    expect(await getAccessoryTagCounts()).toEqual([
+      { item: 'accesorios.luces', count: 2 },
+      expect.objectContaining({ count: 1 }),
+      expect.objectContaining({ count: 1 }),
+    ]);
+    expect((await getAccessoryTagCounts(w.id)).map((t) => t.item).sort()).toEqual(['accesorios.luces', 'accesorios.otro']);
   });
 
   it('manual reminders and notification log', async () => {

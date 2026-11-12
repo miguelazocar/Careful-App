@@ -2,7 +2,7 @@ import { Image } from 'expo-image';
 import { Pressable, View } from 'react-native';
 
 import type { LogRecordFull, Vehicle } from '@/db/types';
-import { ACCESSORY_ICONS, findCategory, findItem, isOtherItem, planItem } from '@/domain/maintenance';
+import { ACCESSORY_ICONS, accessoryTag, findCategory, itemName, planItem } from '@/domain/maintenance';
 import type { UpcomingItem } from '@/domain/schedule';
 import { formatDay, relativeDays } from '@/lib/dates';
 import { formatAmount, formatInt, formatKm } from '@/lib/format';
@@ -14,7 +14,7 @@ import { AppText, Icon, Pill, ProgressBar } from './ui/primitives';
 
 export function recordTitle(r: Pick<LogRecordFull, 'kind' | 'items'>): string {
   if (r.kind === 'odometer') return 'Actualización de kilometraje';
-  const labels = r.items.map((i) => (isOtherItem(i.item) ? i.label : (findItem(i.item)?.item.label ?? i.label)));
+  const labels = r.items.map(itemName);
   if (!labels.length) return r.kind === 'accessory' ? 'Accesorio' : 'Mantenimiento';
   return labels.length > 2 ? `${labels.slice(0, 2).join(', ')} +${labels.length - 2}` : labels.join(', ');
 }
@@ -27,9 +27,22 @@ export function recordVisual(r: Pick<LogRecordFull, 'kind' | 'items'>, primary: 
   return { icon: cat?.icon ?? 'wrench', color: cat?.color ?? primary };
 }
 
+/** Small "# Estéreo" pill for an accessory's tag. */
+export function TagPill({ label, color }: { label: string; color: string }) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3, height: 20, paddingHorizontal: 7, borderRadius: radius.pill, backgroundColor: color + '1F' }}>
+      <Icon name="tag" size={11} color={color} />
+      <AppText variant="captionStrong" color={color} style={{ fontSize: 11, lineHeight: 14 }} numberOfLines={1}>
+        {label}
+      </AppText>
+    </View>
+  );
+}
+
 export function RecordRow({ record, vehicle, onPress, showVehicle = true }: { record: LogRecordFull; vehicle?: Vehicle; onPress: () => void; showVehicle?: boolean }) {
   const { colors } = useTheme();
   const visual = recordVisual(record, colors.primary);
+  const tag = record.kind === 'accessory' && record.items[0] ? accessoryTag(record.items[0].item) : undefined;
   const thumb = record.photos[0] ? photoUri(record.photos[0].path) : null;
   const meta = [formatDay(record.date), record.odometer !== null ? formatKm(record.odometer) : null, showVehicle && vehicle ? `${vehicle.brand} ${vehicle.model}` : null]
     .filter(Boolean)
@@ -52,9 +65,12 @@ export function RecordRow({ record, vehicle, onPress, showVehicle = true }: { re
         <AppText variant="bodyStrong" numberOfLines={1}>
           {recordTitle(record)}
         </AppText>
-        <AppText variant="caption" tone="muted" numberOfLines={1}>
-          {meta}
-        </AppText>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          {tag ? <TagPill label={tag.label} color={visual.color} /> : null}
+          <AppText variant="caption" tone="muted" numberOfLines={1} style={{ flexShrink: 1 }}>
+            {meta}
+          </AppText>
+        </View>
         {record.description ? (
           <AppText variant="caption" tone="subtle" numberOfLines={1}>
             {record.description.replace(/\n/g, ' ')}

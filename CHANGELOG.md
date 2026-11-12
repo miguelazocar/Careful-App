@@ -9,7 +9,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
   - **Servicio**: «¿Qué se hizo?» muestra las categorías (Motor, Caja, Frenos, Tren delantero, Ruedas, Sistema eléctrico, Climatización, Lavado…); cada una abre sus tareas y se pueden elegir varias.
   - Las tareas del plan de mantenimiento piden **cada cuántos km y cada cuántos meses toca la próxima**. Vienen precargados con el plan del vehículo y se pueden cambiar: los km aceptan solo números enteros y los meses se ajustan con − y +.
   - Siempre se piden kilometraje, monto, descripción y una foto opcional.
-  - **Accesorios** y **Kilometraje** se cargan en un panel rápido. Accesorio pide título (con sugerencias), descripción, monto, km y foto. Kilometraje pide solo el km actual y una descripción.
+  - **Accesorios** y **Kilometraje** se cargan en un panel rápido. Accesorio pide qué se puso (texto libre), una **etiqueta** opcional (Luces, Estéreo, Alarma…) para encontrarlo y filtrar, descripción, monto, km y foto. Kilometraje pide solo el km actual y una descripción.
 - **Pestaña Aceite de la ficha**: muestra «Cambio cada X km o N meses», el próximo cambio y una barra de cuánto falta. El intervalo base se edita en el paso Aceite del asistente.
 - **Cada servicio nuevo reemplaza al anterior**: el próximo vencimiento y el conteo de km empiezan de nuevo desde ese día y ese kilometraje.
 - **Plan de mantenimiento con 6 tareas de motor**: cambio de aceite y filtro, filtro de aire del motor, filtro de aire del habitáculo, filtro de combustible, bujías y kit de distribución. Son las únicas que se agendan y avisan; el resto queda solo en el historial. Las seis se agendan desde el primer día: hasta registrarlas, el vencimiento es una estimación (el próximo múltiplo del intervalo de km o el plazo desde el alta).
@@ -40,7 +40,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
 
 ### Cambiado
 - **Agenda en lista cronológica**, sin el calendario mensual: primero los vencidos y después mes por mes, con la fecha de cada service a la izquierda. Filtros por auto y por tipo de mantenimiento (y recordatorios).
-- **Historial**: se quitó el gráfico de gastos de los últimos 6 meses. Queda el registro completo por mes, con filtros por auto y por tipo (servicio, accesorios, kilometraje).
+- **Historial**: se quitó el gráfico de gastos de los últimos 6 meses. Queda el registro completo por mes, con filtros por auto y por tipo (servicio, accesorios, kilometraje); al filtrar accesorios aparecen sus etiquetas en uso para filtrar por cada una.
 - **Nombres del catálogo corregidos**:
   - Sin palabras duplicadas por la negrita de los PDF («5P 5P 1,4 1,4 FIRE FIRE» → «5P 1,4 FIRE»).
   - Unos 35 errores de tipeo de las listas corregidos (TITANIUN, LUXYRY, LIMTED…).

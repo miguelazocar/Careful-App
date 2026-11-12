@@ -1,14 +1,15 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import { RecordRow } from '@/components/rows';
 import { FilterButton, FilterSheet, type FilterOption } from '@/components/ui/filters';
 import { Header, Screen } from '@/components/ui/layout';
-import { AppText, Button, Card, EmptyState } from '@/components/ui/primitives';
-import { listRecords } from '@/db/records';
+import { AppText, Button, Card, Chip, EmptyState } from '@/components/ui/primitives';
+import { getAccessoryTagCounts, listRecords } from '@/db/records';
 import type { RecordKind } from '@/db/types';
 import { listVehicles } from '@/db/vehicles';
+import { ACCESSORY_ICONS, accessoryTag } from '@/domain/maintenance';
 import { formatPlate } from '@/domain/plate';
 import { useQuery } from '@/hooks/useQuery';
 import { formatMonth } from '@/lib/dates';
@@ -22,17 +23,24 @@ const KINDS: { key: RecordKind; label: string; icon: string }[] = [
   { key: 'odometer', label: 'Kilometraje', icon: 'speedometer' },
 ];
 
-/** The full log of every car, newest first, grouped by month; filterable by car and by type. */
+/** The full log of every car, newest first, grouped by month; filterable by car, type and accessory tag. */
 export default function HistoryScreen() {
   const [vehicleId, setVehicleId] = useState<string | null>(null);
   const [kind, setKind] = useState<RecordKind | null>(null);
+  /** Accessory tag (item key); only applies while filtering accessories. */
+  const [tag, setTag] = useState<string | null>(null);
   const [picker, setPicker] = useState<null | 'vehicle' | 'kind'>(null);
   const [limit, setLimit] = useState(60);
 
+  const activeTag = kind === 'accessory' ? tag : null;
   const { data } = useQuery(async () => {
-    const [vehicles, records] = await Promise.all([listVehicles({ includeArchived: true }), listRecords({ vehicleId, kinds: kind ? [kind] : undefined, limit })]);
-    return { vehicles, records };
-  }, [vehicleId, kind, limit]);
+    const [vehicles, records, tags] = await Promise.all([
+      listVehicles({ includeArchived: true }),
+      listRecords({ vehicleId, kinds: kind ? [kind] : undefined, items: activeTag ? [activeTag] : undefined, limit }),
+      kind === 'accessory' ? getAccessoryTagCounts(vehicleId) : Promise.resolve([]),
+    ]);
+    return { vehicles, records, tags };
+  }, [vehicleId, kind, activeTag, limit]);
 
   const groups = useMemo(() => {
     const map = new Map<string, NonNullable<typeof data>['records']>();
@@ -46,6 +54,7 @@ export default function HistoryScreen() {
   const vehicles = data?.vehicles ?? [];
   const activeVehicle = vehicles.find((v) => v.id === vehicleId);
   const filtered = !!activeVehicle || kind !== null;
+  const tagLabel = (item: string) => accessoryTag(item)?.label ?? 'Sin etiqueta';
 
   const options: FilterOption[] =
     picker === 'vehicle'
@@ -69,6 +78,24 @@ export default function HistoryScreen() {
         </View>
       ) : null}
 
+      {kind === 'accessory' && data?.tags.length ? (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }} style={{ marginHorizontal: -spacing.lg }}>
+          <View style={{ width: spacing.lg - 6 }} />
+          <Chip size="sm" icon="tag-multiple" label="Todas" selected={!activeTag} onPress={() => setTag(null)} />
+          {data.tags.map((t) => (
+            <Chip
+              key={t.item}
+              size="sm"
+              icon={ACCESSORY_ICONS[t.item] ?? 'tag'}
+              label={`${tagLabel(t.item)} · ${t.count}`}
+              selected={activeTag === t.item}
+              onPress={() => setTag(activeTag === t.item ? null : t.item)}
+            />
+          ))}
+          <View style={{ width: spacing.lg - 6 }} />
+        </ScrollView>
+      ) : null}
+
       {data && !data.records.length ? (
         filtered ? (
           <Card style={{ gap: spacing.sm }}>
@@ -80,6 +107,7 @@ export default function HistoryScreen() {
               onPress={() => {
                 setVehicleId(null);
                 setKind(null);
+                setTag(null);
               }}
             />
           </Card>
