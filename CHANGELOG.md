@@ -18,7 +18,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
   - **Ficha técnica completa** y **estado de cada servicio** (al día, pronto o vencido).
   - **Historial detallado** con fotos.
 - **«Investigar con IA»** en los pasos Aceite y Refrigerante. Busca en internet los datos del fabricante para el año, la marca, el modelo, el motor y la versión exactos, con fuentes fiables: manual, sitio oficial y buscadores de lubricantes. Completa también el intervalo de cambio de aceite y muestra las fuentes consultadas.
-- **Catálogo del mercado argentino completo**: 88 marcas, unos 1.000 modelos y casi 12.000 versiones, de 1997 a 2026.
+- **Catálogo del mercado argentino completo**: 88 marcas, unos 1.000 modelos y unas 11.500 versiones, de 1997 a 2026.
   - Los nombres y años salen de cuatro ediciones de las listas de la Cámara del Comercio Automotor (2011, 2016, 2021 y 2026).
   - Se eligen primero la marca y el año. Después aparecen solo los modelos de ese año y las versiones de ese modelo en ese año.
   - «Otro modelo» es la única forma de escribir el modelo y la versión a mano.
@@ -43,6 +43,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
   - Unos 35 errores de tipeo de las listas corregidos (TITANIUN, LUXYRY, LIMTED…).
   - Modelos con su nombre real: «Odyssey», «Renegade», «C4 Lounge», «i10», «MX-5», «218i», «Audi S3/S4/S5»…
   - Modelos duplicados unificados («F 430» y «F430»; «DS 3» y «3»).
+  - Versiones repetidas por escribirse con y sin barra unificadas: «A/T» y «AT» (automática), «M/T» y «MT» (manual), «7/A» y «7A», «7/P» y «7P». Eran 331; por ejemplo, el Tracker 2016 mostraba «LTZ A/T 4X4 AWD» y «LTZ AT 4X4 AWD».
 - Notificaciones: los avisos «al comenzar el mes» y «al comenzar la semana» pasan a ser un **aviso semanal** que empieza 1 mes o 1.000 km antes.
 - **Asistente de alta y edición en 4 pasos** que entran en una pantalla: Auto, Registro, Aceite, Refrigerante. Cada dato se elige desde un panel, y al elegir uno se abre el siguiente. Al editar, se abre directo en el paso de la pestaña desde la que se tocó Editar.
 - Combustible: **GNC, Gasolina o Diésel**.

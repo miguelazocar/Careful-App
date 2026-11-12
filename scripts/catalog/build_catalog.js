@@ -125,6 +125,11 @@ const VERSION_WORD_FIXES = {
 const VERSION_PHRASE_FIXES = [
   [/\bWORD CUP\b/g, 'WORLD CUP'],
   [/¨/g, '"'],
+  // The lists write the same thing with and without a slash in different years, which listed
+  // every such version twice ("LTZ A/T" and "LTZ AT"). Keep the slash-less spelling.
+  [/\bA\s*\/\s*T\b/g, 'AT'], // automática
+  [/\bM\s*\/\s*T\b/g, 'MT'], // manual
+  [/\b7\s*\/\s*([AP])\b/g, '7$1'], // 7 asientos / 7 pasajeros
   [/\s+\/\s*/g, ' / '], // "1,0 /1.3" → "1,0 / 1.3"
 ];
 function fixVersionSpelling(v) {

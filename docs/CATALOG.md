@@ -13,7 +13,7 @@ Las listas de precios de la **Cámara del Comercio Automotor (CCA)** para autos,
 | Agosto 2021 | 2007–2021 | Wayback Machine |
 | Noviembre 2026 | 2012–2026 | `cca.org.ar/descargas/precios/Autos.pdf` |
 
-Del PDF se toman **solo los nombres** (marca, modelo, versión) **y los años en que la versión figura con precio**, nunca los precios. Resultado: unas **88 marcas, 1.000 modelos y casi 12.000 versiones**, en `src/data/catalog/brands/*.json` (unos 500 KB).
+Del PDF se toman **solo los nombres** (marca, modelo, versión) **y los años en que la versión figura con precio**, nunca los precios. Resultado: unas **88 marcas, 1.000 modelos y 11.500 versiones**, en `src/data/catalog/brands/*.json` (unos 500 KB).
 
 Los logos de marca provienen de [Simple Icons](https://simpleicons.org) (CC0). Las marcas sin ícono muestran un monograma.
 
@@ -32,6 +32,7 @@ Los logos de marca provienen de [Simple Icons](https://simpleicons.org) (CC0). L
 2. **`build_catalog.js <carpeta con parsed_*.json> <repo>`**: une las ediciones y genera los JSON y `brands/index.ts`.
    - Normaliza nombres: "Mercedes-Benz", "C-HR", quita "PICK - UP".
    - Une las versiones que la CCA etiqueta con el año del restyling ("DRIVE GSE 2020").
+   - Une las abreviaturas que las ediciones escriben con y sin barra: "A/T" y "AT", "M/T" y "MT", "7/A" y "7A", "7/P" y "7P". Si no, la misma versión aparecía dos veces.
    - Deduce la carrocería para el ícono.
 
 En la app (`src/data/catalog/index.ts`), el combustible y la caja se deducen del nombre de la versión ("TDI" es diésel, "CVT" es caja CVT, y así).

@@ -44,7 +44,7 @@
 - Detalle por vehículo: kilometraje, uso promedio, próximos services con barra de progreso, ficha técnica e historial.
 
 ### 🧭 Alta de vehículo (asistente de 4 pasos, sin scroll)
-1. **Tu auto** — foto + **marca → año → modelo → versión → color**, con el catálogo del mercado argentino: **88 marcas, unos 1.000 modelos y casi 12.000 versiones de 1997 a 2026**, tomados de las listas de la CCA ([detalle](docs/CATALOG.md)). Elegís marca y año y aparecen solo los modelos de ese año, y después sus versiones. «Otro modelo» permite escribirlo a mano si no está.
+1. **Tu auto** — foto + **marca → año → modelo → versión → color**, con el catálogo del mercado argentino: **88 marcas, unos 1.000 modelos y unas 11.500 versiones de 1997 a 2026**, tomados de las listas de la CCA ([detalle](docs/CATALOG.md)). Elegís marca y año y aparecen solo los modelos de ese año, y después sus versiones. «Otro modelo» permite escribirlo a mano si no está.
 2. **Registro** — patente, país, **kilometraje actual**, VIN (validado y decodificado), N° de motor y combustible (GNC, gasolina o diésel).
 3. **Aceite** — tipo, marca, modelo, versión, cantidad y **cada cuántos km y meses se cambia**.
 4. **Refrigerante** — tipo, cantidad, concentración (con el cálculo de refrigerante + agua desmineralizada), marca, modelo y versión.
