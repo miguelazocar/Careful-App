@@ -5,15 +5,16 @@
  * whichever comes first. Because the app has no live odometer, the distance-based due date is
  * *estimated* from the vehicle's average daily usage, computed from its odometer history.
  *
- * The regular service (oil change) is always scheduled: before the first one is logged, it is
- * estimated from the next km milestone or the date the vehicle was added (see buildEstimatedItems).
+ * Only the maintenance plan (PLAN_ITEMS: oil, filters, spark plugs, timing kit) is scheduled, and
+ * always: before the first one is logged, each is estimated from the next km milestone or the date
+ * the vehicle was added (see buildEstimatedItems).
  */
 import { addDaysTo, addMonthsTo, daysBetween, minDay } from '@/lib/dates';
 import { formatInt } from '@/lib/format';
 
 import type { ManualReminder, ServiceRule } from '@/db/types';
 
-import { CORE_ITEM, findItem } from './maintenance';
+import { findItem, isTrackedItem, PLAN_ITEMS } from './maintenance';
 
 export interface Reading {
   date: string;
@@ -202,8 +203,9 @@ export function nextDueFrom(date: string, km: number | null, interval: Pick<Inte
 }
 
 /**
- * One item per tracked service, from its latest occurrence: logging a new one replaces the
- * previous schedule and starts counting again from that date and km.
+ * One item per plan item, from its latest occurrence: logging a new one replaces the previous
+ * schedule and starts counting again from that date and km. Anything outside the plan is history
+ * only, even if an older version stored an interval for it.
  */
 export function buildServiceItems(
   vehicleId: string,
@@ -213,6 +215,7 @@ export function buildServiceItems(
 ): UpcomingItem[] {
   const out: UpcomingItem[] = [];
   for (const occ of occurrences) {
+    if (!isTrackedItem(occ.item)) continue;
     const interval = occurrenceInterval(occ, rules);
     if (!interval.enabled || (!interval.intervalKm && !interval.intervalMonths)) continue;
     const { dueDate, dueKm } = nextDueFrom(occ.date, occ.odometer, interval);
@@ -235,11 +238,11 @@ export function buildServiceItems(
   return out;
 }
 
-/** Items scheduled even before they are ever logged: the regular service. */
-export const ALWAYS_SCHEDULED: readonly string[] = [CORE_ITEM];
+/** Items scheduled even before they are ever logged: the whole maintenance plan. */
+export const ALWAYS_SCHEDULED: readonly string[] = PLAN_ITEMS.map((p) => p.item);
 
 /**
- * First service for items that were never logged, so reminders work from day one:
+ * First service for plan items that were never logged, so reminders work from day one:
  * the next km milestone (a multiple of the interval, like manufacturer service plans: 10.000,
  * 20.000…) or `since` (the date the vehicle was added) + the interval, whichever comes first.
  * Logging the real service replaces the estimate.

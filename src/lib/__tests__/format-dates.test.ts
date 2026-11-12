@@ -32,6 +32,24 @@ describe('numbers', () => {
     expect(formatAmountInput('12500,5')).toBe('12.500,5');
     expect(formatAmountInput('012')).toBe('12');
   });
+
+  it('keeps big amounts while typing them digit by digit (the grouping dots are not decimals)', () => {
+    const type = (keys: string) => [...keys].reduce((value, k) => formatAmountInput(value + k, value), '');
+    expect(type('12345')).toBe('12.345');
+    expect(type('1500000')).toBe('1.500.000');
+    expect(type('250000000')).toBe('250.000.000');
+    // the decimal key may send "." or ","
+    expect(type('1234.5')).toBe('1.234,5');
+    expect(type('1234,56')).toBe('1.234,56');
+    expect(type('1234,567')).toBe('1.234,56');
+    expect(type('1234..')).toBe('1.234,');
+    // backspace regroups
+    expect(formatAmountInput('12.34', '12.345')).toBe('1.234');
+    // pasted
+    expect(formatAmountInput('1500000.50', '')).toBe('1.500.000,50');
+    expect(formatAmountInput('12.500', '')).toBe('12.500');
+    expect(parseAmountInput(type('1500000'))).toBe(150_000_000);
+  });
 });
 
 describe('dates', () => {

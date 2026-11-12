@@ -1,6 +1,6 @@
 import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, View } from 'react-native';
 import Animated, { Easing, FadeIn } from 'react-native-reanimated';
 
@@ -15,16 +15,7 @@ import { createRecord, getOdometerReadings, getRecord, updateRecord, type Record
 import { getServiceRules } from '@/db/reminders';
 import type { ServiceRule, Vehicle } from '@/db/types';
 import { listVehicles } from '@/db/vehicles';
-import {
-  findItem,
-  groupOfItem,
-  isOtherItem,
-  isTrackedItem,
-  MAINTENANCE_CATEGORIES,
-  SERVICE_GROUPS,
-  type Category,
-  type ServiceGroup,
-} from '@/domain/maintenance';
+import { findItem, isOtherItem, isTrackedItem, MAINTENANCE_CATEGORIES, type Category } from '@/domain/maintenance';
 import { dueText } from '@/domain/notification-plan';
 import { currentOdometer, nextDueFrom, odometerError, resolveInterval, validateOdometer } from '@/domain/schedule';
 import { today } from '@/lib/dates';
@@ -39,14 +30,13 @@ import { radius, spacing } from '@/theme/tokens';
 
 /**
  * Registrar un servicio / mantenimiento.
- * 1) Mosaico con los 6 rubros habituales (más «Otro servicio» con el catálogo completo).
- * 2) Las tareas frecuentes del rubro. Las que se repiten (cambio de aceite, refrigerante…)
- *    piden cada cuántos km y meses toca la próxima, precargado con el plan del vehículo.
+ * 1) «¿Qué se hizo?»: grilla de categorías; cada una abre sus tareas (se pueden elegir varias).
+ * 2) Las tareas del plan de mantenimiento (aceite, filtros, bujías, distribución) piden cada
+ *    cuántos km y meses toca la próxima, precargado con el plan del vehículo.
  * 3) Siempre: kilometraje, monto, descripción y foto opcional.
  * Accesorios y kilometraje usan los modales rápidos (components/QuickRecord).
  */
 
-type Group = ServiceGroup | 'other';
 interface Interval {
   km: string;
   months: number;
@@ -62,7 +52,6 @@ export default function RecordFormScreen() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [vehicleId, setVehicleId] = useState<string | null>(null);
   const [rules, setRules] = useState<ServiceRule[]>([]);
-  const [group, setGroup] = useState<Group | null>(null);
   const [items, setItems] = useState<RecordItemInput[]>([]);
   const [intervals, setIntervals] = useState<Record<string, Interval>>({});
   const [date, setDate] = useState(today());
@@ -108,7 +97,6 @@ export default function RecordFormScreen() {
             ),
           );
           setPhotos(r.photos.map((p) => p.path));
-          setGroup((r.items[0] && groupOfItem(r.items[0].item)) ?? 'other');
           original.current = { photos: r.photos.map((p) => p.path), km: r.odometer };
         }
       } else {
@@ -120,10 +108,7 @@ export default function RecordFormScreen() {
         const last = useSettings.getState().lastVehicleId;
         setVehicleId(params.vehicleId ?? (list.some((v) => v.id === last) ? last : null) ?? list[0]?.id ?? null);
         const meta = params.item ? findItem(params.item) : undefined;
-        if (meta) {
-          setItems([{ category: meta.category.key, item: meta.item.key, label: meta.item.label }]);
-          setGroup(groupOfItem(meta.item.key) ?? 'other');
-        }
+        if (meta) setItems([{ category: meta.category.key, item: meta.item.key, label: meta.item.label }]);
       }
       setLoaded(true);
     })();
@@ -239,11 +224,6 @@ export default function RecordFormScreen() {
     void persist();
   };
 
-  const extraChips = useMemo(
-    () => items.filter((i) => group === 'other' || !group || !group.options.some((o) => o.item === i.item)),
-    [items, group],
-  );
-
   if (!loaded) return null;
   if (!vehicles.length) {
     return (
@@ -263,68 +243,17 @@ export default function RecordFormScreen() {
       </AppText>
     ) : null;
 
-  /* ------------------------------ 1. Mosaic ------------------------------ */
-  if (!group) {
-    return (
-      <Screen header={<Header back title="Registrar servicio" />}>
-        {vehiclePicker}
-        <AppText variant="heading">¿Qué le hiciste al auto?</AppText>
-        <Grid columns={2} gap={spacing.sm}>
-          {SERVICE_GROUPS.map((g) => (
-            <GroupTile key={g.key} group={g} onPress={() => setGroup(g)} />
-          ))}
-        </Grid>
-        <Pressable
-          onPress={() => setGroup('other')}
-          style={({ pressed }) => ({
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: spacing.sm,
-            padding: spacing.md,
-            borderRadius: radius.lg,
-            borderWidth: 1,
-            borderColor: colors.border,
-            backgroundColor: pressed ? colors.surfaceAlt : colors.surface,
-          })}>
-          <View style={{ width: 40, height: 40, borderRadius: 13, backgroundColor: colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}>
-            <Icon name="dots-grid" size={22} color={colors.textMuted} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="bodyStrong">Otro servicio</AppText>
-            <AppText variant="caption" tone="muted">
-              Frenos, caja, eléctrico, climatización, VTV…
-            </AppText>
-          </View>
-          <Icon name="chevron-right" size={22} color={colors.textSubtle} />
-        </Pressable>
-      </Screen>
-    );
-  }
-
-  /* ------------------------------ 2. Details ------------------------------ */
-  const g = group === 'other' ? null : group;
   return (
     <Screen
-      header={<Header back title={editingId ? 'Editar servicio' : (g?.label ?? 'Otro servicio')} />}
+      header={<Header back title={editingId ? 'Editar servicio' : 'Registrar servicio'} />}
       footer={<Button label="Guardar" icon="check" size="lg" full loading={saving} onPress={save} />}>
       {!editingId ? vehiclePicker : null}
 
       <View>
-        <FieldLabel
-          label="¿Qué se hizo?"
-          hint={items.length ? `${items.length} seleccionado${items.length > 1 ? 's' : ''}` : 'Podés elegir varios'}
-          right={
-            <Pressable onPress={() => setGroup(null)} hitSlop={8} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <Icon name="swap-horizontal" size={16} color={colors.primary} />
-              <AppText variant="captionStrong" tone="primary">
-                Cambiar rubro
-              </AppText>
-            </Pressable>
-          }
-        />
-        {extraChips.length ? (
+        <FieldLabel label="¿Qué se hizo?" hint={items.length ? `${items.length} seleccionado${items.length > 1 ? 's' : ''}` : 'Podés elegir varios'} />
+        {items.length ? (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: spacing.sm }}>
-            {extraChips.map((i, idx) => (
+            {items.map((i, idx) => (
               <Chip
                 key={`${i.item}-${idx}`}
                 size="sm"
@@ -336,33 +265,11 @@ export default function RecordFormScreen() {
             ))}
           </View>
         ) : null}
-        {g ? (
-          <Animated.View entering={enter}>
-            <Grid columns={2} gap={spacing.xs}>
-              {g.options.map((o) => {
-                const meta = findItem(o.item);
-                if (!meta) return null;
-                return (
-                  <OptionTile
-                    key={o.item}
-                    icon={o.icon}
-                    label={meta.item.label}
-                    tracked={isTrackedItem(o.item)}
-                    color={g.color}
-                    active={items.some((i) => i.item === o.item)}
-                    onPress={() => toggle(meta.category.key, o.item, meta.item.label)}
-                  />
-                );
-              })}
-            </Grid>
-          </Animated.View>
-        ) : (
-          <Grid columns={4} gap={spacing.xs}>
-            {MAINTENANCE_CATEGORIES.map((c) => (
-              <CategoryTile key={c.key} category={c} count={items.filter((i) => i.category === c.key).length} onPress={() => setOpenCategory(c)} />
-            ))}
-          </Grid>
-        )}
+        <Grid columns={4} gap={spacing.xs}>
+          {MAINTENANCE_CATEGORIES.map((c) => (
+            <CategoryTile key={c.key} category={c} count={items.filter((i) => i.category === c.key).length} onPress={() => setOpenCategory(c)} />
+          ))}
+        </Grid>
       </View>
 
       {tracked.map((t) => {
@@ -433,76 +340,6 @@ export default function RecordFormScreen() {
 }
 
 /* ------------------------------ Building blocks ------------------------------ */
-
-function GroupTile({ group, onPress }: { group: ServiceGroup; onPress: () => void }) {
-  const { colors } = useTheme();
-  return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel={group.label}
-      style={({ pressed }) => ({
-        minHeight: 140,
-        gap: spacing.sm,
-        borderRadius: radius.xl,
-        padding: spacing.md,
-        justifyContent: 'space-between',
-        backgroundColor: colors.surface,
-        borderWidth: 1,
-        borderColor: colors.border,
-        transform: [{ scale: pressed ? 0.97 : 1 }],
-      })}>
-      <View style={{ width: 52, height: 52, borderRadius: 17, backgroundColor: group.color, alignItems: 'center', justifyContent: 'center' }}>
-        <Icon name={group.icon} size={30} color="#FFFFFF" />
-      </View>
-      <View>
-        <AppText variant="bodyStrong" numberOfLines={1} adjustsFontSizeToFit>
-          {group.label}
-        </AppText>
-        <AppText variant="caption" tone="muted" numberOfLines={2} style={{ fontSize: 12, lineHeight: 15 }}>
-          {group.hint}
-        </AppText>
-      </View>
-    </Pressable>
-  );
-}
-
-function OptionTile({ icon, label, active, tracked, color, onPress }: { icon: string; label: string; active: boolean; tracked: boolean; color: string; onPress: () => void }) {
-  const { colors } = useTheme();
-  return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="checkbox"
-      accessibilityState={{ checked: active }}
-      accessibilityLabel={label}
-      style={({ pressed }) => ({
-        minHeight: 64,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: spacing.sm,
-        paddingHorizontal: spacing.sm,
-        paddingVertical: spacing.xs,
-        borderRadius: radius.lg,
-        borderWidth: active ? 2 : 1,
-        borderColor: active ? color : colors.border,
-        backgroundColor: active ? color + '1F' : pressed ? colors.surfaceAlt : colors.surface,
-      })}>
-      <View style={{ width: 36, height: 36, borderRadius: 12, backgroundColor: active ? color : colors.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}>
-        <Icon name={icon} size={20} color={active ? '#FFFFFF' : color} />
-      </View>
-      <View style={{ flex: 1 }}>
-        <AppText variant="captionStrong" numberOfLines={2} style={{ lineHeight: 16 }}>
-          {label}
-        </AppText>
-        {tracked ? (
-          <AppText variant="caption" tone="muted" style={{ fontSize: 11 }}>
-            Agenda el próximo
-          </AppText>
-        ) : null}
-      </View>
-    </Pressable>
-  );
-}
 
 function CategoryTile({ category, count, onPress }: { category: Category; count: number; onPress: () => void }) {
   const { colors } = useTheme();

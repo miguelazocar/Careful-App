@@ -60,7 +60,7 @@ export async function loadUpcoming(opts: { vehicleId?: string; warnKm?: number; 
       ctx,
     });
     items.push(...buildServiceItems(vehicle.id, occurrences, rules, ctx));
-    // the regular service is always scheduled, even before the first one is logged
+    // the maintenance plan is always scheduled, even before each job is first logged
     items.push(...buildEstimatedItems(vehicle.id, occurrences, rules, ctx, vehicle.createdAt.slice(0, 10)));
   }
 

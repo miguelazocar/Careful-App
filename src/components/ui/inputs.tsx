@@ -45,7 +45,7 @@ export function TextField({ label, hint, error, value, onChangeText, icon, suffi
     format === 'int' ? 'number-pad' : format === 'amount' ? 'decimal-pad' : rest.keyboardType;
   const handle = (t: string) => {
     if (format === 'int') onChangeText(formatIntInput(t));
-    else if (format === 'amount') onChangeText(formatAmountInput(t.replace('.', ',')));
+    else if (format === 'amount') onChangeText(formatAmountInput(t, value ?? ''));
     else if (format === 'upper') onChangeText(t.toUpperCase());
     else onChangeText(t);
   };

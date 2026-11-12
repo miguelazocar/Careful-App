@@ -122,11 +122,6 @@ export default function VehicleDetailScreen() {
     ]);
   };
 
-  const quickAccessory = (title: string) => {
-    setSheet(null);
-    openQuickRecord({ kind: 'accessory', vehicleId: v.id, title });
-  };
-
   const go = (pathname: '/record/form' | '/reminder/form' | '/vehicle/plan', params: Record<string, string>) => {
     setSheet(null);
     router.push({ pathname, params } as never);
@@ -197,7 +192,7 @@ export default function VehicleDetailScreen() {
 
         {/* Quick actions */}
         <View style={{ flexDirection: 'row', gap: spacing.xs }}>
-          <Action icon="wrench" label="Registrar" primary onPress={() => go('/record/form', { kind: 'maintenance', vehicleId: v.id })} />
+          <Action icon="plus" label="Evento" primary onPress={() => go('/record/form', { kind: 'maintenance', vehicleId: v.id })} />
           <Action icon="speedometer" label="Kilometraje" onPress={() => openQuickRecord({ kind: 'odometer', vehicleId: v.id })} />
           <Action icon="calendar-clock" label="Services" badge={pending || undefined} onPress={() => setSheet('services')} />
           <Action icon="history" label="Historial" onPress={() => setSheet('history')} />
@@ -214,9 +209,7 @@ export default function VehicleDetailScreen() {
                 onPress={() =>
                   it.source !== 'service'
                     ? go('/reminder/form', { id: it.reminderId ?? '' })
-                    : it.categoryKey === 'accesorios'
-                      ? quickAccessory(it.title)
-                      : go('/record/form', { kind: 'maintenance', vehicleId: v.id, item: it.item ?? '' })
+                    : go('/record/form', { kind: 'maintenance', vehicleId: v.id, item: it.item ?? '' })
                 }
               />
             ))
@@ -245,7 +238,7 @@ export default function VehicleDetailScreen() {
             ))
           ) : (
             <AppText variant="caption" tone="muted">
-              Todavía no hay registros. Tocá «Registrar» para cargar el primero.
+              Todavía no hay registros. Tocá «Evento» para cargar el primero.
             </AppText>
           )}
         </ScrollView>

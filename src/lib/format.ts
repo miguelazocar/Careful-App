@@ -75,11 +75,33 @@ export function parseAmountInput(text: string): number | null {
   return Number.isSafeInteger(cents) ? cents : null;
 }
 
-/** Live formatting for amount inputs: keeps the user's decimal part while grouping thousands. */
-export function formatAmountInput(text: string): string {
-  const t = text.replace(/[^\d,]/g, '');
+/** Whole part digits kept while typing an amount (hundreds of billions; stays a safe integer in cents). */
+const MAX_AMOUNT_DIGITS = 12;
+
+/**
+ * Live formatting for amount inputs: groups thousands ("1.234.567") and keeps up to 2 decimals.
+ * `prev` is the field's current value. The dots in it are thousands separators added here, so
+ * they are never read as decimals; only a "." the user just typed is (the decimal key of some
+ * keyboards sends "." instead of ","). Pasted text is parsed as a whole.
+ */
+export function formatAmountInput(text: string, prev = ''): string {
+  let t = text.trim();
+  const dots = (s: string) => s.split('.').length - 1;
+  if (t.includes(',')) {
+    // "," is always the decimal separator: every dot is a thousands separator
+  } else if (t.length > prev.length + 1) {
+    // pasted: "1500000.50" or "12.5" carry decimals, "12.500" is thousands (as parseAmountInput)
+    const m = /^([^.]*)\.(\d{1,2})$/.exec(t);
+    if (m) t = `${m[1]},${m[2]}`;
+  } else if (dots(t) > dots(prev)) {
+    let i = 0;
+    while (i < prev.length && prev[i] === t[i]) i++;
+    if (t[i] === '.') t = `${t.slice(0, i)},${t.slice(i + 1)}`;
+  }
+  t = t.replace(/[^\d,]/g, '');
   const [whole, ...rest] = t.split(',');
-  const w = whole ? formatInt(Number(whole.replace(/^0+(?=\d)/, ''))) : rest.length ? '0' : '';
+  const digits = whole.replace(/^0+(?=\d)/, '').slice(0, MAX_AMOUNT_DIGITS);
+  const w = digits ? formatInt(Number(digits)) : rest.length ? '0' : '';
   return rest.length ? `${w},${rest.join('').slice(0, 2)}` : w;
 }
 

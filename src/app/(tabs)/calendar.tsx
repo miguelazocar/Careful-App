@@ -2,48 +2,46 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Pressable, View } from 'react-native';
 
-import { openQuickRecord } from '@/components/QuickRecord';
-import { UpcomingRow } from '@/components/rows';
+import { dueLabel, upcomingVisual } from '@/components/rows';
+import { FilterButton, FilterSheet, type FilterOption } from '@/components/ui/filters';
 import { Sheet } from '@/components/ui/overlays';
 import { Header, Screen } from '@/components/ui/layout';
-import { AppText, Button, Card, EmptyState, Grid, IconButton, ListRow } from '@/components/ui/primitives';
+import { AppText, Button, Card, EmptyState, Icon, IconButton, ListRow } from '@/components/ui/primitives';
 import { setManualReminderDone } from '@/db/reminders';
+import type { Vehicle } from '@/db/types';
+import { agendaSections, MANUAL_TYPE, matchesAgendaFilter, type AgendaFilter } from '@/domain/agenda';
+import { findItem, PLAN_ITEMS } from '@/domain/maintenance';
+import { formatPlate } from '@/domain/plate';
 import type { UpcomingItem } from '@/domain/schedule';
 import { useQuery } from '@/hooks/useQuery';
-import { addMonthsTo, daysBetween, formatDay, formatMonth, monthStart, parseDay, today, toDay } from '@/lib/dates';
+import { formatDay, relativeDays, today } from '@/lib/dates';
+import { formatInt } from '@/lib/format';
 import { loadUpcoming, vehicleLabel } from '@/services/upcoming';
 import { useSettings } from '@/stores/settings';
 import { toast } from '@/stores/ui';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 
-const WEEKDAYS = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
-
+/** Agenda: every scheduled service and reminder, in chronological order, filterable by car and type. */
 export default function CalendarScreen() {
   const { colors } = useTheme();
   const warnKm = useSettings((s) => s.notifications.warnKm);
-  const [month, setMonth] = useState(monthStart(today()));
-  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [filter, setFilter] = useState<AgendaFilter>({ vehicleId: null, type: null });
+  const [picker, setPicker] = useState<null | 'vehicle' | 'type'>(null);
   const [action, setAction] = useState<UpcomingItem | null>(null);
   const { data } = useQuery(() => loadUpcoming({ warnKm }), [warnKm]);
 
+  const vehicles = useMemo(() => [...(data?.snapshots.values() ?? [])].map((s) => s.vehicle), [data]);
   const items = useMemo(() => data?.items ?? [], [data]);
-  const byDay = useMemo(() => {
-    const m = new Map<string, UpcomingItem[]>();
-    for (const it of items) {
-      const d = it.due.status === 'overdue' ? null : it.due.effectiveDate;
-      if (!d) continue;
-      m.set(d, [...(m.get(d) ?? []), it]);
-    }
-    return m;
-  }, [items]);
-
-  const overdue = items.filter((i) => i.due.status === 'overdue');
-  const upcoming = items.filter((i) => i.due.status !== 'overdue');
-  const dayItems = selectedDay ? (byDay.get(selectedDay) ?? []) : null;
+  // a filter pointing at a vehicle that no longer exists falls back to "all"
+  const active: AgendaFilter = { ...filter, vehicleId: vehicles.some((v) => v.id === filter.vehicleId) ? filter.vehicleId : null };
+  const sections = agendaSections(items.filter((i) => matchesAgendaFilter(i, active)));
 
   const vehicleOf = (id: string) => data?.snapshots.get(id)?.vehicle;
   const noVehicles = data && data.snapshots.size === 0;
+  const filtered = active.vehicleId !== null || active.type !== null;
+  const typeLabel = active.type === null ? 'Todos los tipos' : active.type === MANUAL_TYPE ? 'Recordatorios' : (findItem(active.type)?.item.label ?? 'Tipo');
+  const activeVehicle = active.vehicleId ? vehicleOf(active.vehicleId) : undefined;
 
   return (
     <Screen
@@ -52,54 +50,50 @@ export default function CalendarScreen() {
         <Header
           large
           title="Agenda"
-          subtitle="Próximos services y recordatorios"
+          subtitle="Lo que toca hacer, en orden"
           right={!noVehicles ? <IconButton icon="bell-plus" tone="primary" accessibilityLabel="Nuevo recordatorio" onPress={() => router.push('/reminder/form')} /> : undefined}
         />
       }>
       {noVehicles ? (
-        <EmptyState icon="calendar-month" title="Nada agendado todavía" message="Agregá un auto y registrá su último service: Careful calcula el próximo por fecha o kilometraje." action={<Button label="Agregar auto" icon="car-2-plus" onPress={() => router.push('/vehicle/form')} />} />
-      ) : (
+        <EmptyState icon="calendar-month" title="Nada agendado todavía" message="Agregá un auto y Careful agenda su plan de mantenimiento por fecha o kilometraje." action={<Button label="Agregar auto" icon="car-2-plus" onPress={() => router.push('/vehicle/form')} />} />
+      ) : data ? (
         <>
-          <MonthGrid month={month} onMonth={setMonth} byDay={byDay} selected={selectedDay} onSelect={(d) => setSelectedDay(d === selectedDay ? null : d)} />
-
-          {dayItems ? (
-            <View style={{ gap: spacing.sm }}>
-              <AppText variant="subheading">{formatDay(selectedDay!, "EEEE d 'de' MMMM")}</AppText>
-              {dayItems.length ? (
-                dayItems.map((it) => <UpcomingRow key={it.key} item={it} vehicle={vehicleOf(it.vehicleId)} onPress={() => setAction(it)} />)
-              ) : (
-                <AppText variant="caption" tone="muted">
-                  Nada para este día.
-                </AppText>
-              )}
-            </View>
-          ) : null}
-
-          {overdue.length ? (
-            <View style={{ gap: spacing.sm }}>
-              <AppText variant="heading" tone="danger">
-                Vencidos
-              </AppText>
-              {overdue.map((it) => (
-                <UpcomingRow key={it.key} item={it} vehicle={vehicleOf(it.vehicleId)} onPress={() => setAction(it)} />
-              ))}
-            </View>
-          ) : null}
-
-          <View style={{ gap: spacing.sm }}>
-            <AppText variant="heading">Próximos</AppText>
-            {upcoming.length ? (
-              upcoming.map((it) => <UpcomingRow key={it.key} item={it} vehicle={vehicleOf(it.vehicleId)} onPress={() => setAction(it)} />)
-            ) : (
-              <Card>
-                <AppText variant="caption" tone="muted">
-                  Registrá un cambio de aceite u otro service y Careful agenda el próximo automáticamente.
-                </AppText>
-              </Card>
-            )}
+          <View style={{ flexDirection: 'row', gap: spacing.xs }}>
+            <FilterButton icon="car" label={activeVehicle ? vehicleLabel(activeVehicle) : 'Todos los autos'} active={!!activeVehicle} onPress={() => setPicker('vehicle')} />
+            <FilterButton icon="filter-variant" label={typeLabel} active={active.type !== null} onPress={() => setPicker('type')} />
           </View>
+
+          {sections.length ? (
+            sections.map((s) => (
+              <View key={s.key} style={{ gap: spacing.xs }}>
+                <AppText variant="subheading" tone={s.kind === 'overdue' ? 'danger' : 'default'}>
+                  {s.title}
+                </AppText>
+                {s.items.map((it) => (
+                  <AgendaRow key={it.key} item={it} vehicle={vehicleOf(it.vehicleId)} onPress={() => setAction(it)} />
+                ))}
+              </View>
+            ))
+          ) : (
+            <Card style={{ gap: spacing.sm }}>
+              <AppText tone="muted">{filtered ? 'No hay nada programado con estos filtros.' : 'No hay services programados. Revisá el plan de mantenimiento de tus autos.'}</AppText>
+              {filtered ? <Button label="Quitar filtros" variant="secondary" icon="filter-remove-outline" onPress={() => setFilter({ vehicleId: null, type: null })} /> : null}
+            </Card>
+          )}
         </>
-      )}
+      ) : null}
+
+      <FilterSheet
+        visible={!!picker}
+        title={picker === 'vehicle' ? 'Filtrar por auto' : 'Filtrar por tipo'}
+        options={picker ? filterOptions(picker, items, vehicles, active) : []}
+        selected={picker === 'vehicle' ? active.vehicleId : active.type}
+        onSelect={(key) => {
+          setFilter(picker === 'vehicle' ? { ...active, vehicleId: key } : { ...active, type: key });
+          setPicker(null);
+        }}
+        onClose={() => setPicker(null)}
+      />
 
       <Sheet visible={!!action} onClose={() => setAction(null)} title={action?.title}>
         {action ? (
@@ -117,8 +111,7 @@ export default function CalendarScreen() {
                   subtitle="Carga el service y reprograma el próximo"
                   onPress={() => {
                     setAction(null);
-                    if (action.categoryKey === 'accesorios') openQuickRecord({ kind: 'accessory', vehicleId: action.vehicleId, title: action.title });
-                    else router.push({ pathname: '/record/form', params: { kind: 'maintenance', vehicleId: action.vehicleId, item: action.item } });
+                    router.push({ pathname: '/record/form', params: { kind: 'maintenance', vehicleId: action.vehicleId, item: action.item } });
                   }}
                 />
               ) : (
@@ -147,76 +140,90 @@ export default function CalendarScreen() {
   );
 }
 
-function MonthGrid({ month, onMonth, byDay, selected, onSelect }: { month: string; onMonth: (m: string) => void; byDay: Map<string, UpcomingItem[]>; selected: string | null; onSelect: (d: string) => void }) {
+/** Options of the car or type filter, each with how many items it would show combined with the other filter. */
+function filterOptions(kind: 'vehicle' | 'type', items: UpcomingItem[], vehicles: Vehicle[], filter: AgendaFilter): FilterOption[] {
+  const count = (f: AgendaFilter) => items.filter((i) => matchesAgendaFilter(i, f)).length;
+  if (kind === 'vehicle') {
+    return [
+      { key: null, label: 'Todos los autos', icon: 'car-multiple', count: count({ ...filter, vehicleId: null }) },
+      ...vehicles.map((v) => ({ key: v.id, label: vehicleLabel(v), subtitle: v.plate ? formatPlate(v.plate, v.country) : undefined, icon: 'car', count: count({ ...filter, vehicleId: v.id }) })),
+    ];
+  }
+  const hasReminders = items.some((i) => i.source === 'manual');
+  return [
+    { key: null, label: 'Todos los tipos', icon: 'format-list-bulleted', count: count({ ...filter, type: null }) },
+    ...PLAN_ITEMS.map((p) => ({ key: p.item, label: findItem(p.item)?.item.label ?? p.item, icon: p.icon, color: p.color, count: count({ ...filter, type: p.item }) })),
+    ...(hasReminders ? [{ key: MANUAL_TYPE, label: 'Recordatorios', subtitle: 'VTV, seguro, patente…', icon: 'bell-ring', count: count({ ...filter, type: MANUAL_TYPE }) }] : []),
+  ];
+}
+
+/** "Pronto · en 12 días · faltan 800 km" — the date itself is in the row's date block. */
+function detailOf(it: UpcomingItem): string {
+  const d = it.due;
+  const parts: string[] = [];
+  if (it.estimated) parts.push('Estimado');
+  if (d.status === 'overdue') parts.push(dueLabel(it));
+  else {
+    if (d.status === 'soon') parts.push('Pronto');
+    if (d.effectiveDate) parts.push(relativeDays(d.effectiveDate));
+    if (d.remainingKm !== null) parts.push(`faltan ${formatInt(d.remainingKm)} km`);
+  }
+  const text = parts.join(' · ');
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function AgendaRow({ item, vehicle, onPress }: { item: UpcomingItem; vehicle?: Vehicle; onPress: () => void }) {
   const { colors } = useTheme();
-  const first = parseDay(month);
-  const offset = (first.getDay() + 6) % 7; // Monday-first
-  const daysInMonth = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
-  const todayStr = today();
-  const cells: (string | null)[] = [...Array<null>(offset).fill(null)];
-  for (let d = 1; d <= daysInMonth; d++) cells.push(toDay(new Date(first.getFullYear(), first.getMonth(), d)));
-  while (cells.length % 7) cells.push(null);
-
+  const visual = upcomingVisual(item, colors.primary);
+  const d = item.due;
+  const tone = d.status === 'overdue' ? colors.danger : d.status === 'soon' ? colors.warning : null;
+  // overdue by km has no meaningful date: the block shows an alert instead
+  const shown = d.status === 'overdue' ? (d.dueDate && d.dueDate < today() ? d.dueDate : null) : d.effectiveDate;
   return (
-    <Card style={{ gap: spacing.sm }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <IconButton icon="chevron-left" tone="clear" size={38} accessibilityLabel="Mes anterior" onPress={() => onMonth(addMonthsTo(month, -1))} />
-        <Pressable onPress={() => onMonth(monthStart(todayStr))}>
-          <AppText variant="subheading" style={{ textTransform: 'capitalize' }}>
-            {formatMonth(month.slice(0, 7))}
-          </AppText>
-        </Pressable>
-        <IconButton icon="chevron-right" tone="clear" size={38} accessibilityLabel="Mes siguiente" onPress={() => onMonth(addMonthsTo(month, 1))} />
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${item.title}${vehicle ? `, ${vehicleLabel(vehicle)}` : ''}${shown ? `, ${formatDay(shown)}` : ''}. ${detailOf(item)}`}
+      style={({ pressed }) => ({
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: spacing.sm,
+        padding: spacing.sm,
+        borderRadius: radius.lg,
+        backgroundColor: pressed ? colors.surfaceAlt : colors.surface,
+      })}>
+      <View style={{ width: 52, height: 58, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: (tone ?? colors.primary) + '1A' }}>
+        {shown ? (
+          <>
+            <AppText variant="heading" color={tone ?? colors.text} style={{ fontSize: 22, lineHeight: 26 }}>
+              {formatDay(shown, 'd')}
+            </AppText>
+            <AppText variant="captionStrong" color={tone ?? colors.textMuted} style={{ fontSize: 11, lineHeight: 13, textTransform: 'uppercase' }}>
+              {formatDay(shown, 'MMM')}
+            </AppText>
+          </>
+        ) : (
+          <Icon name={d.status === 'overdue' ? 'alert' : 'speedometer'} size={24} color={tone ?? colors.textMuted} />
+        )}
       </View>
-      <Grid columns={7} gap={0}>
-        {WEEKDAYS.map((w, i) => (
-          <AppText key={`w${i}`} variant="captionStrong" tone="subtle" align="center" style={{ fontSize: 12 }}>
-            {w}
+      <View style={{ flex: 1, gap: 1 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <Icon name={visual.icon} size={17} color={visual.color} />
+          <AppText variant="bodyStrong" numberOfLines={1} style={{ flex: 1 }}>
+            {item.title}
           </AppText>
-        ))}
-        {cells.map((d, i) => {
-          if (!d) return <View key={`e${i}`} style={{ height: 44 }} />;
-          const events = byDay.get(d) ?? [];
-          const isToday = d === todayStr;
-          const isSel = d === selected;
-          const past = daysBetween(todayStr, d) < 0;
-          const dot = events.some((e) => e.due.status === 'soon') ? colors.warning : colors.primary;
-          return (
-            <Pressable key={d} onPress={() => onSelect(d)} style={{ height: 44, alignItems: 'center', justifyContent: 'center' }} accessibilityLabel={`${formatDay(d)}${events.length ? `, ${events.length} eventos` : ''}`}>
-              <View
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 18,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: isSel ? colors.primary : isToday ? colors.primarySoft : 'transparent',
-                }}>
-                <AppText variant={isToday || events.length ? 'captionStrong' : 'caption'} color={isSel ? '#fff' : past ? colors.textSubtle : colors.text}>
-                  {Number(d.slice(8))}
-                </AppText>
-              </View>
-              {events.length ? <View style={{ position: 'absolute', bottom: 3, width: 6, height: 6, borderRadius: 3, backgroundColor: isSel ? '#fff' : dot }} /> : null}
-            </Pressable>
-          );
-        })}
-      </Grid>
-      <View style={{ flexDirection: 'row', gap: spacing.md, justifyContent: 'center' }}>
-        <Legend color={colors.primary} label="Programado" />
-        <Legend color={colors.warning} label="Pronto" />
+        </View>
+        {vehicle ? (
+          <AppText variant="caption" tone="muted" numberOfLines={1}>
+            {vehicleLabel(vehicle)}
+            {vehicle.plate ? ` · ${formatPlate(vehicle.plate, vehicle.country)}` : ''}
+          </AppText>
+        ) : null}
+        <AppText variant="caption" tone={d.status === 'overdue' ? 'danger' : d.status === 'soon' ? 'warning' : 'subtle'} numberOfLines={2}>
+          {detailOf(item)}
+        </AppText>
       </View>
-    </Card>
+      <Icon name="chevron-right" size={20} color={colors.textSubtle} />
+    </Pressable>
   );
 }
-
-function Legend({ color, label }: { color: string; label: string }) {
-  return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-      <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: color }} />
-      <AppText variant="caption" tone="muted" style={{ fontSize: 12 }}>
-        {label}
-      </AppText>
-    </View>
-  );
-}
-

@@ -54,16 +54,15 @@ En los pasos 3 y 4, **«Investigar con IA»** busca en internet los datos del fa
 IA en el alta: **escanear la cédula verde** completa los datos, y la **foto del auto** detecta patente y color.
 
 ### 🔧 Registro de actividad (botón ＋ central)
-- **Servicio / Mantenimiento**: mosaico con 6 rubros (**Aceite, Agua / Refrigerante, Tren delantero, Estético / Limpieza, Ruedas, Batería**) y sus tareas frecuentes, más «Otro servicio» con el catálogo completo. Las tareas que se repiten piden **cada cuántos km y meses toca la próxima**, precargado con el plan del auto.
+- **Servicio / Mantenimiento**: «¿Qué se hizo?» con las categorías (Motor, Caja, Frenos, Tren delantero, Ruedas, Sistema eléctrico, Climatización, Lavado…) y sus tareas; se pueden elegir varias. Las tareas del plan de mantenimiento piden **cada cuántos km y meses toca la próxima**, precargado con el plan del auto. La ficha del auto lo abre con **＋ Evento**.
 - **Accesorios**: panel rápido con título, descripción, monto, km y foto.
 - **Kilometraje**: panel rápido con el km actual y una descripción.
 - Km (validado contra el historial), monto **sin símbolo de moneda**, descripción con **"Mejorar texto"**, taller y foto opcional.
 
 ### 📅 Agenda inteligente
-- Cada ítem con intervalo (aceite, filtros, distribución, bujías, refrigerante, frenos, alineación, A/C, VTV, matafuego…) agenda el **próximo service por km o por fecha, lo que ocurra primero**.
+- **Plan de mantenimiento** (editable por vehículo): cambio de aceite y filtro, filtro de aire del motor, filtro de aire del habitáculo, filtro de combustible, bujías y kit de distribución. Cada uno agenda el **próximo service por km o por fecha, lo que ocurra primero**, desde el primer día (estimado hasta que lo registres).
 - Como no hay odómetro en vivo, el vencimiento por km se convierte en una **fecha estimada según tu uso promedio**.
-- Plan de mantenimiento **editable por vehículo** y recordatorios manuales (seguro, patente, VTV…).
-- Calendario mensual + lista de vencidos y próximos.
+- **Lista cronológica**: vencidos primero y después mes por mes, con **filtros por auto y por tipo**. Incluye los recordatorios manuales (seguro, patente, VTV…).
 
 ### 🔔 Notificaciones
 - **Cada semana** desde que faltan **1.000 km o un mes** (lo que llegue primero) **hasta que registres el servicio**, aunque ya esté vencido.
@@ -96,7 +95,7 @@ IA en el alta: **escanear la cédula verde** completa los datos, y la **foto del
 En modo **Automático** usa Gemini si está configurado y cae a la IA local si no hay conexión.
 
 ### 📄 Más
-- Historial agrupado por mes, filtros por auto y tipo, y **gráfico de gastos**.
+- Historial completo agrupado por mes, con **filtros por auto y por tipo** (servicio, accesorios, kilometraje).
 - **Informe del vehículo en PDF** para la venta: resumen (km recorridos, gastos por rubro, costo por km, servicios), ficha técnica, estado de cada servicio e historial detallado con fotos.
 - Archivar vehículos vendidos sin perder su historia.
 - Tema **automático / claro / oscuro** (automático por defecto).

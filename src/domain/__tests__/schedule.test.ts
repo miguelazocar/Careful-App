@@ -166,14 +166,18 @@ describe('service items', () => {
     expect(off).toHaveLength(0);
   });
 
-  it('a rule can make a non-default item trackable', () => {
-    const items = buildServiceItems('v1', [{ item: 'electrico.bateria', category: 'electrico', date: '2026-01-01', odometer: null, recordId: 'r' }], [{ vehicleId: 'v1', item: 'electrico.bateria', intervalKm: null, intervalMonths: 36, enabled: true }], ctx());
-    expect(items[0].due.dueDate).toBe('2029-01-01');
+  it('only the maintenance plan is scheduled, even with a rule or an interval of its own', () => {
+    const battery = { item: 'electrico.bateria', category: 'electrico', date: '2026-01-01', odometer: 40_000, recordId: 'r' };
+    expect(resolveInterval('electrico.bateria', []).intervalMonths).toBeNull();
+    expect(buildServiceItems('v1', [battery], [{ vehicleId: 'v1', item: 'electrico.bateria', intervalKm: null, intervalMonths: 36, enabled: true }], ctx())).toEqual([]);
+    expect(buildServiceItems('v1', [{ ...battery, intervalMonths: 36 }], [], ctx())).toEqual([]);
+    const plugs = buildServiceItems('v1', [{ item: 'motor.bujias', category: 'motor', date: '2026-01-01', odometer: 40_000, recordId: 'r' }], [], ctx());
+    expect(plugs.map((i) => [i.title, i.due.dueKm, i.due.dueDate])).toEqual([['Bujías', 80_000, '2029-01-01']]);
   });
 
   it('without odometer, a km-only interval cannot be scheduled', () => {
-    expect(resolveInterval('ruedas.alineacion_balanceo', []).intervalKm).toBe(10_000);
-    const items = buildServiceItems('v1', [{ item: 'tren_delantero.rotulas', category: 'tren_delantero', date: '2026-01-01', odometer: null, recordId: 'r' }], [], ctx());
+    const kmOnly = [{ vehicleId: 'v1', item: 'motor.filtro_aire', intervalKm: 20_000, intervalMonths: null, enabled: true }];
+    const items = buildServiceItems('v1', [{ item: 'motor.filtro_aire', category: 'motor', date: '2026-01-01', odometer: null, recordId: 'r' }], kmOnly, ctx());
     expect(items).toHaveLength(0);
   });
 
@@ -198,7 +202,7 @@ describe('buildEstimatedItems (service without history)', () => {
 
   it('schedules the oil change at the next km milestone or one year after the vehicle was added', () => {
     const [it] = buildEstimatedItems('v1', [], [], ctx({ currentKm: 49_200 }), since);
-    expect(it).toMatchObject({ key: 'svc:v1:motor.aceite', item: 'motor.aceite', title: 'Cambio de aceite', estimated: true });
+    expect(it).toMatchObject({ key: 'svc:v1:motor.aceite', item: 'motor.aceite', title: 'Cambio de aceite y filtro', estimated: true });
     expect(it.due.dueKm).toBe(50_000);
     expect(it.due.remainingKm).toBe(800);
     expect(it.due.dueDate).toBe('2027-05-01');
@@ -215,11 +219,25 @@ describe('buildEstimatedItems (service without history)', () => {
     expect(buildEstimatedItems('v1', [], [], ctx({ currentKm: 60_000 }), since)[0].due.dueKm).toBe(70_000);
   });
 
+  it('estimates every plan item from day one, each at its own milestone', () => {
+    const items = buildEstimatedItems('v1', [], [], ctx({ currentKm: 49_200 }), since);
+    expect(items.map((i) => [i.title, i.due.dueKm, i.due.dueDate])).toEqual([
+      ['Cambio de aceite y filtro', 50_000, '2027-05-01'],
+      ['Filtro de aire del motor', 60_000, '2028-05-01'],
+      ['Filtro de aire del habitáculo', 60_000, '2027-05-01'],
+      ['Filtro de combustible', 60_000, '2028-05-01'],
+      ['Bujías', 80_000, '2029-05-01'],
+      ['Kit de distribución', 60_000, '2030-05-01'],
+    ]);
+  });
+
   it('disappears once the real service is logged, and respects a disabled or custom interval', () => {
+    const oil = (list: { item?: string }[]) => list.filter((i) => i.item === 'motor.aceite');
     const logged = [{ item: 'motor.aceite', category: 'motor', date: '2026-04-01', odometer: 48_000, recordId: 'r1' }];
-    expect(buildEstimatedItems('v1', logged, [], ctx(), since)).toEqual([]);
+    expect(oil(buildEstimatedItems('v1', logged, [], ctx(), since))).toEqual([]);
+    expect(buildEstimatedItems('v1', logged, [], ctx(), since)).toHaveLength(5);
     const off = [{ vehicleId: 'v1', item: 'motor.aceite', intervalKm: 10_000, intervalMonths: 12, enabled: false }];
-    expect(buildEstimatedItems('v1', [], off as never, ctx(), since)).toEqual([]);
+    expect(oil(buildEstimatedItems('v1', [], off as never, ctx(), since))).toEqual([]);
     const custom = [{ vehicleId: 'v1', item: 'motor.aceite', intervalKm: 15_000, intervalMonths: null, enabled: true }];
     const [it] = buildEstimatedItems('v1', [], custom as never, ctx({ currentKm: 31_000 }), since);
     expect(it.due.dueKm).toBe(45_000);

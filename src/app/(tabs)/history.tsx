@@ -1,47 +1,37 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 
-import { MonthlyChart, type MonthValue } from '@/components/MonthlyChart';
 import { RecordRow } from '@/components/rows';
+import { FilterButton, FilterSheet, type FilterOption } from '@/components/ui/filters';
 import { Header, Screen } from '@/components/ui/layout';
-import { AppText, Button, Card, Chip, EmptyState } from '@/components/ui/primitives';
-import { getMonthlySpend, listRecords } from '@/db/records';
+import { AppText, Button, Card, EmptyState } from '@/components/ui/primitives';
+import { listRecords } from '@/db/records';
 import type { RecordKind } from '@/db/types';
 import { listVehicles } from '@/db/vehicles';
+import { formatPlate } from '@/domain/plate';
 import { useQuery } from '@/hooks/useQuery';
-import { addMonthsTo, formatMonth, today } from '@/lib/dates';
+import { formatMonth } from '@/lib/dates';
 import { formatAmount, pluralize } from '@/lib/format';
+import { vehicleLabel } from '@/services/upcoming';
 import { spacing } from '@/theme/tokens';
 
-type KindFilter = 'all' | RecordKind;
-const KIND_FILTERS: { value: KindFilter; label: string; icon: string }[] = [
-  { value: 'all', label: 'Todo', icon: 'format-list-checks' },
-  { value: 'maintenance', label: 'Mantenimiento', icon: 'wrench' },
-  { value: 'accessory', label: 'Accesorios', icon: 'star-four-points' },
-  { value: 'odometer', label: 'Kilometraje', icon: 'speedometer' },
+const KINDS: { key: RecordKind; label: string; icon: string }[] = [
+  { key: 'maintenance', label: 'Servicio / Mantenimiento', icon: 'wrench' },
+  { key: 'accessory', label: 'Accesorios', icon: 'star-four-points' },
+  { key: 'odometer', label: 'Kilometraje', icon: 'speedometer' },
 ];
 
-function lastMonths(n: number): string[] {
-  const out: string[] = [];
-  for (let i = n - 1; i >= 0; i--) out.push(addMonthsTo(`${today().slice(0, 7)}-01`, -i).slice(0, 7));
-  return out;
-}
-
+/** The full log of every car, newest first, grouped by month; filterable by car and by type. */
 export default function HistoryScreen() {
   const [vehicleId, setVehicleId] = useState<string | null>(null);
-  const [kind, setKind] = useState<KindFilter>('all');
+  const [kind, setKind] = useState<RecordKind | null>(null);
+  const [picker, setPicker] = useState<null | 'vehicle' | 'kind'>(null);
   const [limit, setLimit] = useState(60);
 
   const { data } = useQuery(async () => {
-    const months = lastMonths(6);
-    const [vehicles, records, spend] = await Promise.all([
-      listVehicles({ includeArchived: true }),
-      listRecords({ vehicleId, kinds: kind === 'all' ? undefined : [kind], limit }),
-      getMonthlySpend(`${months[0]}-01`, vehicleId),
-    ]);
-    const chart: MonthValue[] = months.map((m) => spend.find((s) => s.month === m) ?? { month: m, cents: 0, count: 0 });
-    return { vehicles, records, chart };
+    const [vehicles, records] = await Promise.all([listVehicles({ includeArchived: true }), listRecords({ vehicleId, kinds: kind ? [kind] : undefined, limit })]);
+    return { vehicles, records };
   }, [vehicleId, kind, limit]);
 
   const groups = useMemo(() => {
@@ -54,48 +44,53 @@ export default function HistoryScreen() {
   }, [data]);
 
   const vehicles = data?.vehicles ?? [];
-  const sixMonthTotal = data?.chart.reduce((s, m) => s + m.cents, 0) ?? 0;
+  const activeVehicle = vehicles.find((v) => v.id === vehicleId);
+  const filtered = !!activeVehicle || kind !== null;
+
+  const options: FilterOption[] =
+    picker === 'vehicle'
+      ? [
+          { key: null, label: 'Todos los autos', icon: 'car-multiple' },
+          ...vehicles.map((v) => ({
+            key: v.id,
+            label: vehicleLabel(v),
+            subtitle: [v.plate ? formatPlate(v.plate, v.country) : null, v.archivedAt ? 'Archivado' : null].filter(Boolean).join(' · ') || undefined,
+            icon: v.archivedAt ? 'archive-outline' : 'car',
+          })),
+        ]
+      : [{ key: null, label: 'Todos los tipos', icon: 'format-list-bulleted' }, ...KINDS];
 
   return (
     <Screen tabBar header={<Header large title="Historial" subtitle="Todo lo que le hiciste a tus autos" />}>
-      {vehicles.length > 1 ? (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }} style={{ marginHorizontal: -spacing.lg }} contentInset={{ left: spacing.lg }}>
-          <View style={{ width: spacing.lg - 6 }} />
-          <Chip label="Todos" selected={!vehicleId} onPress={() => setVehicleId(null)} />
-          {vehicles.map((v) => (
-            <Chip key={v.id} label={v.model} selected={vehicleId === v.id} onPress={() => setVehicleId(v.id)} />
-          ))}
-          <View style={{ width: spacing.lg - 6 }} />
-        </ScrollView>
+      {vehicles.length ? (
+        <View style={{ flexDirection: 'row', gap: spacing.xs }}>
+          <FilterButton icon="car" label={activeVehicle ? vehicleLabel(activeVehicle) : 'Todos los autos'} active={!!activeVehicle} onPress={() => setPicker('vehicle')} />
+          <FilterButton icon="filter-variant" label={KINDS.find((k) => k.key === kind)?.label ?? 'Todos los tipos'} active={kind !== null} onPress={() => setPicker('kind')} />
+        </View>
       ) : null}
 
-      <Card style={{ gap: spacing.sm }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-          <View>
-            <AppText variant="caption" tone="muted">
-              Gastos de los últimos 6 meses
-            </AppText>
-            <AppText variant="title">{formatAmount(sixMonthTotal)}</AppText>
-          </View>
-        </View>
-        {data ? <MonthlyChart data={data.chart} /> : <View style={{ height: 170 }} />}
-      </Card>
-
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }} style={{ marginHorizontal: -spacing.lg }}>
-        <View style={{ width: spacing.lg - 6 }} />
-        {KIND_FILTERS.map((k) => (
-          <Chip key={k.value} size="sm" icon={k.icon} label={k.label} selected={kind === k.value} onPress={() => setKind(k.value)} />
-        ))}
-        <View style={{ width: spacing.lg - 6 }} />
-      </ScrollView>
-
       {data && !data.records.length ? (
-        <EmptyState
-          icon="history"
-          title="Sin movimientos"
-          message={vehicles.length ? 'Tocá el botón + para registrar un service, accesorio o kilometraje.' : 'Agregá tu primer auto para empezar su historial.'}
-          action={!vehicles.length ? <Button label="Agregar auto" icon="car-2-plus" onPress={() => router.push('/vehicle/form')} /> : undefined}
-        />
+        filtered ? (
+          <Card style={{ gap: spacing.sm }}>
+            <AppText tone="muted">No hay registros con estos filtros.</AppText>
+            <Button
+              label="Quitar filtros"
+              variant="secondary"
+              icon="filter-remove-outline"
+              onPress={() => {
+                setVehicleId(null);
+                setKind(null);
+              }}
+            />
+          </Card>
+        ) : (
+          <EmptyState
+            icon="history"
+            title="Sin movimientos"
+            message={vehicles.length ? 'Tocá el botón + para registrar un service, accesorio o kilometraje.' : 'Agregá tu primer auto para empezar su historial.'}
+            action={!vehicles.length ? <Button label="Agregar auto" icon="car-2-plus" onPress={() => router.push('/vehicle/form')} /> : undefined}
+          />
+        )
       ) : null}
 
       {groups.map(([month, records]) => {
@@ -117,7 +112,7 @@ export default function HistoryScreen() {
                   key={r.id}
                   record={r}
                   vehicle={vehicles.find((v) => v.id === r.vehicleId)}
-                  showVehicle={vehicles.length > 1 && !vehicleId}
+                  showVehicle={vehicles.length > 1 && !activeVehicle}
                   onPress={() => router.push({ pathname: '/record/[id]', params: { id: r.id } })}
                 />
               ))}
@@ -127,6 +122,19 @@ export default function HistoryScreen() {
       })}
 
       {data && data.records.length >= limit ? <Button label="Ver más" variant="ghost" onPress={() => setLimit((l) => l + 60)} /> : null}
+
+      <FilterSheet
+        visible={!!picker}
+        title={picker === 'vehicle' ? 'Filtrar por auto' : 'Filtrar por tipo'}
+        options={options}
+        selected={picker === 'vehicle' ? (activeVehicle?.id ?? null) : kind}
+        onSelect={(key) => {
+          if (picker === 'vehicle') setVehicleId(key);
+          else setKind(key as RecordKind | null);
+          setPicker(null);
+        }}
+        onClose={() => setPicker(null)}
+      />
     </Screen>
   );
 }

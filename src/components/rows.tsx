@@ -2,7 +2,7 @@ import { Image } from 'expo-image';
 import { Pressable, View } from 'react-native';
 
 import type { LogRecordFull, Vehicle } from '@/db/types';
-import { ACCESSORY_ICONS, findCategory, findItem, isOtherItem } from '@/domain/maintenance';
+import { ACCESSORY_ICONS, findCategory, findItem, isOtherItem, planItem } from '@/domain/maintenance';
 import type { UpcomingItem } from '@/domain/schedule';
 import { formatDay, relativeDays } from '@/lib/dates';
 import { formatAmount, formatInt, formatKm } from '@/lib/format';
@@ -83,9 +83,18 @@ export function dueLabel(it: UpcomingItem): string {
   return parts.join(' · ') || 'Sin fecha';
 }
 
+/** Icon and color of an agenda item: its plan item, else its category, else a reminder bell. */
+export function upcomingVisual(item: UpcomingItem, primary: string): { icon: string; color: string } {
+  if (item.source === 'manual') return { icon: 'bell-ring', color: primary };
+  const plan = planItem(item.item);
+  if (plan) return { icon: plan.icon, color: plan.color };
+  const cat = item.categoryKey ? findCategory(item.categoryKey) : undefined;
+  return { icon: cat?.icon ?? 'wrench', color: cat?.color ?? primary };
+}
+
 export function UpcomingRow({ item, vehicle, onPress, compact }: { item: UpcomingItem; vehicle?: Vehicle; onPress?: () => void; compact?: boolean }) {
   const { colors } = useTheme();
-  const cat = item.categoryKey ? findCategory(item.categoryKey) : undefined;
+  const visual = upcomingVisual(item, colors.primary);
   const tone = item.due.status === 'overdue' ? 'danger' : item.due.status === 'soon' ? 'warning' : 'success';
   const barColor = { danger: colors.danger, warning: colors.warning, success: colors.success }[tone];
   return (
@@ -101,8 +110,8 @@ export function UpcomingRow({ item, vehicle, onPress, compact }: { item: Upcomin
         borderLeftColor: barColor,
       })}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-        <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: (cat?.color ?? colors.primary) + '1F', alignItems: 'center', justifyContent: 'center' }}>
-          <Icon name={item.source === 'manual' ? 'bell-ring' : (cat?.icon ?? 'wrench')} size={21} color={cat?.color ?? colors.primary} />
+        <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: visual.color + '1F', alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name={visual.icon} size={21} color={visual.color} />
         </View>
         <View style={{ flex: 1 }}>
           <AppText variant="bodyStrong" numberOfLines={1}>
@@ -123,7 +132,7 @@ export function UpcomingRow({ item, vehicle, onPress, compact }: { item: Upcomin
         <View style={{ gap: 4 }}>
           <ProgressBar value={item.due.progress} color={barColor} />
           <AppText variant="caption" tone="subtle" style={{ fontSize: 12 }}>
-            Último: {item.lastDate ? formatDay(item.lastDate) : '—'}
+            {item.lastDate ? `Último: ${formatDay(item.lastDate)}` : 'Todavía sin registrar'}
             {item.lastKm !== null && item.lastKm !== undefined ? ` · ${formatKm(item.lastKm)}` : ''}
             {item.due.trigger === 'km' ? ' · fecha estimada por tu uso' : ''}
           </AppText>

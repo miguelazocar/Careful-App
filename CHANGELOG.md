@@ -6,12 +6,13 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
 
 ### Agregado
 - **Registrar con el botón ＋ en tres opciones**: Servicio / Mantenimiento, Accesorios o Kilometraje.
-  - **Servicio**: mosaico con los 6 rubros habituales y su ícono: Aceite, Agua / Refrigerante, Tren delantero, Estético / Limpieza, Ruedas y Batería. Cada rubro muestra sus tareas frecuentes; por ejemplo, Aceite ofrece cambio (service), relleno y filtros. «Otro servicio» da acceso al catálogo completo (frenos, caja, VTV…).
-  - Las tareas que se repiten (cambio de aceite, refrigerante, revisión de tren delantero, batería…) piden **cada cuántos km y cada cuántos meses toca la próxima**. Vienen precargados con el plan del vehículo y se pueden cambiar: los km aceptan solo números enteros y los meses se ajustan con − y +.
+  - **Servicio**: «¿Qué se hizo?» muestra las categorías (Motor, Caja, Frenos, Tren delantero, Ruedas, Sistema eléctrico, Climatización, Lavado…); cada una abre sus tareas y se pueden elegir varias.
+  - Las tareas del plan de mantenimiento piden **cada cuántos km y cada cuántos meses toca la próxima**. Vienen precargados con el plan del vehículo y se pueden cambiar: los km aceptan solo números enteros y los meses se ajustan con − y +.
   - Siempre se piden kilometraje, monto, descripción y una foto opcional.
   - **Accesorios** y **Kilometraje** se cargan en un panel rápido. Accesorio pide título (con sugerencias), descripción, monto, km y foto. Kilometraje pide solo el km actual y una descripción.
 - **Pestaña Aceite de la ficha**: muestra «Cambio cada X km o N meses», el próximo cambio y una barra de cuánto falta. El intervalo base se edita en el paso Aceite del asistente.
 - **Cada servicio nuevo reemplaza al anterior**: el próximo vencimiento y el conteo de km empiezan de nuevo desde ese día y ese kilometraje.
+- **Plan de mantenimiento con 6 tareas de motor**: cambio de aceite y filtro, filtro de aire del motor, filtro de aire del habitáculo, filtro de combustible, bujías y kit de distribución. Son las únicas que se agendan y avisan; el resto queda solo en el historial. Las seis se agendan desde el primer día: hasta registrarlas, el vencimiento es una estimación (el próximo múltiplo del intervalo de km o el plazo desde el alta).
 - **Avisos semanales**: desde que faltan 1.000 km o un mes para el vencimiento (lo que llegue primero), hasta que se registre el servicio, aunque ya esté vencido. Además, «Mañana» y «Hoy» el día del vencimiento.
 - **Informe del vehículo en PDF**, para entregar a un comprador:
   - **Resumen**: km recorridos desde el alta, gasto total y por rubro, costo por km, servicios, cambios de aceite, accesorios y uso promedio.
@@ -23,7 +24,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
   - Se eligen primero la marca y el año. Después aparecen solo los modelos de ese año y las versiones de ese modelo en ese año.
   - «Otro modelo» es la única forma de escribir el modelo y la versión a mano.
   - Ver [docs/CATALOG.md](docs/CATALOG.md).
-- **Ficha del vehículo nueva**: foto arriba y un recuadro con pestañas (**Vehículo**, **Aceite**, **Refrigerante**) que se ve completo, sin scroll. Abajo hay accesos a Registrar, Kilometraje, Services e Historial.
+- **Ficha del vehículo nueva**: foto arriba y un recuadro con pestañas (**Vehículo**, **Aceite**, **Refrigerante**) que se ve completo, sin scroll. Abajo hay accesos a **＋ Evento**, Kilometraje, Services e Historial.
 - **Datos de aceite**:
   - tipo (mineral, semi-sintético o sintético);
   - cantidad;
@@ -38,6 +39,8 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
 - Se puede probar en **Expo Go**. Las funciones que necesitan módulos nativos propios (OCR del teléfono, Google Drive) avisan que no están disponibles en lugar de cerrar la app.
 
 ### Cambiado
+- **Agenda en lista cronológica**, sin el calendario mensual: primero los vencidos y después mes por mes, con la fecha de cada service a la izquierda. Filtros por auto y por tipo de mantenimiento (y recordatorios).
+- **Historial**: se quitó el gráfico de gastos de los últimos 6 meses. Queda el registro completo por mes, con filtros por auto y por tipo (servicio, accesorios, kilometraje).
 - **Nombres del catálogo corregidos**:
   - Sin palabras duplicadas por la negrita de los PDF («5P 5P 1,4 1,4 FIRE FIRE» → «5P 1,4 FIRE»).
   - Unos 35 errores de tipeo de las listas corregidos (TITANIUN, LUXYRY, LIMTED…).
@@ -64,6 +67,8 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
 - **Apariencia**: la opción "Sistema" pasa a llamarse "Automático" y es la predeterminada.
 
 ### Corregido
+- **Montos**: al escribir la quinta cifra el monto se cortaba («12.345» quedaba «1,23»), porque el punto de miles se tomaba como coma decimal. Ahora se pueden cargar montos de millones; la coma (o el punto recién tecleado) marca los decimales.
+- En Expo Go, la app mostraba un error al abrir porque no podía crear el canal de notificaciones. Ahora los avisos usan el canal por defecto si el propio no se puede crear.
 - Al editar un vehículo, "Kilometraje actual" mostraba el kilometraje con el que se lo dio de alta. Ahora muestra el actual, y un valor mayor se guarda como una lectura nueva.
 - Un cambio hecho mientras se subía una copia podía quedar sin respaldar hasta el día siguiente. Ahora se guarda otra copia al terminar.
 - Si el teléfono deja de tener bloqueo de pantalla, el modo "Desbloqueo del teléfono" ya no deja la app trabada en la pantalla de bloqueo: se desactiva y avisa, igual que cuando se pierde el PIN.
