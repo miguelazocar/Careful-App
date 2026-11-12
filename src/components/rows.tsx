@@ -6,6 +6,7 @@ import { ACCESSORY_ICONS, accessoryTag, findCategory, itemName, planItem } from 
 import type { UpcomingItem } from '@/domain/schedule';
 import { formatDay, relativeDays } from '@/lib/dates';
 import { formatAmount, formatInt, formatKm } from '@/lib/format';
+import { isImagePath } from '@/lib/attachments';
 import { photoUri } from '@/services/photos';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
@@ -43,8 +44,10 @@ export function RecordRow({ record, vehicle, onPress, showVehicle = true }: { re
   const { colors } = useTheme();
   const visual = recordVisual(record, colors.primary);
   const tag = record.kind === 'accessory' && record.items[0] ? accessoryTag(record.items[0].item) : undefined;
-  const thumb = record.photos[0] ? photoUri(record.photos[0].path) : null;
-  const meta = [formatDay(record.date), record.odometer !== null ? formatKm(record.odometer) : null, showVehicle && vehicle ? `${vehicle.brand} ${vehicle.model}` : null]
+  const firstImage = record.photos.find((p) => isImagePath(p.path));
+  const thumb = firstImage ? photoUri(firstImage.path) : null;
+  const docs = record.photos.length - record.photos.filter((p) => isImagePath(p.path)).length;
+  const meta = [formatDay(record.date), record.odometer !== null ? formatKm(record.odometer) : null, showVehicle && vehicle ? `${vehicle.brand} ${vehicle.model}` : null, docs ? `${docs} ${docs === 1 ? 'archivo' : 'archivos'}` : null]
     .filter(Boolean)
     .join(' · ');
   return (

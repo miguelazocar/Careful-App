@@ -359,7 +359,7 @@ export default function RecordFormScreen() {
       />
       <TextField label="Taller" value={workshop} onChangeText={setWorkshop} placeholder="Opcional" icon="store-outline" />
       <View>
-        <FieldLabel label="Foto" hint="Opcional: factura, repuestos, el trabajo terminado" />
+        <FieldLabel label="Fotos y archivos" hint="Opcional: foto del trabajo, factura en PDF, garantía…" />
         <PhotoStrip
           photos={photos}
           onChange={(next) => {

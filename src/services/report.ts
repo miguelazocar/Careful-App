@@ -20,6 +20,7 @@ import { formatDay, today } from '@/lib/dates';
 import { formatAmount, formatInt, formatKm } from '@/lib/format';
 import { withExternalActivity } from '@/stores/ui';
 
+import { attachmentName, isImagePath } from '@/lib/attachments';
 import { photoUri } from './photos';
 import { loadUpcoming, vehicleLabel } from './upcoming';
 
@@ -120,6 +121,7 @@ function serviceTable(items: UpcomingItem[]): string {
 }
 
 function recordCard(r: LogRecordFull, thumbs: string[]): string {
+  const docs = r.photos.map((p) => p.path).filter((x) => !isImagePath(x)).map(attachmentName);
   const kind = KIND[r.kind] ?? KIND.maintenance;
   const d = r.date.split('-');
   const title = r.kind === 'odometer' ? 'Actualización de kilometraje' : r.items.map(itemName).join(' · ') || kind.label;
@@ -138,6 +140,7 @@ function recordCard(r: LogRecordFull, thumbs: string[]): string {
       <div class="meta">${r.odometer !== null ? `<span>⏱ ${esc(formatKm(r.odometer))}</span>` : ''}${r.workshop ? `<span>🔧 ${esc(r.workshop)}</span>` : ''}</div>
       ${r.description ? `<p>${esc(r.description).replace(/\n/g, '<br/>')}</p>` : ''}
       ${intervals.length ? `<div class="next">${intervals.map(esc).join('<br/>')}</div>` : ''}
+      ${docs.length ? `<div class="docs">📎 ${docs.map(esc).join(' · ')}</div>` : ''}
       ${thumbs.length ? `<div class="thumbs">${thumbs.map((t) => `<img src="${t}"/>`).join('')}</div>` : ''}
     </div>
   </article>`;
@@ -158,7 +161,8 @@ export async function buildVehicleReportHtml(vehicleId: string): Promise<string>
   for (const r of records) {
     if (budget <= 0) break;
     const list: string[] = [];
-    for (const p of r.photos.slice(0, Math.min(THUMBS_PER_RECORD, budget))) {
+    // documents (PDF, Word…) can't be embedded: they are listed by name in the card
+    for (const p of r.photos.filter((x) => isImagePath(x.path)).slice(0, Math.min(THUMBS_PER_RECORD, budget))) {
       const t = await imageData(p.path, 420, 0.6);
       if (t) list.push(t);
     }
@@ -225,6 +229,7 @@ export async function buildVehicleReportHtml(vehicleId: string): Promise<string>
   .meta { display: flex; gap: 14px; color: #3B4A60; font-size: 10.5px; }
   .body p { margin: 5px 0 0; color: #2A3446; }
   .next { margin-top: 5px; padding: 5px 8px; background: #F2F6FC; border-radius: 6px; color: #0547C9; font-size: 10px; }
+  .docs { margin-top: 6px; font-size: 11px; color: #475569; }
   .thumbs { display: flex; gap: 6px; margin-top: 7px; } .thumbs img { width: 120px; height: 86px; object-fit: cover; border-radius: 8px; }
   .foot { margin-top: 18px; padding-top: 8px; border-top: 1px solid #E1E7F0; color: #94A0B4; font-size: 9px; text-align: center; }
 </style></head><body>

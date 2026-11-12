@@ -57,7 +57,7 @@ IA en el alta: **escanear la cédula verde** completa los datos, y la **foto del
 - **Servicio / Mantenimiento**: «¿Qué se hizo?» con las categorías (Motor, Caja, Frenos, Tren delantero, Ruedas, Sistema eléctrico, Climatización, Lavado…) y sus tareas; se pueden elegir varias. Las tareas del plan de mantenimiento piden **cada cuántos km y meses toca la próxima**, precargado con el plan del auto. La ficha del auto lo abre con **＋ Evento**.
 - **Accesorios**: panel rápido con qué pusiste, una **etiqueta** (Luces, Estéreo, Alarma…) para filtrar, descripción, monto, km, fecha y foto.
 - **Kilometraje**: panel rápido con el km actual y una descripción.
-- Km (validado contra el historial), monto **sin símbolo de moneda**, descripción con **"Mejorar texto"**, taller y foto opcional.
+- Km (validado contra el historial), monto **sin símbolo de moneda**, descripción con **"Mejorar texto"**, taller y **adjuntos**: sacar una foto, elegirla de la galería o subir un archivo (PDF, Word, Excel… hasta 20 MB) que se abre con las apps del teléfono.
 
 ### 📅 Agenda inteligente
 - **Plan de mantenimiento** (editable por vehículo): cambio de aceite y filtro, filtro de aire del motor, filtro de aire del habitáculo, filtro de combustible, bujías y kit de distribución. Cada uno agenda el **próximo service por km o por fecha, lo que ocurra primero**, desde el primer día (estimado hasta que lo registres).

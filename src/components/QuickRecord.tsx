@@ -227,7 +227,7 @@ function QuickRecordSheet({ req, visible, onClose }: { req: QuickRequest; visibl
             </View>
             <DateField label="Fecha" value={date} onChange={setDate} />
             <View>
-              <FieldLabel label="Foto" hint="Opcional" />
+              <FieldLabel label="Fotos y archivos" hint="Opcional: foto, factura en PDF, garantía…" />
               <PhotoStrip
                 photos={photos}
                 max={4}

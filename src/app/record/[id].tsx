@@ -3,7 +3,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Pressable, View } from 'react-native';
 
-import { PhotoViewer } from '@/components/pickers';
+import { openDocument, PhotoViewer } from '@/components/pickers';
 import { recordTitle, recordVisual } from '@/components/rows';
 import { Header, Screen } from '@/components/ui/layout';
 import { confirmIdentity } from '@/components/AuthPrompt';
@@ -15,6 +15,7 @@ import { accessoryTag, findItem, itemName } from '@/domain/maintenance';
 import { useQuery } from '@/hooks/useQuery';
 import { formatDayLong } from '@/lib/dates';
 import { formatAmount, formatKm } from '@/lib/format';
+import { attachmentName, documentVisual, isImagePath } from '@/lib/attachments';
 import { deletePhotoFiles, photoUri } from '@/services/photos';
 import { toast } from '@/stores/ui';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -41,6 +42,8 @@ export default function RecordDetailScreen() {
   }
   const visual = recordVisual(r, colors.primary);
   const tag = r.kind === 'accessory' && r.items[0] ? accessoryTag(r.items[0].item) : undefined;
+  const images = r.photos.map((p) => p.path).filter(isImagePath);
+  const documents = r.photos.map((p) => p.path).filter((p) => !isImagePath(p));
 
   const edit = async () => {
     if (!(await confirmIdentity('Confirmá que sos vos para editar este registro.'))) return;
@@ -137,21 +140,44 @@ export default function RecordDetailScreen() {
         </View>
       ) : null}
 
-      {r.photos.length ? (
+      {images.length ? (
         <View style={{ gap: spacing.xs }}>
           <AppText variant="subheading">Fotos</AppText>
           <Grid columns={3} gap={spacing.xs}>
-            {r.photos.map((p, i) => (
-              <Pressable key={p.id} onPress={() => setViewer(i)} style={{ aspectRatio: 1, borderRadius: radius.md, overflow: 'hidden' }}>
-                <Image source={{ uri: photoUri(p.path) ?? undefined }} style={{ flex: 1 }} contentFit="cover" />
+            {images.map((p, i) => (
+              <Pressable key={p} onPress={() => setViewer(i)} style={{ aspectRatio: 1, borderRadius: radius.md, overflow: 'hidden' }}>
+                <Image source={{ uri: photoUri(p) ?? undefined }} style={{ flex: 1 }} contentFit="cover" />
               </Pressable>
             ))}
           </Grid>
         </View>
       ) : null}
 
+      {documents.length ? (
+        <View style={{ gap: spacing.xs }}>
+          <AppText variant="subheading">Archivos</AppText>
+          <Card padded={false}>
+            {documents.map((p, i) => {
+              const visual = documentVisual(p);
+              return (
+                <ListRow
+                  key={p}
+                  icon={visual.icon}
+                  iconColor={visual.color}
+                  title={attachmentName(p)}
+                  subtitle={`${visual.label} · tocá para abrirlo`}
+                  last={i === documents.length - 1}
+                  right={<Icon name="open-in-new" size={20} color={colors.textSubtle} />}
+                  onPress={() => void openDocument(p)}
+                />
+              );
+            })}
+          </Card>
+        </View>
+      ) : null}
+
       <Button label="Editar registro" icon="pencil" variant="secondary" onPress={() => void edit()} />
-      <PhotoViewer photos={r.photos.map((p) => p.path)} index={viewer} onClose={() => setViewer(null)} />
+      <PhotoViewer photos={images} index={viewer} onClose={() => setViewer(null)} />
     </Screen>
   );
 }

@@ -1,7 +1,9 @@
+import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 
+import { attachmentMime, attachmentName, DOC_SEPARATOR, documentFileName, MAX_DOCUMENT_MB } from '@/lib/attachments';
 import { newId } from '@/lib/id';
 import { withExternalActivity } from '@/stores/ui';
 
@@ -84,6 +86,43 @@ export async function storePhoto(sourceUri: string, width?: number, height?: num
   const target = new File(photoDir(), name);
   new File(saved.uri).moveSync(target);
   return { path: `${PHOTO_DIR}/${name}`, uri: target.uri };
+}
+
+/* ------------------------------ Documents ------------------------------ */
+/*
+ * Records can also carry documents (invoice PDF, warranty in Word…). They are stored next to the
+ * photos, so backups and restores carry them unchanged, as "photos/<id>--<original name>".
+ */
+/** Lets the user pick any document and stores a copy. Returns null when cancelled. */
+export async function pickDocument(): Promise<PickedPhoto | null> {
+  // the document picker gives the real file name ("Factura.pdf"); content URIs only carry an id
+  const picked = await withExternalActivity(() => DocumentPicker.getDocumentAsync({ type: '*/*', copyToCacheDirectory: true, multiple: false }));
+  const asset = picked.canceled ? null : picked.assets?.[0];
+  if (!asset) return null;
+  const cached = new File(asset.uri);
+  if ((asset.size ?? cached.size) > MAX_DOCUMENT_MB * 1024 * 1024) {
+    if (cached.exists) cached.delete();
+    throw new Error(`El archivo pesa más de ${MAX_DOCUMENT_MB} MB. Elegí uno más liviano.`);
+  }
+  const name = `${newId()}${DOC_SEPARATOR}${documentFileName(asset.name, asset.mimeType)}`;
+  const target = new File(photoDir(), name);
+  cached.moveSync(target);
+  return { path: `${PHOTO_DIR}/${name}`, uri: target.uri };
+}
+
+/** Opens a stored document with an app of the phone (PDF viewer, Word…). */
+export async function openAttachment(path: string): Promise<void> {
+  const stored = new File(Paths.document, path);
+  if (!stored.exists) throw new Error('El archivo ya no está en el teléfono.');
+  const mimeType = attachmentMime(path);
+  // viewers title the file by its name: hand them a temporary copy named like the original
+  const openDir = new Directory(Paths.cache, 'abiertos');
+  if (openDir.exists) openDir.delete();
+  openDir.create({ intermediates: true });
+  const file = new File(openDir, attachmentName(path));
+  await stored.copy(file);
+  if (!(await file.canPreview({ mimeType }))) throw new Error('No hay ninguna app en el teléfono para abrir este tipo de archivo.');
+  await withExternalActivity(() => file.preview({ title: attachmentName(path), mimeType }));
 }
 
 export function deletePhotoFiles(paths: (string | null | undefined)[]): void {
