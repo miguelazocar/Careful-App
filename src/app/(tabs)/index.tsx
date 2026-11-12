@@ -8,19 +8,24 @@ import { UpcomingRow } from '@/components/rows';
 import { VehicleCard } from '@/components/VehicleCard';
 import { Screen } from '@/components/ui/layout';
 import { AppText, Button, Icon, IconButton, SectionTitle } from '@/components/ui/primitives';
+import { listVehicles } from '@/db/vehicles';
 import { useQuery } from '@/hooks/useQuery';
 import { loadUpcoming } from '@/services/upcoming';
 import { useSettings } from '@/stores/settings';
+import { useTheme } from '@/theme/ThemeProvider';
 import { brand, radius, spacing } from '@/theme/tokens';
 
 export default function GarageScreen() {
   const warnKm = useSettings((s) => s.notifications.warnKm);
-  const { data } = useQuery(() => loadUpcoming({ warnKm }), [warnKm]);
+  const { data } = useQuery(async () => {
+    const [upcoming, all] = await Promise.all([loadUpcoming({ warnKm }), listVehicles({ includeArchived: true })]);
+    return { ...upcoming, archivedCount: all.filter((v) => v.archivedAt).length };
+  }, [warnKm]);
 
   const snapshots = data ? [...data.snapshots.values()] : [];
   const attention = data?.items.filter((i) => i.due.status !== 'ok') ?? [];
 
-  if (data && snapshots.length === 0) return <Welcome />;
+  if (data && snapshots.length === 0) return <Welcome archivedCount={data.archivedCount} />;
 
   return (
     <Screen
@@ -59,11 +64,43 @@ export default function GarageScreen() {
           </View>
         </View>
       ) : null}
+
+      {data?.archivedCount ? <ArchivedButton count={data.archivedCount} /> : null}
     </Screen>
   );
 }
 
-function Welcome() {
+/** Entry to the archived cars (sold, stolen…), at the end of the garage. */
+function ArchivedButton({ count }: { count: number }) {
+  const { colors } = useTheme();
+  return (
+    <Pressable
+      onPress={() => router.push('/vehicle/archived')}
+      accessibilityRole="button"
+      accessibilityLabel={`Archivados, ${count}`}
+      style={({ pressed }) => ({
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: spacing.sm,
+        padding: spacing.md,
+        borderRadius: radius.lg,
+        borderWidth: 1,
+        borderColor: colors.border,
+        backgroundColor: pressed ? colors.surfaceAlt : colors.surface,
+      })}>
+      <Icon name="archive-outline" size={22} color={colors.textMuted} />
+      <View style={{ flex: 1 }}>
+        <AppText variant="bodyStrong">Archivados</AppText>
+        <AppText variant="caption" tone="muted">
+          {count === 1 ? '1 auto que ya no tenés' : `${count} autos que ya no tenés`} · historial guardado
+        </AppText>
+      </View>
+      <Icon name="chevron-right" size={22} color={colors.textSubtle} />
+    </Pressable>
+  );
+}
+
+function Welcome({ archivedCount }: { archivedCount: number }) {
   return (
     <Screen tabBar contentStyle={{ flexGrow: 1, justifyContent: 'center' }}>
       <LinearGradient colors={['#0B1B3F', '#0547C9']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ borderRadius: radius.xxl, padding: spacing.xl, gap: spacing.lg, overflow: 'hidden' }}>
@@ -89,6 +126,11 @@ function Welcome() {
           </AppText>
         </Pressable>
       </LinearGradient>
+      {archivedCount ? (
+        <View style={{ marginTop: spacing.lg }}>
+          <ArchivedButton count={archivedCount} />
+        </View>
+      ) : null}
       <View style={{ gap: spacing.sm, marginTop: spacing.lg }}>
         {[
           ['shield-lock', 'Tus datos quedan en tu teléfono'],

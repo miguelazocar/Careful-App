@@ -9,6 +9,7 @@ import { AppText, Button, Card, Chip, EmptyState } from '@/components/ui/primiti
 import { getAccessoryTagCounts, listRecords } from '@/db/records';
 import type { RecordKind } from '@/db/types';
 import { listVehicles } from '@/db/vehicles';
+import { archiveReasonLabel } from '@/domain/archive';
 import { ACCESSORY_ICONS, accessoryTag } from '@/domain/maintenance';
 import { formatPlate } from '@/domain/plate';
 import { useQuery } from '@/hooks/useQuery';
@@ -63,7 +64,7 @@ export default function HistoryScreen() {
           ...vehicles.map((v) => ({
             key: v.id,
             label: vehicleLabel(v),
-            subtitle: [v.plate ? formatPlate(v.plate, v.country) : null, v.archivedAt ? 'Archivado' : null].filter(Boolean).join(' · ') || undefined,
+            subtitle: [v.plate ? formatPlate(v.plate, v.country) : null, v.archivedAt ? `Archivado · ${archiveReasonLabel(v.archivedReason)}` : null].filter(Boolean).join(' · ') || undefined,
             icon: v.archivedAt ? 'archive-outline' : 'car',
           })),
         ]

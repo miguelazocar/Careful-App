@@ -35,7 +35,8 @@ export async function loadUpcoming(opts: { vehicleId?: string; warnKm?: number; 
   const now = opts.now ?? new Date();
   const today = todayFn(now);
   const warnKm = opts.warnKm ?? 1000;
-  const vehicles = (await listVehicles()).filter((v) => !opts.vehicleId || v.id === opts.vehicleId);
+  // archived vehicles leave the agenda and reminders, but their own screen still loads them
+  const vehicles = (await listVehicles({ includeArchived: !!opts.vehicleId })).filter((v) => !opts.vehicleId || v.id === opts.vehicleId);
   const snapshots = new Map<string, VehicleSnapshot>();
   const items: UpcomingItem[] = [];
 

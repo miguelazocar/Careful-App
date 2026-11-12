@@ -97,7 +97,7 @@ En modo **Automático** usa Gemini si está configurado y cae a la IA local si n
 ### 📄 Más
 - Historial completo agrupado por mes, con **filtros por auto y por tipo** (servicio, accesorios, kilometraje) y, en accesorios, **por etiqueta**.
 - **Informe del vehículo en PDF** para la venta: resumen (km recorridos, gastos por rubro, costo por km, servicios), ficha técnica, estado de cada servicio e historial detallado con fotos.
-- Archivar vehículos vendidos sin perder su historia.
+- **Archivar** un auto que ya no tenés indicando el motivo (venta, pérdida, robo, cedido, embargado, siniestro, baja u otro): sale del garage y de los avisos, y queda en **Archivados** con todo su historial e informe PDF, listo para restaurar.
 - Tema **automático / claro / oscuro** (automático por defecto).
 
 ## 🧠 Decisiones de producto

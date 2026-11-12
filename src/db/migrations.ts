@@ -131,6 +131,11 @@ export const MIGRATIONS: string[] = [
   ALTER TABLE record_items ADD COLUMN interval_km INTEGER;
   ALTER TABLE record_items ADD COLUMN interval_months INTEGER;
   `,
+  // 4 — why a vehicle was archived (domain/archive.ts keys: venta, robo…) and an optional detail.
+  `
+  ALTER TABLE vehicles ADD COLUMN archived_reason TEXT;
+  ALTER TABLE vehicles ADD COLUMN archived_note TEXT;
+  `,
 ];
 
 export async function migrate(db: Db): Promise<number> {

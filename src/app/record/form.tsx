@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, View } from 'react-native';
 import Animated, { Easing, FadeIn } from 'react-native-reanimated';
 
-import { IntervalFields } from '@/components/IntervalFields';
+import { IntervalFields, monthsUnit } from '@/components/IntervalFields';
 import { PhotoStrip, VehicleSelector } from '@/components/pickers';
 import { openQuickRecord } from '@/components/QuickRecord';
 import { DateField, FieldLabel, TextField } from '@/components/ui/inputs';
@@ -15,7 +15,7 @@ import { createRecord, getOdometerReadings, getRecord, updateRecord, type Record
 import { getServiceRules } from '@/db/reminders';
 import type { ServiceRule, Vehicle } from '@/db/types';
 import { listVehicles } from '@/db/vehicles';
-import { findItem, isOtherItem, isTrackedItem, MAINTENANCE_CATEGORIES, type Category } from '@/domain/maintenance';
+import { CORE_ITEM, findItem, isOtherItem, isTrackedItem, MAINTENANCE_CATEGORIES, OIL_CHANGE_EXTRAS, PLAN_ITEMS, planItem, type Category } from '@/domain/maintenance';
 import { dueText } from '@/domain/notification-plan';
 import { currentOdometer, nextDueFrom, odometerError, resolveInterval, validateOdometer } from '@/domain/schedule';
 import { today } from '@/lib/dates';
@@ -62,6 +62,8 @@ export default function RecordFormScreen() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [readings, setReadings] = useState<{ date: string; km: number }[]>([]);
   const [openCategory, setOpenCategory] = useState<Category | null>(null);
+  /** Interval cards the user expanded ("Cambiar"). */
+  const [openIntervals, setOpenIntervals] = useState<Record<string, boolean>>({});
   const [saving, setSaving] = useState(false);
   const [improving, setImproving] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -131,7 +133,9 @@ export default function RecordFormScreen() {
   const vehicle = vehicles.find((v) => v.id === vehicleId);
   const lastKm = vehicle ? currentOdometer(vehicle.initialOdometer, readings) : null;
   const km = parseIntInput(odometer);
-  const tracked = items.filter((i) => isTrackedItem(i.item));
+  // plan order: the oil change (with its extra filters) first
+  const planIndex = (item: string) => PLAN_ITEMS.findIndex((p) => p.item === item);
+  const tracked = items.filter((i) => isTrackedItem(i.item)).sort((a, b) => planIndex(a.item) - planIndex(b.item));
 
   /** The interval shown for a tracked item: what the user set, else the vehicle's plan. */
   const intervalOf = (item: string): Interval => {
@@ -276,18 +280,55 @@ export default function RecordFormScreen() {
         const iv = intervalOf(t.item);
         const next = nextDueFrom(date, km, { intervalKm: parseIntInput(iv.km), intervalMonths: iv.months || null });
         const when = dueText(next);
+        const plan = planItem(t.item);
+        // the oil change always shows its fields; the rest open on demand when there are several
+        const full = t.item === CORE_ITEM || tracked.length === 1 || openIntervals[t.item];
+        const every = [iv.km ? `${iv.km} km` : null, iv.months ? `${iv.months} ${monthsUnit(iv.months)}` : null].filter(Boolean).join(' o ');
         return (
-          <Animated.View key={t.item} entering={enter} style={{ gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, backgroundColor: colors.primarySoft }}>
+          <Animated.View key={t.item} entering={enter} style={{ gap: full ? spacing.sm : 4, padding: spacing.md, borderRadius: radius.lg, backgroundColor: colors.primarySoft }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
-              <Icon name="calendar-sync" size={20} color={colors.primary} />
+              <Icon name={plan?.icon ?? 'calendar-sync'} size={20} color={plan?.color ?? colors.primary} />
               <AppText variant="bodyStrong" style={{ flex: 1 }}>
                 Próximo: {labelOf(t).toLowerCase()}
               </AppText>
+              {!full ? (
+                <Pressable onPress={() => setOpenIntervals((p) => ({ ...p, [t.item]: true }))} hitSlop={8} accessibilityRole="button" accessibilityLabel={`Cambiar el intervalo de ${labelOf(t)}`}>
+                  <AppText variant="captionStrong" tone="primary">
+                    Cambiar
+                  </AppText>
+                </Pressable>
+              ) : null}
             </View>
-            <IntervalFields km={iv.km} months={iv.months} onKm={(v) => setIntervals((p) => ({ ...p, [t.item]: { ...iv, km: v } }))} onMonths={(v) => setIntervals((p) => ({ ...p, [t.item]: { ...iv, months: v } }))} />
+            {full ? (
+              <IntervalFields km={iv.km} months={iv.months} onKm={(v) => setIntervals((p) => ({ ...p, [t.item]: { ...iv, km: v } }))} onMonths={(v) => setIntervals((p) => ({ ...p, [t.item]: { ...iv, months: v } }))} />
+            ) : null}
             <AppText variant="caption" tone="muted">
+              {!full && every ? `Cada ${every}. ` : ''}
               {when ? `Te avisamos para hacerlo ${when}.` : 'Cargá el kilometraje para calcular el próximo.'}
             </AppText>
+            {t.item === CORE_ITEM ? (
+              <View style={{ gap: 6, marginTop: 2 }}>
+                <AppText variant="captionStrong">¿También cambiaste?</AppText>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+                  {OIL_CHANGE_EXTRAS.map((key) => {
+                    const meta = findItem(key);
+                    if (!meta) return null;
+                    const on = items.some((i) => i.item === key);
+                    return (
+                      <Chip
+                        key={key}
+                        size="sm"
+                        icon={on ? 'check' : planItem(key)?.icon}
+                        color={planItem(key)?.color}
+                        label={meta.item.label}
+                        selected={on}
+                        onPress={() => toggle(meta.category.key, key, meta.item.label)}
+                      />
+                    );
+                  })}
+                </View>
+              </View>
+            ) : null}
           </Animated.View>
         );
       })}

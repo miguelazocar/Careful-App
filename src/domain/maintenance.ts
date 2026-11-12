@@ -314,6 +314,9 @@ export function isTrackedItem(item: string): boolean {
 /** The item every vehicle is expected to track from day one. */
 export const CORE_ITEM = 'motor.aceite';
 
+/** Filters usually replaced together with the oil change: offered right on its card. */
+export const OIL_CHANGE_EXTRAS: readonly string[] = ['motor.filtro_aire', 'climatizacion.filtro_habitaculo', 'motor.filtro_combustible'];
+
 const ALL_CATEGORIES = [...MAINTENANCE_CATEGORIES, ACCESSORY_CATEGORY];
 const ITEM_INDEX = new Map<string, { item: CatalogItem; category: Category }>();
 for (const category of ALL_CATEGORIES) {

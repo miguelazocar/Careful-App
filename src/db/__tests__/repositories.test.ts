@@ -117,9 +117,22 @@ describe('repositories on real SQLite', () => {
     expect(b.sortOrder).toBe(1);
     await updateVehicle(a.id, { nickname: 'El Cronos', initialOdometer: 41_000 });
     expect((await getVehicle(a.id))?.nickname).toBe('El Cronos');
-    await setVehicleArchived(b.id, true);
+    await setVehicleArchived(b.id, { reason: 'venta', note: '  Vendido a Juan  ' });
     expect((await listVehicles()).map((v) => v.id)).toEqual([a.id]);
     expect(await listVehicles({ includeArchived: true })).toHaveLength(2);
+    expect(await getVehicle(b.id)).toMatchObject({ archivedReason: 'venta', archivedNote: 'Vendido a Juan' });
+    expect((await getVehicle(b.id))?.archivedAt).toBeTruthy();
+  });
+
+  it('restoring an archived vehicle clears its reason; its own agenda still loads, the global one skips it', async () => {
+    const a = await createVehicle(baseVehicle);
+    const b = await createVehicle({ ...baseVehicle, model: 'Toro', plate: 'AF100AA' });
+    await setVehicleArchived(b.id, { reason: 'robo' });
+    expect((await loadUpcoming()).snapshots.has(b.id)).toBe(false);
+    expect((await loadUpcoming()).snapshots.has(a.id)).toBe(true);
+    expect((await loadUpcoming({ vehicleId: b.id })).snapshots.get(b.id)?.vehicle.archivedReason).toBe('robo');
+    await setVehicleArchived(b.id, null);
+    expect(await getVehicle(b.id)).toMatchObject({ archivedAt: null, archivedReason: null, archivedNote: null });
   });
 
   it('stores records with items and photos, and notifies listeners', async () => {

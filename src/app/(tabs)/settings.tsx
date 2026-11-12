@@ -7,7 +7,7 @@ import { Header, Screen } from '@/components/ui/layout';
 import { AppText, Card, ListRow, Segmented } from '@/components/ui/primitives';
 import { getDb, notifyDataChanged } from '@/db/connection';
 import { TABLES } from '@/db/migrations';
-import { listVehicles, setVehicleArchived } from '@/db/vehicles';
+import { listVehicles } from '@/db/vehicles';
 import { useQuery } from '@/hooks/useQuery';
 import { formatMoment } from '@/lib/dates';
 import { listPhotoFiles } from '@/services/photos';
@@ -91,26 +91,15 @@ export default function SettingsScreen() {
       </Card>
 
       {archived?.length ? (
-        <View style={{ gap: spacing.sm }}>
-          <AppText variant="overline" tone="muted">
-            Vehículos archivados
-          </AppText>
-          <Card padded={false}>
-            {archived.map((v, i) => (
-              <ListRow
-                key={v.id}
-                icon="archive-outline"
-                title={`${v.brand} ${v.model}`}
-                subtitle="Tocá para restaurar al garage"
-                last={i === archived.length - 1}
-                onPress={async () => {
-                  await setVehicleArchived(v.id, false);
-                  toast('Vehículo restaurado');
-                }}
-              />
-            ))}
-          </Card>
-        </View>
+        <Card padded={false}>
+          <ListRow
+            icon="archive-outline"
+            title="Vehículos archivados"
+            subtitle={archived.length === 1 ? '1 auto que ya no tenés' : `${archived.length} autos que ya no tenés`}
+            last
+            onPress={() => router.push('/vehicle/archived')}
+          />
+        </Card>
       ) : null}
 
       <Card padded={false}>

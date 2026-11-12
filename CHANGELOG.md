@@ -13,6 +13,8 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
 - **Pestaña Aceite de la ficha**: muestra «Cambio cada X km o N meses», el próximo cambio y una barra de cuánto falta. El intervalo base se edita en el paso Aceite del asistente.
 - **Cada servicio nuevo reemplaza al anterior**: el próximo vencimiento y el conteo de km empiezan de nuevo desde ese día y ese kilometraje.
 - **Plan de mantenimiento con 6 tareas de motor**: cambio de aceite y filtro, filtro de aire del motor, filtro de aire del habitáculo, filtro de combustible, bujías y kit de distribución. Son las únicas que se agendan y avisan; el resto queda solo en el historial. Las seis se agendan desde el primer día: hasta registrarlas, el vencimiento es una estimación (el próximo múltiplo del intervalo de km o el plazo desde el alta).
+- **Filtros junto con el cambio de aceite**: la tarjeta del cambio de aceite pregunta «¿También cambiaste?» con filtro de aire del motor, del habitáculo y de combustible. Marcarlos reinicia también sus contadores de km y meses.
+- **Archivar con motivo**: venta, pérdida, robo, cedido, embargado, siniestro, baja / desguace u otro, más un detalle opcional. El auto sale del garage, de la agenda y de los avisos, y queda en **Archivados** (botón al final del garage) con su historial, su informe PDF y la opción de restaurarlo.
 - **Avisos semanales**: desde que faltan 1.000 km o un mes para el vencimiento (lo que llegue primero), hasta que se registre el servicio, aunque ya esté vencido. Además, «Mañana» y «Hoy» el día del vencimiento.
 - **Informe del vehículo en PDF**, para entregar a un comprador:
   - **Resumen**: km recorridos desde el alta, gasto total y por rubro, costo por km, servicios, cambios de aceite, accesorios y uso promedio.

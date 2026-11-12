@@ -36,11 +36,13 @@ interface VehicleRow {
   notes: string | null;
   sort_order: number;
   archived_at: string | null;
+  archived_reason: string | null;
+  archived_note: string | null;
   created_at: string;
   updated_at: string;
 }
 
-export type VehicleInput = Omit<Vehicle, 'id' | 'createdAt' | 'updatedAt' | 'sortOrder' | 'archivedAt'> & {
+export type VehicleInput = Omit<Vehicle, 'id' | 'createdAt' | 'updatedAt' | 'sortOrder' | 'archivedAt' | 'archivedReason' | 'archivedNote'> & {
   sortOrder?: number;
 };
 
@@ -110,6 +112,8 @@ export function mapVehicle(r: VehicleRow): Vehicle {
     notes: r.notes,
     sortOrder: r.sort_order,
     archivedAt: r.archived_at,
+    archivedReason: r.archived_reason,
+    archivedNote: r.archived_note,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
   };
@@ -157,9 +161,15 @@ export async function updateVehicle(id: string, patch: Partial<VehicleInput>): P
   return (await getVehicle(id))!;
 }
 
-export async function setVehicleArchived(id: string, archived: boolean): Promise<void> {
-  await getDb().runAsync('UPDATE vehicles SET archived_at = ?, updated_at = ? WHERE id = ?', [
-    archived ? nowIso() : null,
+/**
+ * Archives a vehicle with the reason it is no longer in use (`null` restores it to the garage).
+ * Archived vehicles keep their whole history but leave the garage, the agenda and the reminders.
+ */
+export async function setVehicleArchived(id: string, archive: { reason: string; note?: string | null } | null): Promise<void> {
+  await getDb().runAsync('UPDATE vehicles SET archived_at = ?, archived_reason = ?, archived_note = ?, updated_at = ? WHERE id = ?', [
+    archive ? nowIso() : null,
+    archive?.reason ?? null,
+    archive?.note?.trim() || null,
     nowIso(),
     id,
   ]);

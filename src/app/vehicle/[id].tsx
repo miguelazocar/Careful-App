@@ -5,6 +5,7 @@ import { Alert, Pressable, ScrollView, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { ArchiveSheet } from '@/components/ArchiveSheet';
 import { confirmIdentity } from '@/components/AuthPrompt';
 import { BrandLogo } from '@/components/BrandLogo';
 import { monthsUnit } from '@/components/IntervalFields';
@@ -17,6 +18,7 @@ import { listRecords } from '@/db/records';
 import { getServiceRules } from '@/db/reminders';
 import type { Vehicle } from '@/db/types';
 import { deleteVehicle, setVehicleArchived } from '@/db/vehicles';
+import { archiveReasonIcon, archiveReasonLabel } from '@/domain/archive';
 import { flagEmoji } from '@/domain/countries';
 import { CORE_ITEM } from '@/domain/maintenance';
 import { dueText } from '@/domain/notification-plan';
@@ -52,7 +54,7 @@ export default function VehicleDetailScreen() {
   const insets = useSafeAreaInsets();
   const warnKm = useSettings((s) => s.notifications.warnKm);
   const [tab, setTab] = useState<Tab>('vehiculo');
-  const [sheet, setSheet] = useState<null | 'menu' | 'services' | 'history'>(null);
+  const [sheet, setSheet] = useState<null | 'menu' | 'services' | 'history' | 'archive'>(null);
   const [exporting, setExporting] = useState(false);
 
   const { data } = useQuery(async () => {
@@ -71,6 +73,9 @@ export default function VehicleDetailScreen() {
     );
   }
   const v = snap.vehicle;
+  /** Sold, stolen…: history only, no services or reminders. */
+  const archived = !!v.archivedAt;
+  const nextOil = archived ? undefined : data.upcoming.items.find((i) => i.item === CORE_ITEM);
   const pending = data.upcoming.items.filter((i) => i.due.status !== 'ok').length;
   const total = data.records.reduce((s, r) => s + (r.amountCents ?? 0), 0);
 
@@ -108,19 +113,10 @@ export default function VehicleDetailScreen() {
     ]);
   };
 
-  const archive = () => {
+  const restore = async () => {
     setSheet(null);
-    Alert.alert('Archivar vehículo', 'Lo ocultamos del garage y de los avisos, pero conservás su historial. Podés restaurarlo desde Ajustes.', [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Archivar',
-        onPress: async () => {
-          await setVehicleArchived(v.id, true);
-          toast('Vehículo archivado');
-          router.back();
-        },
-      },
-    ]);
+    await setVehicleArchived(v.id, null);
+    toast('Vehículo restaurado al garage');
   };
 
   const go = (pathname: '/record/form' | '/reminder/form' | '/vehicle/plan', params: Record<string, string>) => {
@@ -141,6 +137,15 @@ export default function VehicleDetailScreen() {
         <View style={{ position: 'absolute', left: spacing.lg, right: spacing.lg, bottom: spacing.xl + 8, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
           <BrandLogo brandId={v.brandId} brand={v.brand} size={48} />
           <View style={{ flex: 1 }}>
+            {archived ? (
+              <View style={{ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6, paddingHorizontal: 10, paddingVertical: 4, borderRadius: radius.pill, backgroundColor: 'rgba(7,11,20,0.6)', maxWidth: '100%' }}>
+                <Icon name={archiveReasonIcon(v.archivedReason)} size={14} color="#FFFFFF" />
+                <AppText variant="captionStrong" color="#FFFFFF" numberOfLines={1} style={{ flexShrink: 1 }}>
+                  Archivado · {archiveReasonLabel(v.archivedReason)} · {formatDay(v.archivedAt!.slice(0, 10))}
+                  {v.archivedNote ? ` · ${v.archivedNote}` : ''}
+                </AppText>
+              </View>
+            ) : null}
             <AppText variant="overline" color="rgba(255,255,255,0.85)" numberOfLines={1}>
               {v.brand}
               {v.year ? ` · ${v.year}` : ''}
@@ -182,9 +187,9 @@ export default function VehicleDetailScreen() {
           </View>
           <Animated.View key={tab} entering={FadeIn.duration(180)} style={{ height: TAB_HEIGHT, paddingHorizontal: spacing.sm, paddingBottom: spacing.sm }}>
             {tab === 'vehiculo' ? (
-              <VehicleTab v={v} km={snap.currentKm} spentCents={total} nextOil={data.upcoming.items.find((i) => i.item === CORE_ITEM)} />
+              <VehicleTab v={v} km={snap.currentKm} spentCents={total} nextOil={nextOil} />
             ) : tab === 'aceite' ? (
-              <OilTab v={v} plan={data.oilPlan} next={data.upcoming.items.find((i) => i.item === CORE_ITEM)} />
+              <OilTab v={v} plan={data.oilPlan} next={nextOil} />
             ) : (
               <CoolantTab v={v} />
             )}
@@ -192,12 +197,20 @@ export default function VehicleDetailScreen() {
         </Card>
 
         {/* Quick actions */}
-        <View style={{ flexDirection: 'row', gap: spacing.xs }}>
-          <Action icon="plus" label="Evento" primary onPress={() => go('/record/form', { kind: 'maintenance', vehicleId: v.id })} />
-          <Action icon="speedometer" label="Kilometraje" onPress={() => openQuickRecord({ kind: 'odometer', vehicleId: v.id })} />
-          <Action icon="calendar-clock" label="Services" badge={pending || undefined} onPress={() => setSheet('services')} />
-          <Action icon="history" label="Historial" onPress={() => setSheet('history')} />
-        </View>
+        {archived ? (
+          <View style={{ flexDirection: 'row', gap: spacing.xs }}>
+            <Action icon="history" label="Historial" primary onPress={() => setSheet('history')} />
+            <Action icon="file-pdf-box" label={exporting ? 'Generando…' : 'Informe PDF'} onPress={() => void exportPdf()} />
+            <Action icon="archive-arrow-up-outline" label="Restaurar" onPress={() => void restore()} />
+          </View>
+        ) : (
+          <View style={{ flexDirection: 'row', gap: spacing.xs }}>
+            <Action icon="plus" label="Evento" primary onPress={() => go('/record/form', { kind: 'maintenance', vehicleId: v.id })} />
+            <Action icon="speedometer" label="Kilometraje" onPress={() => openQuickRecord({ kind: 'odometer', vehicleId: v.id })} />
+            <Action icon="calendar-clock" label="Services" badge={pending || undefined} onPress={() => setSheet('services')} />
+            <Action icon="history" label="Historial" onPress={() => setSheet('history')} />
+          </View>
+        )}
       </View>
 
       <Sheet visible={sheet === 'services'} onClose={() => setSheet(null)} title="Próximos services">
@@ -248,12 +261,28 @@ export default function VehicleDetailScreen() {
       <Sheet visible={sheet === 'menu'} onClose={() => setSheet(null)} title={`${v.brand} ${v.model}`}>
         <View style={{ borderRadius: radius.lg, overflow: 'hidden', backgroundColor: colors.surface }}>
           <ListRow icon="file-pdf-box" title={exporting ? 'Generando…' : 'Informe del vehículo (PDF)'} subtitle="Resumen, ficha técnica e historial: ideal para vender" onPress={() => void exportPdf()} />
-          <ListRow icon="calendar-plus" title="Agregar recordatorio" subtitle="VTV, seguro, patente…" onPress={() => go('/reminder/form', { vehicleId: v.id })} />
-          <ListRow icon="tune-variant" title="Plan de mantenimiento" subtitle="Intervalos por km y por tiempo" onPress={() => go('/vehicle/plan', { id: v.id })} />
-          <ListRow icon="archive-outline" title="Archivar" subtitle="Lo vendiste o ya no lo usás" onPress={archive} />
+          {archived ? (
+            <ListRow icon="archive-arrow-up-outline" title="Restaurar al garage" subtitle="Vuelve a la lista, la agenda y los avisos" onPress={() => void restore()} />
+          ) : (
+            <>
+              <ListRow icon="calendar-plus" title="Agregar recordatorio" subtitle="VTV, seguro, patente…" onPress={() => go('/reminder/form', { vehicleId: v.id })} />
+              <ListRow icon="tune-variant" title="Plan de mantenimiento" subtitle="Intervalos por km y por tiempo" onPress={() => go('/vehicle/plan', { id: v.id })} />
+              <ListRow icon="archive-arrow-down-outline" title="Archivar" subtitle="Venta, robo, pérdida… conserva su historial" onPress={() => setSheet('archive')} />
+            </>
+          )}
           <ListRow icon="delete-outline" title="Eliminar vehículo" danger last onPress={() => void remove()} />
         </View>
       </Sheet>
+
+      <ArchiveSheet
+        vehicle={v}
+        visible={sheet === 'archive'}
+        onClose={() => setSheet(null)}
+        onArchived={() => {
+          setSheet(null);
+          router.back();
+        }}
+      />
     </View>
   );
 }

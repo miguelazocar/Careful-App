@@ -57,7 +57,12 @@ export interface Vehicle {
   coolantConcentration: number | null;
   notes: string | null;
   sortOrder: number;
+  /** Set when the car is no longer in use (sold, stolen…): hidden from the garage and reminders. */
   archivedAt: string | null;
+  /** Why it was archived: an ArchiveReason key (domain/archive.ts). */
+  archivedReason: string | null;
+  /** Optional detail, e.g. "Vendido a Juan Pérez". */
+  archivedNote: string | null;
   createdAt: string;
   updatedAt: string;
 }
