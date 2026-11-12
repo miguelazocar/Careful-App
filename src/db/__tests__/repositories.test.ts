@@ -25,6 +25,7 @@ const baseVehicle: VehicleInput = {
   colorHex: '#F5F6F8',
   plate: 'AE307KT',
   country: 'AR',
+  plateStyle: null,
   vin: null,
   engineNumber: null,
   photo: 'photos/cover.jpg',

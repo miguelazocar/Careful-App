@@ -136,6 +136,11 @@ export const MIGRATIONS: string[] = [
   ALTER TABLE vehicles ADD COLUMN archived_reason TEXT;
   ALTER TABLE vehicles ADD COLUMN archived_note TEXT;
   `,
+  // 5 — plate design chosen by the user (domain/plate-styles.ts keys: mercosur-ar, eu-es…).
+  //     NULL = deduced from the country and the plate format.
+  `
+  ALTER TABLE vehicles ADD COLUMN plate_style TEXT;
+  `,
 ];
 
 export async function migrate(db: Db): Promise<number> {

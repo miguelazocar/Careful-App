@@ -33,6 +33,8 @@ export interface Vehicle {
   colorHex: string | null;
   plate: string | null;
   country: string;
+  /** "Tipo de patente": a PlateStyle key (domain/plate-styles.ts); null = deduced from the country. */
+  plateStyle: string | null;
   vin: string | null;
   engineNumber: string | null;
   /** Relative path inside the app documents directory (e.g. "photos/abc.jpg"). */

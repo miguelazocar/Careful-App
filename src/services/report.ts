@@ -10,10 +10,11 @@ import type { LogRecordFull, Vehicle } from '@/db/types';
 import { getVehicle } from '@/db/vehicles';
 import { isLightColor } from '@/domain/colors';
 import { archiveReasonLabel } from '@/domain/archive';
-import { countryName } from '@/domain/countries';
+import { countryName, flagEmoji } from '@/domain/countries';
 import { accessoryTag, CORE_ITEM, findCategory, itemName } from '@/domain/maintenance';
 import { dueText } from '@/domain/notification-plan';
 import { formatPlate } from '@/domain/plate';
+import { plateCountryName, plateText, resolvePlateStyle } from '@/domain/plate-styles';
 import { summarizeHistory, type SpendGroup } from '@/domain/report-summary';
 import { resolveInterval, type UpcomingItem } from '@/domain/schedule';
 import { coolantBaseLabel, coolantMix, fuelLabel, oilBaseLabel } from '@/domain/vehicle-specs';
@@ -89,6 +90,32 @@ function field(label: string, value: string | number | null | undefined, wide = 
 
 function kpi(label: string, value: string, sub?: string | null): string {
   return `<div class="kpi"><span>${esc(label)}</span><b>${esc(value)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</div>`;
+}
+
+/** The plate as drawn in the app: Mercosur band, black 1995 Argentine plate, Chile, Perú or EU strip. */
+function plateHtml(v: Vehicle): string {
+  if (!v.plate) return '';
+  const style = resolvePlateStyle(v);
+  const text = esc(plateText(style, formatPlate(v.plate, style.country)));
+  switch (style.design) {
+    case 'mercosur':
+      return `<div class="plate"><div class="band"><span>${esc(style.band)}</span><i>${flagEmoji(style.country)}</i></div><b>${text}</b></div>`;
+    case 'pe':
+      return `<div class="plate pe"><div class="band">${esc(style.band)}</div><b>${text}</b></div>`;
+    case 'ar-1995':
+      return `<div class="plate old"><div class="inner"><div class="top">${esc(style.band)}</div><b>${text}</b></div></div>`;
+    case 'cl':
+      return `<div class="plate"><div class="top">${esc(style.band)}</div><b>${text}</b></div>`;
+    case 'eu': {
+      const stars = Array.from({ length: 12 }, (_, i) => {
+        const a = (i / 12) * Math.PI * 2;
+        return `<circle cx="${(7 + 5 * Math.cos(a)).toFixed(2)}" cy="${(7 + 5 * Math.sin(a)).toFixed(2)}" r="0.9" fill="#FFCC00"/>`;
+      }).join('');
+      return `<div class="plate eu"><div class="strip"><svg width="14" height="14" viewBox="0 0 14 14">${stars}</svg><i>${flagEmoji(style.country)}</i></div><b>${text}</b></div>`;
+    }
+    default:
+      return `<div class="plate"><b>${text}</b></div>`;
+  }
 }
 
 function serviceTable(items: UpcomingItem[]): string {
@@ -189,7 +216,15 @@ export async function buildVehicleReportHtml(vehicleId: string): Promise<string>
   .id .brand { display: flex; align-items: center; gap: 10px; color: #5F6E85; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
   h1 { font-size: 26px; line-height: 1.1; margin: 0; letter-spacing: -0.5px; }
   .ver { color: #3B4A60; font-size: 12px; }
-  .plate { display: inline-block; align-self: flex-start; margin-top: 4px; padding: 3px 12px; border: 2px solid #141C2B; border-radius: 6px; font-weight: 800; font-size: 15px; letter-spacing: 2px; }
+  .plate { display: inline-flex; flex-direction: column; align-self: flex-start; margin-top: 4px; border: 2px solid #141C2B; border-radius: 6px; overflow: hidden; background: #fff; }
+  .plate b { display: block; padding: 2px 12px 3px; font-weight: 800; font-size: 15px; letter-spacing: 2px; text-align: center; color: #111; }
+  .plate .band { background: #1F3C8C; color: #fff; font-size: 7px; font-weight: 700; letter-spacing: 1px; text-align: center; padding: 1px 8px; }
+  .plate .band { display: flex; justify-content: space-between; align-items: center; gap: 8px; } .plate i { font-style: normal; font-size: 8px; line-height: 1; }
+  .plate .top { font-size: 6px; font-weight: 700; letter-spacing: 1px; text-align: center; padding-top: 2px; color: #111; }
+  .plate.old { background: #121212; border-color: #000; padding: 1.5px; } .plate.old .inner { border: 1px solid rgba(255,255,255,.8); border-radius: 3px; }
+  .plate.old b, .plate.old .top { color: #fff; }
+  .plate.pe .band { background: #D91023; }
+  .plate.eu { flex-direction: row; } .plate.eu .strip { background: #003399; color: #fff; width: 20px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 2px 0; font-size: 6px; font-weight: 700; }
   .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 4px 0 10px; } .kpis.k3 { grid-template-columns: repeat(3, 1fr); }
   .kpi { background: #F2F6FC; border-radius: 10px; padding: 9px 11px; }
   .kpi span { display: block; color: #5F6E85; font-size: 9px; text-transform: uppercase; letter-spacing: .6px; font-weight: 700; }
@@ -241,7 +276,7 @@ export async function buildVehicleReportHtml(vehicleId: string): Promise<string>
     <div class="brand">${brandBadge(v, 34)}${esc(v.brand)}${v.year ? ` · ${v.year}` : ''}</div>
     <h1>${esc(vehicleLabel(v))}</h1>
     ${v.variant ? `<div class="ver">${esc(v.variant)}</div>` : ''}
-    ${plate ? `<div class="plate">${esc(plate)}</div>` : ''}
+    ${plateHtml(v)}
   </div>
 </div>
 
@@ -250,7 +285,7 @@ export async function buildVehicleReportHtml(vehicleId: string): Promise<string>
   <h4>Vehículo</h4>
   ${field('Marca', v.brand)}${field('Modelo', v.model)}${field('Año', v.year)}
   ${field('Versión', v.variant, true)}${field('Color', v.color)}
-  ${field('Patente', plate)}${field('País', countryName(v.country))}${field('Combustible', fuelLabel(v.fuel))}
+  ${field('Patente', plate)}${field('País', plateCountryName(v.country) ?? (v.country === 'XX' ? null : countryName(v.country)))}${field('Combustible', fuelLabel(v.fuel))}
   ${field('N° de chasis (VIN)', v.vin, true)}${field('N° de motor', v.engineNumber)}
   <h4>Uso</h4>
   ${field('Kilometraje actual', formatKm(s.kmNow))}${field('Km recorridos desde el alta', formatKm(s.kmDriven))}${field('Uso promedio', s.kmPerMonth ? `${formatInt(s.kmPerMonth)} km/mes` : null)}

@@ -10,9 +10,18 @@ const UY = /^[A-Z]{3}\d{4}$/; // ABC 1234
 const BR_MERCOSUL = /^[A-Z]{3}\d[A-Z]\d{2}$/; // ABC1D23
 const CL = /^[A-Z]{4}\d{2}$/; // BBBB12
 
+const PY_MERCOSUR = /^[A-Z]{4}\d{3}$/; // ABCD 123
+const PE = /^[A-Z0-9]{3}\d{3}$/; // ABC-123 / A1B-234
+const ES = /^\d{4}[A-Z]{3}$/; // 1234 BCD
+const FR = /^[A-Z]{2}\d{3}[A-Z]{2}$/; // AB-123-CD
+
 export function formatPlate(raw: string | null | undefined, country = 'AR'): string {
   const p = normalizePlate(raw);
   if (!p) return '';
+  if (country === 'FR' && FR.test(p)) return `${p.slice(0, 2)}-${p.slice(2, 5)}-${p.slice(5)}`;
+  if (country === 'PY' && PY_MERCOSUR.test(p)) return `${p.slice(0, 4)} ${p.slice(4)}`;
+  if (country === 'PE' && PE.test(p)) return `${p.slice(0, 3)}-${p.slice(3)}`;
+  if (country === 'ES' && ES.test(p)) return `${p.slice(0, 4)} ${p.slice(4)}`;
   if (AR_MERCOSUR.test(p)) return `${p.slice(0, 2)} ${p.slice(2, 5)} ${p.slice(5)}`;
   if (AR_OLD.test(p)) return `${p.slice(0, 3)} ${p.slice(3)}`;
   if (country === 'UY' && UY.test(p)) return `${p.slice(0, 3)} ${p.slice(3)}`;

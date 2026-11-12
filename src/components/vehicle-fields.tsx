@@ -3,9 +3,11 @@ import { Pressable, ScrollView, View } from 'react-native';
 
 import { BRANDS, normalizeText } from '@/data/catalog';
 import { isLightColor, VEHICLE_COLORS } from '@/domain/colors';
+import { PLATE_GROUPS, PLATE_STYLES } from '@/domain/plate-styles';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 
+import { PlateBadge } from './brand';
 import { BrandLogo } from './BrandLogo';
 import { FieldLabel, TextField } from './ui/inputs';
 import { Sheet } from './ui/overlays';
@@ -310,6 +312,69 @@ export function ColorSheet({
             ) : undefined
           }
         />
+      </ScrollView>
+    </Sheet>
+  );
+}
+
+/** "Tipo de patente": every design grouped (Mercosur, Sudamérica, Unión Europea…), each previewed with the user's plate. */
+export function PlateStyleSheet({ visible, plate, selected, onSelect, onClose }: { visible: boolean; plate: string; selected: string; onSelect: (key: string) => void; onClose: () => void }) {
+  const { colors } = useTheme();
+  const [query, setQuery] = useState('');
+  const [prevVisible, setPrevVisible] = useState(visible);
+  if (visible !== prevVisible) {
+    setPrevVisible(visible);
+    if (visible) setQuery('');
+  }
+  const q = normalizeText(query);
+  const shown = PLATE_STYLES.filter((s) => !q || normalizeText(`${s.label} ${s.group}`).includes(q));
+  return (
+    <Sheet visible={visible} onClose={onClose} title="Tipo de patente">
+      <View style={{ marginBottom: spacing.sm }}>
+        <TextField value={query} onChangeText={setQuery} placeholder="Buscar país" icon="magnify" autoCorrect={false} />
+      </View>
+      <ScrollView style={{ flexShrink: 1 }} keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: 6, paddingBottom: spacing.xs }}>
+        {PLATE_GROUPS.map((group) => {
+          const styles = shown.filter((s) => s.group === group);
+          if (!styles.length) return null;
+          return (
+            <View key={group} style={{ gap: 6 }}>
+              <AppText variant="captionStrong" tone="muted" style={{ marginTop: spacing.xs }}>
+                {group}
+              </AppText>
+              {styles.map((s) => {
+                const active = s.key === selected;
+                return (
+                  <Pressable
+                    key={s.key}
+                    onPress={() => onSelect(s.key)}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: active }}
+                    accessibilityLabel={s.label}
+                    style={({ pressed }) => ({
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: spacing.sm,
+                      paddingHorizontal: spacing.md,
+                      paddingVertical: 10,
+                      borderRadius: radius.md,
+                      backgroundColor: active ? colors.primarySoft : pressed ? colors.surfaceAlt : colors.surface,
+                      borderWidth: 1,
+                      borderColor: active ? colors.primary : colors.border,
+                    })}>
+                    <View style={{ width: 132 }}>
+                      <PlateBadge plate={plate || null} plateStyle={s.key} size="sm" placeholder />
+                    </View>
+                    <AppText variant="bodyStrong" style={{ flex: 1 }} numberOfLines={1}>
+                      {s.label}
+                    </AppText>
+                    {active ? <Icon name="check-circle" size={20} color={colors.primary} /> : null}
+                  </Pressable>
+                );
+              })}
+            </View>
+          );
+        })}
       </ScrollView>
     </Sheet>
   );

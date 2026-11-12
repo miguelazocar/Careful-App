@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ArchiveSheet } from '@/components/ArchiveSheet';
 import { confirmIdentity } from '@/components/AuthPrompt';
+import { PlateBadge } from '@/components/brand';
 import { BrandLogo } from '@/components/BrandLogo';
 import { monthsUnit } from '@/components/IntervalFields';
 import { openQuickRecord } from '@/components/QuickRecord';
@@ -19,7 +20,6 @@ import { getServiceRules } from '@/db/reminders';
 import type { Vehicle } from '@/db/types';
 import { deleteVehicle, setVehicleArchived } from '@/db/vehicles';
 import { archiveReasonIcon, archiveReasonLabel } from '@/domain/archive';
-import { flagEmoji } from '@/domain/countries';
 import { CORE_ITEM } from '@/domain/maintenance';
 import { dueText } from '@/domain/notification-plan';
 import { formatPlate } from '@/domain/plate';
@@ -315,7 +315,7 @@ function VehicleTab({ v, km, spentCents, nextOil }: { v: Vehicle; km: number; sp
         <Cell label={oil?.status === 'overdue' ? 'Aceite vencido' : 'Próximo aceite'} value={oilValue} accent={oilTone} />
       </Row>
       <Row>
-        <Cell label="Patente / placa" value={v.plate ? `${flagEmoji(v.country)} ${formatPlate(v.plate, v.country)}` : null} />
+        <Cell label="Patente / placa" value={v.plate ? formatPlate(v.plate, v.country) : null} content={v.plate ? <PlateBadge plate={v.plate} plateStyle={v.plateStyle} country={v.country} size="sm" /> : undefined} />
         <Cell label="Marca" value={v.brand} left={<BrandLogo brandId={v.brandId} brand={v.brand} size={20} />} />
       </Row>
       <Row>
@@ -433,15 +433,21 @@ function Row({ children }: { children: ReactNode }) {
   return <View style={{ flex: 1, flexDirection: 'row', gap: spacing.xs }}>{children}</View>;
 }
 
-/** A label / value box. `accent` highlights it (tinted background, value in that color). */
-function Cell({ label, value, left, big, accent }: { label: string; value: string | null | undefined; left?: ReactNode; big?: boolean; accent?: string }) {
+/**
+ * A label / value box. `accent` highlights it (tinted background, value in that color); `content`
+ * replaces the value (e.g. the drawn plate).
+ */
+function Cell({ label, value, left, big, accent, content }: { label: string; value: string | null | undefined; left?: ReactNode; big?: boolean; accent?: string; content?: ReactNode }) {
   const { colors } = useTheme();
   return (
     <View style={{ flex: 1, justifyContent: 'center', paddingHorizontal: spacing.sm, paddingVertical: 6, borderRadius: radius.sm, backgroundColor: accent ? accent + '1A' : colors.surfaceAlt }}>
       <AppText variant="caption" tone="muted" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85} style={{ fontSize: 11 }}>
         {label}
       </AppText>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+      {content ? (
+        <View style={{ marginTop: 2 }}>{content}</View>
+      ) : (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
         {left}
         <AppText
           variant={big ? 'number' : 'bodyStrong'}
@@ -453,7 +459,8 @@ function Cell({ label, value, left, big, accent }: { label: string; value: strin
           style={[{ flexShrink: 1 }, big ? { fontSize: 22 } : null]}>
           {value || '—'}
         </AppText>
-      </View>
+        </View>
+      )}
     </View>
   );
 }

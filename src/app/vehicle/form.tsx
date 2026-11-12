@@ -10,15 +10,16 @@ import { FieldLabel, TextField } from '@/components/ui/inputs';
 import { Header, Screen } from '@/components/ui/layout';
 import { Sheet } from '@/components/ui/overlays';
 import { AppText, Button, Icon, ListRow, Segmented } from '@/components/ui/primitives';
-import { BrandSheet, ColorSheet, OptionSheet, SelectField } from '@/components/vehicle-fields';
+import { PlateBadge } from '@/components/brand';
+import { BrandSheet, ColorSheet, OptionSheet, PlateStyleSheet, SelectField } from '@/components/vehicle-fields';
 import { getBrand, getModel, matchBrand, maxCatalogYear, modelsFor, variantsFor, yearsForBrand } from '@/data/catalog';
 import { createRecord, getOdometerReadings } from '@/db/records';
 import { getServiceRules, saveServiceRule } from '@/db/reminders';
 import { createVehicle, getVehicle, updateVehicle, type VehicleInput } from '@/db/vehicles';
 import { colorHexFor } from '@/domain/colors';
-import { COUNTRIES, flagEmoji } from '@/domain/countries';
 import { describeMissing, mergeFluids, missingFluidFields } from '@/domain/fluids';
 import { formatPlate, normalizePlate } from '@/domain/plate';
+import { findPlateStyle, resolvePlateStyle } from '@/domain/plate-styles';
 import { CORE_ITEM, findItem } from '@/domain/maintenance';
 import { currentOdometer, odometerError, resolveInterval } from '@/domain/schedule';
 import { COOLANT_BASES, COOLANT_CONCENTRATIONS, coolantMix, FUEL_OPTIONS, fuelLabel, OIL_BASES, type CoolantBase, type FuelKey, type OilBase } from '@/domain/vehicle-specs';
@@ -46,6 +47,8 @@ interface Draft {
   colorHex: string | null;
   plate: string;
   country: string;
+  /** "Tipo de patente" (PlateStyle key). */
+  plateStyle: string;
   odometer: string;
   vin: string;
   engineNumber: string;
@@ -84,6 +87,7 @@ const EMPTY: Draft = {
   colorHex: null,
   plate: '',
   country: 'AR',
+  plateStyle: 'mercosur-ar',
   odometer: '',
   vin: '',
   engineNumber: '',
@@ -155,6 +159,7 @@ export default function VehicleFormScreen() {
         colorHex: v.colorHex,
         plate: formatPlate(v.plate, v.country),
         country: v.country,
+        plateStyle: resolvePlateStyle(v).key,
         // "Kilometraje actual" is the latest reading, not the value entered when the car was added
         odometer: formatInt(current),
         vin: v.vin ?? '',
@@ -333,6 +338,7 @@ export default function VehicleFormScreen() {
         colorHex: draft.colorHex,
         plate: normalizePlate(draft.plate) || null,
         country: draft.country,
+        plateStyle: draft.plateStyle,
         vin: draft.vin ? normalizeVin(draft.vin) : null,
         engineNumber: draft.engineNumber.trim().toUpperCase() || null,
         photo: draft.photo,
@@ -745,7 +751,9 @@ const TRANSMISSION: Record<string, string> = { manual: 'Manual', automatica: 'Au
 /* ============================ 2. Registro ============================ */
 
 function RegistroStep({ draft, set }: StepProps) {
-  const [countrySheet, setCountrySheet] = useState(false);
+  const [plateSheet, setPlateSheet] = useState(false);
+  const plateStyle = resolvePlateStyle(draft);
+  const { colors } = useTheme();
   const vin = normalizeVin(draft.vin);
   const vinInfo = useMemo(() => {
     if (!vin) return null;
@@ -757,28 +765,45 @@ function RegistroStep({ draft, set }: StepProps) {
     const mismatch = (brandId && draft.brandId && brandId !== draft.brandId) || (year && draft.year && Math.abs(year - draft.year) > 1);
     return { hint: parts.join(' · '), mismatch };
   }, [vin, draft.brandId, draft.year]);
-  const country = COUNTRIES.find((c) => c.code === draft.country);
 
   return (
     <View style={{ gap: spacing.md }}>
-      <TextField
-        label="Patente / placa"
-        labelRight={
-          <Pressable onPress={() => setCountrySheet(true)} hitSlop={8} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <AppText variant="captionStrong" tone="primary">
-              {flagEmoji(draft.country)} {country?.name ?? draft.country}
-            </AppText>
-            <Icon name="chevron-down" size={16} />
+      <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+        <View style={{ flex: 1 }}>
+          <FieldLabel label="Tipo de patente" />
+          <Pressable
+            onPress={() => setPlateSheet(true)}
+            accessibilityRole="button"
+            accessibilityLabel={`Tipo de patente: ${plateStyle.label}`}
+            style={({ pressed }) => ({
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 6,
+              minHeight: 52,
+              paddingHorizontal: spacing.sm,
+              borderRadius: radius.md,
+              borderWidth: 1.5,
+              borderColor: colors.border,
+              backgroundColor: pressed ? colors.surfaceAlt : colors.surface,
+            })}>
+            <View style={{ flex: 1 }}>
+              <PlateBadge plate={draft.plate || null} plateStyle={plateStyle.key} size="sm" placeholder />
+            </View>
+            <Icon name="chevron-down" size={18} color={colors.textSubtle} />
           </Pressable>
-        }
-        value={draft.plate}
-        onChangeText={(t) => set({ plate: t.toUpperCase() })}
-        onBlur={() => set({ plate: formatPlate(draft.plate, draft.country) })}
-        placeholder="AB 123 CD"
-        autoCapitalize="characters"
-        icon="card-text-outline"
-        maxLength={10}
-      />
+        </View>
+        <View style={{ flex: 1 }}>
+          <TextField
+            label="Patente / placa"
+            value={draft.plate}
+            onChangeText={(t) => set({ plate: t.toUpperCase() })}
+            onBlur={() => set({ plate: formatPlate(draft.plate, draft.country) })}
+            placeholder={plateStyle.placeholder}
+            autoCapitalize="characters"
+            maxLength={10}
+          />
+        </View>
+      </View>
       <TextField label="Kilometraje actual" value={draft.odometer} onChangeText={(t) => set({ odometer: t })} format="int" placeholder="0" suffix="km" icon="speedometer" />
       <View>
         <TextField
@@ -805,15 +830,17 @@ function RegistroStep({ draft, set }: StepProps) {
         <Segmented<FuelKey> options={FUEL_OPTIONS} value={(draft.fuel ?? '') as FuelKey} onChange={(v) => set({ fuel: v })} />
       </View>
 
-      <OptionSheet
-        visible={countrySheet}
-        title="País de la patente"
-        options={COUNTRIES.map((c) => ({ key: c.code, label: `${flagEmoji(c.code)}  ${c.name}` }))}
-        selected={draft.country}
-        onClose={() => setCountrySheet(false)}
-        onSelect={(code) => {
-          set({ country: code, plate: formatPlate(draft.plate, code) });
-          setCountrySheet(false);
+      <PlateStyleSheet
+        visible={plateSheet}
+        plate={draft.plate}
+        selected={plateStyle.key}
+        onClose={() => setPlateSheet(false)}
+        onSelect={(key) => {
+          const style = findPlateStyle(key);
+          // "Otro país" keeps whatever country the vehicle had
+          const country = style && style.key !== 'otro' ? style.country : draft.country;
+          set({ plateStyle: key, country, plate: formatPlate(draft.plate, country) });
+          setPlateSheet(false);
         }}
       />
     </View>

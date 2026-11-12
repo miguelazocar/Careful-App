@@ -67,7 +67,7 @@ export function VehicleCard({ vehicle, currentKm, onPress }: { vehicle: Vehicle;
       <View style={{ flex: 1, flexDirection: 'row' }}>
         <View style={{ width: '44%' }} />
         <View style={{ flex: 1, paddingVertical: spacing.md, paddingRight: spacing.md, paddingLeft: spacing.xs, alignItems: 'flex-end', justifyContent: 'space-between' }}>
-          <PlateBadge plate={vehicle.plate} country={vehicle.country} size="lg" align="end" />
+          <PlateBadge plate={vehicle.plate} plateStyle={vehicle.plateStyle} country={vehicle.country} size="lg" align="end" />
 
           <View style={{ alignItems: 'flex-end', alignSelf: 'stretch' }}>
             <AppText variant="overline" tone="primary" align="right" numberOfLines={1}>

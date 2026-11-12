@@ -18,6 +18,7 @@ interface VehicleRow {
   color_hex: string | null;
   plate: string | null;
   country: string;
+  plate_style: string | null;
   vin: string | null;
   engine_number: string | null;
   photo: string | null;
@@ -60,6 +61,7 @@ const COLUMNS: [keyof VehicleInput, string][] = [
   ['colorHex', 'color_hex'],
   ['plate', 'plate'],
   ['country', 'country'],
+  ['plateStyle', 'plate_style'],
   ['vin', 'vin'],
   ['engineNumber', 'engine_number'],
   ['photo', 'photo'],
@@ -94,6 +96,7 @@ export function mapVehicle(r: VehicleRow): Vehicle {
     colorHex: r.color_hex,
     plate: r.plate,
     country: r.country,
+    plateStyle: r.plate_style ?? null,
     vin: r.vin,
     engineNumber: r.engine_number,
     photo: r.photo,
