@@ -12,6 +12,11 @@ import { loadUpcoming, vehicleLabel } from './upcoming';
 const CHANNEL_ID = 'service-reminders';
 let syncing: Promise<void> | null = null;
 let pending = false;
+/**
+ * Resolves to whether our Android channel exists. Creating it can fail (Expo Go rejects it with a
+ * native NullPointerException); reminders then go to the default channel instead of failing.
+ */
+let channelReady: Promise<boolean> = Promise.resolve(false);
 
 export function configureNotifications(): void {
   Notifications.setNotificationHandler({
@@ -23,14 +28,17 @@ export function configureNotifications(): void {
     }),
   });
   if (Platform.OS === 'android') {
-    void Notifications.setNotificationChannelAsync(CHANNEL_ID, {
+    channelReady = Notifications.setNotificationChannelAsync(CHANNEL_ID, {
       name: 'Recordatorios de service',
       description: 'Avisos de mantenimientos próximos y kilometraje',
       // eslint-disable-next-line import/namespace -- re-exported enum the import plugin can't follow
       importance: Notifications.AndroidImportance.HIGH,
       lightColor: '#0B63F6',
       vibrationPattern: [0, 200, 120, 200],
-    });
+    }).then(
+      () => true,
+      () => false,
+    );
   }
 }
 
@@ -81,12 +89,13 @@ async function doSync(): Promise<void> {
     label: vehicleLabel(s.vehicle),
     lastReadingDate: s.lastReadingDate,
   }));
+  const channelId = (await channelReady) ? CHANNEL_ID : undefined;
   const plan = planNotifications(items, vehicles, prefs, new Date());
   for (const n of plan) {
     await Notifications.scheduleNotificationAsync({
       identifier: n.id,
       content: { title: n.title, body: n.body, data: n.data },
-      trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: n.date, channelId: CHANNEL_ID },
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: n.date, channelId },
     });
   }
 
@@ -106,7 +115,7 @@ async function doSync(): Promise<void> {
           body: `${snap ? vehicleLabel(snap.vehicle) : 'Tu auto'} · service a los ${formatInt(it.due.dueKm)} km`,
           data: { itemKey: it.key, vehicleId: it.vehicleId },
         },
-        trigger: { channelId: CHANNEL_ID },
+        trigger: channelId ? { channelId } : null,
       });
     }
   }
