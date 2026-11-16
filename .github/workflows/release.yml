@@ -1,0 +1,38 @@
+name: Release
+
+# Every version tag (vX.Y.Z, pushed by scripts/release.ps1) becomes a GitHub Release whose notes
+# are that version's section of CHANGELOG.md. The signed APK is attached from the build PC
+# (the signing key never leaves it).
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Release ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Notas desde el CHANGELOG
+        id: notes
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          awk -v v="$version" '
+            index($0, "## [" v "]") == 1 { found = 1; next }
+            found && /^## \[/ { exit }
+            found { print }
+          ' CHANGELOG.md > notes.md
+          if ! grep -q '[^[:space:]]' notes.md; then
+            echo "No hay notas para $version en CHANGELOG.md." > notes.md
+          fi
+          printf '\n---\nAPK firmado para Android: `Careful-%s.apk` (en *Assets*).\n' "$version" >> notes.md
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: Careful ${{ steps.notes.outputs.version }}
+          body_path: notes.md

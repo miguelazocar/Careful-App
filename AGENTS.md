@@ -8,6 +8,7 @@ App Android (Expo SDK 58 / React Native 0.88, TypeScript estricto) para llevar l
 npm run check          # typecheck + lint + tests (correr antes de cada commit)
 npx expo run:android   # development build en emulador/dispositivo
 .\scripts\build-apk.ps1  # APK de release firmado (Windows)
+.\scripts\release.ps1    # publica una versión: CHANGELOG, APK, tag y GitHub Release (docs/BUILD.md)
 ```
 
 Usar siempre `npx expo install <paquete>` para dependencias nativas.

@@ -61,6 +61,23 @@ npx eas-cli@latest build --platform android --profile preview
 
 Genera un APK descargable desde expo.dev. Para Play Store usar `--profile production` (AAB) y Play App Signing.
 
-## Versionado
+## Publicar una versión
 
-Antes de cada release: subir `expo.version` y `expo.android.versionCode` en `app.json` y anotar los cambios en `CHANGELOG.md`.
+Cada cambio visible se anota en `CHANGELOG.md`, en **[Sin publicar]**. Para publicar:
+
+```powershell
+.\scripts\release.ps1                 # 1.2.0 -> 1.2.1
+.\scripts\release.ps1 -Bump minor     # 1.2.1 -> 1.3.0
+.\scripts\release.ps1 -DryRun         # compila todo sin commitear, subir ni publicar
+```
+
+El script:
+
+1. Sube la versión en `package.json`, `package-lock.json` y `app.json` (`versionCode` + 1).
+2. Cierra **[Sin publicar]** en el CHANGELOG como **[X.Y.Z] — fecha**.
+3. Corre `npm run check` y compila el APK firmado (con prebuild, para que Android tome la versión nueva).
+4. Commitea `release: X.Y.Z`, crea el tag `vX.Y.Z` y lo sube.
+5. El tag dispara `.github/workflows/release.yml`: GitHub crea la **Release** con las notas de esa versión del CHANGELOG.
+6. Adjunta el APK a la Release con GitHub CLI y lo copia a la carpeta de entrega (Google Drive), quitando las versiones anteriores de ahí.
+
+Para adjuntar el APK hace falta GitHub CLI autorizado una vez: `winget install --id GitHub.cli` y `gh auth login`. Sin eso, la Release se publica igual con sus notas y el script indica cómo adjuntar el APK después. La clave de firma nunca sale de la PC.
