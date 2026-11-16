@@ -74,6 +74,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
 - **Apariencia**: la opción "Sistema" pasa a llamarse "Automático" y es la predeterminada.
 
 ### Corregido
+- **Garage**: en la tarjeta de cada auto la foto se cortaba arriba a la derecha (el degradado no llegaba a taparla). Ahora se funde de forma pareja y termina exactamente en su borde, en cualquier ancho de pantalla.
 - **Montos**: al escribir la quinta cifra el monto se cortaba («12.345» quedaba «1,23»), porque el punto de miles se tomaba como coma decimal. Ahora se pueden cargar montos de millones; la coma (o el punto recién tecleado) marca los decimales.
 - En Expo Go, la app mostraba un error al abrir porque no podía crear el canal de notificaciones. Ahora los avisos usan el canal por defecto si el propio no se puede crear.
 - Al editar un vehículo, "Kilometraje actual" mostraba el kilometraje con el que se lo dio de alta. Ahora muestra el actual, y un valor mayor se guarda como una lectura nueva.

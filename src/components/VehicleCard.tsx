@@ -54,16 +54,17 @@ export function VehicleCard({ vehicle, currentKm, onPress }: { vehicle: Vehicle;
       })}>
       <View style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '62%' }}>
         <VehiclePhoto vehicle={vehicle} />
+        {/* the photo melts into the card: fully opaque at its right edge, so no seam shows at any width */}
+        <LinearGradient
+          pointerEvents="none"
+          // eased ramp (no visible step where the fade begins), fully opaque at the right edge
+          colors={[surface + '00', surface + '00', surface + '14', surface + '40', surface + '80', surface + 'BF', surface + 'EB', surface]}
+          locations={[0, 0.3, 0.45, 0.58, 0.7, 0.81, 0.92, 1]}
+          start={{ x: 0, y: 0.5 }}
+          end={{ x: 1, y: 0.5 }}
+          style={{ position: 'absolute', inset: 0 }}
+        />
       </View>
-      {/* diagonal fade from the photo into the card surface */}
-      <LinearGradient
-        pointerEvents="none"
-        colors={[surface + '00', surface + '00', surface + 'D9', surface]}
-        locations={[0, 0.3, 0.5, 0.62]}
-        start={{ x: 0, y: 0.15 }}
-        end={{ x: 1, y: 0.85 }}
-        style={{ position: 'absolute', inset: 0 }}
-      />
       <View style={{ flex: 1, flexDirection: 'row' }}>
         <View style={{ width: '44%' }} />
         <View style={{ flex: 1, paddingVertical: spacing.md, paddingRight: spacing.md, paddingLeft: spacing.xs, alignItems: 'flex-end', justifyContent: 'space-between' }}>
