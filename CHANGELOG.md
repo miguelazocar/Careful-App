@@ -4,6 +4,8 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). V
 
 ## [Sin publicar]
 
+## [1.2.0] — 2026-11-16
+
 ### Agregado
 - **Registrar con el botón ＋ en tres opciones**: Servicio / Mantenimiento, Accesorios o Kilometraje.
   - **Servicio**: «¿Qué se hizo?» muestra las categorías (Motor, Caja, Frenos, Tren delantero, Ruedas, Sistema eléctrico, Climatización, Lavado…); cada una abre sus tareas y se pueden elegir varias.
