@@ -6,7 +6,8 @@ import { daysBetween, minDay } from '@/lib/dates';
 
 import type { LogRecordFull, Vehicle } from '@/db/types';
 
-import { ACCESSORY_CATEGORY, accessoryTag, CORE_ITEM, findCategory } from './maintenance';
+import { DEFAULT_ACCESSORY_TAG_PREFS, resolveAccessoryTag, type AccessoryTagPrefs } from './accessory-tags';
+import { ACCESSORY_CATEGORY, CORE_ITEM, findCategory } from './maintenance';
 
 export interface SpendGroup {
   key: string;
@@ -74,6 +75,8 @@ export function summarizeHistory(
   records: LogRecordFull[],
   current: { km: number; dailyKm: number | null },
   today: string,
+  /** To name the user's own accessory tags. */
+  tagPrefs: AccessoryTagPrefs = DEFAULT_ACCESSORY_TAG_PREFS,
 ): ReportSummary {
   const added = vehicle.createdAt.slice(0, 10);
   const oldest = records.reduce<string | null>((m, r) => minDay(m, r.date), null);
@@ -108,7 +111,7 @@ export function summarizeHistory(
     return { key: cat?.key ?? 'otros', label: cat?.label ?? 'Otros', color: cat?.color ?? '#64748B' };
   });
   const accessoryTags = groupBy(accessories, (r) => {
-    const tag = r.items[0] ? accessoryTag(r.items[0].item) : undefined;
+    const tag = r.items[0] ? resolveAccessoryTag(r.items[0].item, tagPrefs) : undefined;
     return { key: tag?.key ?? 'sin-etiqueta', label: tag?.label ?? 'Sin etiqueta', color: ACCESSORY_CATEGORY.color };
   });
 

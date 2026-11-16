@@ -11,12 +11,14 @@ import { openQuickRecord } from '@/components/QuickRecord';
 import { AppText, Button, Card, Chip, Grid, Icon, IconButton, ListRow } from '@/components/ui/primitives';
 import { deleteRecord, getRecord } from '@/db/records';
 import { getVehicle } from '@/db/vehicles';
-import { accessoryTag, findItem, itemName } from '@/domain/maintenance';
+import { resolveAccessoryTag } from '@/domain/accessory-tags';
+import { findItem, itemName } from '@/domain/maintenance';
 import { useQuery } from '@/hooks/useQuery';
 import { formatDayLong } from '@/lib/dates';
 import { formatAmount, formatKm } from '@/lib/format';
 import { attachmentName, documentVisual, isImagePath } from '@/lib/attachments';
 import { deletePhotoFiles, photoUri } from '@/services/photos';
+import { useSettings } from '@/stores/settings';
 import { toast } from '@/stores/ui';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
@@ -25,6 +27,7 @@ export default function RecordDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { colors } = useTheme();
   const [viewer, setViewer] = useState<number | null>(null);
+  const tagPrefs = useSettings((s) => s.accessoryTags);
   const { data } = useQuery(async () => {
     const record = await getRecord(id);
     const vehicle = record ? await getVehicle(record.vehicleId) : null;
@@ -41,7 +44,7 @@ export default function RecordDetailScreen() {
     );
   }
   const visual = recordVisual(r, colors.primary);
-  const tag = r.kind === 'accessory' && r.items[0] ? accessoryTag(r.items[0].item) : undefined;
+  const tag = r.kind === 'accessory' && r.items[0] ? resolveAccessoryTag(r.items[0].item, tagPrefs) : undefined;
   const images = r.photos.map((p) => p.path).filter(isImagePath);
   const documents = r.photos.map((p) => p.path).filter((p) => !isImagePath(p));
 

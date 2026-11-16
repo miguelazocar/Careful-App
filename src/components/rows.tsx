@@ -2,12 +2,14 @@ import { Image } from 'expo-image';
 import { Pressable, View } from 'react-native';
 
 import type { LogRecordFull, Vehicle } from '@/db/types';
-import { ACCESSORY_ICONS, accessoryTag, findCategory, itemName, planItem } from '@/domain/maintenance';
+import { resolveAccessoryTag } from '@/domain/accessory-tags';
+import { ACCESSORY_ICONS, findCategory, itemName, planItem } from '@/domain/maintenance';
 import type { UpcomingItem } from '@/domain/schedule';
 import { formatDay, relativeDays } from '@/lib/dates';
 import { formatAmount, formatInt, formatKm } from '@/lib/format';
 import { isImagePath } from '@/lib/attachments';
 import { photoUri } from '@/services/photos';
+import { useSettings } from '@/stores/settings';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 
@@ -43,7 +45,8 @@ export function TagPill({ label, color }: { label: string; color: string }) {
 export function RecordRow({ record, vehicle, onPress, showVehicle = true }: { record: LogRecordFull; vehicle?: Vehicle; onPress: () => void; showVehicle?: boolean }) {
   const { colors } = useTheme();
   const visual = recordVisual(record, colors.primary);
-  const tag = record.kind === 'accessory' && record.items[0] ? accessoryTag(record.items[0].item) : undefined;
+  const tagPrefs = useSettings((s) => s.accessoryTags);
+  const tag = record.kind === 'accessory' && record.items[0] ? resolveAccessoryTag(record.items[0].item, tagPrefs) : undefined;
   const firstImage = record.photos.find((p) => isImagePath(p.path));
   const thumb = firstImage ? photoUri(firstImage.path) : null;
   const docs = record.photos.length - record.photos.filter((p) => isImagePath(p.path)).length;

@@ -11,7 +11,8 @@ import { getVehicle } from '@/db/vehicles';
 import { isLightColor } from '@/domain/colors';
 import { archiveReasonLabel } from '@/domain/archive';
 import { countryName, flagEmoji } from '@/domain/countries';
-import { accessoryTag, CORE_ITEM, findCategory, itemName } from '@/domain/maintenance';
+import { resolveAccessoryTag, type AccessoryTagPrefs } from '@/domain/accessory-tags';
+import { CORE_ITEM, findCategory, itemName } from '@/domain/maintenance';
 import { dueText } from '@/domain/notification-plan';
 import { formatPlate } from '@/domain/plate';
 import { plateCountryName, plateText, resolvePlateStyle } from '@/domain/plate-styles';
@@ -20,6 +21,7 @@ import { resolveInterval, type UpcomingItem } from '@/domain/schedule';
 import { coolantBaseLabel, coolantMix, fuelLabel, oilBaseLabel } from '@/domain/vehicle-specs';
 import { formatDay, today } from '@/lib/dates';
 import { formatAmount, formatInt, formatKm } from '@/lib/format';
+import { getSettings } from '@/stores/settings';
 import { withExternalActivity } from '@/stores/ui';
 
 import { attachmentName, isImagePath } from '@/lib/attachments';
@@ -135,14 +137,14 @@ function serviceTable(items: UpcomingItem[]): string {
     <table class="grid"><thead><tr><th>Servicio</th><th>Último</th><th>Próximo</th><th>Estado</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
-function recordCard(r: LogRecordFull, thumbs: string[]): string {
+function recordCard(r: LogRecordFull, thumbs: string[], tagPrefs: AccessoryTagPrefs): string {
   const docs = r.photos.map((p) => p.path).filter((x) => !isImagePath(x)).map(attachmentName);
   const kind = KIND[r.kind] ?? KIND.maintenance;
   const d = r.date.split('-');
   const title = r.kind === 'odometer' ? 'Actualización de kilometraje' : r.items.map(itemName).join(' · ') || kind.label;
   const first = r.items[0];
   // maintenance shows its category; an accessory, its tag
-  const sub = !first ? null : r.kind === 'accessory' ? (accessoryTag(first.item)?.label ?? null) : r.kind === 'maintenance' ? (findCategory(first.category)?.label ?? null) : null;
+  const sub = !first ? null : r.kind === 'accessory' ? (resolveAccessoryTag(first.item, tagPrefs)?.label ?? null) : r.kind === 'maintenance' ? (findCategory(first.category)?.label ?? null) : null;
   const intervals = r.items
     .filter((i) => i.intervalKm || i.intervalMonths)
     .map((i) => `${itemName(i)}: próximo cada ${[i.intervalKm ? formatKm(i.intervalKm) : null, i.intervalMonths ? months(i.intervalMonths) : null].filter(Boolean).join(' o ')}`);
@@ -167,7 +169,8 @@ export async function buildVehicleReportHtml(vehicleId: string): Promise<string>
   const [records, upcoming, rules] = await Promise.all([listRecords({ vehicleId }), loadUpcoming({ vehicleId }), getServiceRules(vehicleId)]);
   const snap = upcoming.snapshots.get(vehicleId);
   const now = today();
-  const s = summarizeHistory(vehicle, records, { km: snap?.currentKm ?? vehicle.initialOdometer, dailyKm: snap?.dailyKm ?? null }, now);
+  const tagPrefs = getSettings().accessoryTags;
+  const s = summarizeHistory(vehicle, records, { km: snap?.currentKm ?? vehicle.initialOdometer, dailyKm: snap?.dailyKm ?? null }, now, tagPrefs);
   const v = vehicle;
 
   const cover = await imageData(v.photo, 1000, 0.75);
@@ -193,7 +196,7 @@ export async function buildVehicleReportHtml(vehicleId: string): Promise<string>
   // the history lists what was done to the car; odometer readings only feed the km figures
   const done = records.filter((r) => r.kind !== 'odometer');
   const history = done.length
-    ? done.map((r) => recordCard(r, thumbsBy.get(r.id) ?? [])).join('')
+    ? done.map((r) => recordCard(r, thumbsBy.get(r.id) ?? [], tagPrefs)).join('')
     : '<p class="muted">Todavía no hay servicios ni accesorios registrados.</p>';
   const period = (first: string | null, last: string | null) => (first && last ? (first === last ? formatDay(first) : `${formatDay(first)} – ${formatDay(last)}`) : null);
   const avg = (cents: number, count: number) => (count ? formatAmount(Math.round(cents / count)) : '—');

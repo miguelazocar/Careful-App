@@ -10,12 +10,14 @@ import { getAccessoryTagCounts, listRecords } from '@/db/records';
 import type { RecordKind } from '@/db/types';
 import { listVehicles } from '@/db/vehicles';
 import { archiveReasonLabel } from '@/domain/archive';
-import { ACCESSORY_ICONS, accessoryTag } from '@/domain/maintenance';
+import { resolveAccessoryTag } from '@/domain/accessory-tags';
+import { ACCESSORY_ICONS } from '@/domain/maintenance';
 import { formatPlate } from '@/domain/plate';
 import { useQuery } from '@/hooks/useQuery';
 import { formatMonth } from '@/lib/dates';
 import { formatAmount, pluralize } from '@/lib/format';
 import { vehicleLabel } from '@/services/upcoming';
+import { useSettings } from '@/stores/settings';
 import { spacing } from '@/theme/tokens';
 
 const KINDS: { key: RecordKind; label: string; icon: string }[] = [
@@ -32,6 +34,7 @@ export default function HistoryScreen() {
   const [tag, setTag] = useState<string | null>(null);
   const [picker, setPicker] = useState<null | 'vehicle' | 'kind'>(null);
   const [limit, setLimit] = useState(60);
+  const tagPrefs = useSettings((s) => s.accessoryTags);
 
   const activeTag = kind === 'accessory' ? tag : null;
   const { data } = useQuery(async () => {
@@ -55,7 +58,7 @@ export default function HistoryScreen() {
   const vehicles = data?.vehicles ?? [];
   const activeVehicle = vehicles.find((v) => v.id === vehicleId);
   const filtered = !!activeVehicle || kind !== null;
-  const tagLabel = (item: string) => accessoryTag(item)?.label ?? 'Sin etiqueta';
+  const tagLabel = (item: string) => resolveAccessoryTag(item, tagPrefs)?.label ?? 'Sin etiqueta';
 
   const options: FilterOption[] =
     picker === 'vehicle'

@@ -7,6 +7,7 @@ import { Header, Screen } from '@/components/ui/layout';
 import { AppText, Card, ListRow, Segmented } from '@/components/ui/primitives';
 import { getDb, notifyDataChanged } from '@/db/connection';
 import { TABLES } from '@/db/migrations';
+import { activeAccessoryTags } from '@/domain/accessory-tags';
 import { listVehicles } from '@/db/vehicles';
 import { useQuery } from '@/hooks/useQuery';
 import { formatMoment } from '@/lib/dates';
@@ -21,6 +22,7 @@ export default function SettingsScreen() {
   const backup = useSettings((s) => s.backup);
   const drive = useSettings((s) => s.drive);
   const notifications = useSettings((s) => s.notifications);
+  const accessoryTags = useSettings((s) => s.accessoryTags);
   const ai = useSettings((s) => s.ai);
   const { data: archived } = useQuery(async () => (await listVehicles({ includeArchived: true })).filter((v) => v.archivedAt), []);
 
@@ -86,6 +88,13 @@ export default function SettingsScreen() {
           title="Inteligencia artificial"
           subtitle={ai.provider === 'local' ? 'En el teléfono' : ai.hasKey ? 'Gemini conectado' : 'En el teléfono · Gemini sin configurar'}
           onPress={() => router.push('/settings/ai')}
+        />
+        <ListRow
+          icon="tag-multiple"
+          iconColor="#0FA57D"
+          title="Etiquetas de accesorios"
+          subtitle={`${activeAccessoryTags(accessoryTags).length} etiquetas · agregá o quitá las tuyas`}
+          onPress={() => router.push('/settings/accessory-tags')}
           last
         />
       </Card>

@@ -247,14 +247,11 @@ export const ACCESSORY_CATEGORY: Category = {
 /**
  * Accessory tags. In an accessory record, `item` is the tag (what kind of thing it is, to filter
  * by) and `label` is what the user wrote they installed ("Estéreo Pioneer con CarPlay").
- * `accesorios.otro` means "sin etiqueta".
+ * `accesorios.otro` means "sin etiqueta". The user can remove these and add their own
+ * (domain/accessory-tags.ts).
  */
 export const ACCESSORY_TAGS: CatalogItem[] = ACCESSORY_CATEGORY.items.filter((i) => !isOtherItem(i.key));
 export const NO_ACCESSORY_TAG = `${ACCESSORY_CATEGORY.key}.${OTHER_ITEM_SUFFIX}`;
-
-export function accessoryTag(item: string): CatalogItem | undefined {
-  return ACCESSORY_TAGS.find((t) => t.key === item);
-}
 
 export const ACCESSORY_ICONS: Record<string, IconName> = {
   'accesorios.luces': 'car-light-high',

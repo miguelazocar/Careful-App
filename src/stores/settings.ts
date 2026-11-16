@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
 import { getAllSettings, setSetting } from '@/db/settings';
+import { DEFAULT_ACCESSORY_TAG_PREFS, type AccessoryTagPrefs } from '@/domain/accessory-tags';
 import { DEFAULT_NOTIFICATION_PREFS, type NotificationPrefs } from '@/domain/notification-plan';
 
 export type ThemePreference = 'system' | 'light' | 'dark';
@@ -46,6 +47,8 @@ export interface SettingsData {
   backup: BackupPrefs;
   drive: DrivePrefs;
   ai: AiPrefs;
+  /** Accessory tags: suggested ones removed and the user's own (travels in backups). */
+  accessoryTags: AccessoryTagPrefs;
   lastVehicleId: string | null;
 }
 
@@ -56,6 +59,7 @@ export const DEFAULT_SETTINGS: SettingsData = {
   backup: { folderUri: null, folderLabel: null, lastBackupAt: null, lastError: null },
   drive: { email: null, name: null, wifiOnly: true, lastAt: null, lastError: null, pending: false },
   ai: { provider: 'auto', model: 'gemini-flash-latest', hasKey: false },
+  accessoryTags: DEFAULT_ACCESSORY_TAG_PREFS,
   lastVehicleId: null,
 };
 

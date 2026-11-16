@@ -10,7 +10,8 @@ import { AppText, Button, Icon } from '@/components/ui/primitives';
 import { createRecord, getOdometerReadings, getRecord, updateRecord, type RecordInput } from '@/db/records';
 import type { Vehicle } from '@/db/types';
 import { listVehicles } from '@/db/vehicles';
-import { ACCESSORY_CATEGORY, ACCESSORY_ICONS, ACCESSORY_TAGS, accessoryTag, NO_ACCESSORY_TAG } from '@/domain/maintenance';
+import { activeAccessoryTags, resolveAccessoryTag } from '@/domain/accessory-tags';
+import { ACCESSORY_CATEGORY, NO_ACCESSORY_TAG } from '@/domain/maintenance';
 import { currentOdometer, odometerError, validateOdometer } from '@/domain/schedule';
 import { today } from '@/lib/dates';
 import { formatAmount, formatInt, formatKm, parseAmountInput, parseIntInput } from '@/lib/format';
@@ -84,7 +85,7 @@ function QuickRecordSheet({ req, visible, onClose }: { req: QuickRequest; visibl
         setVehicleId(r.vehicleId);
         setDate(r.date);
         setTitle(r.items[0]?.label ?? '');
-        setTag(r.items[0] && accessoryTag(r.items[0].item) ? r.items[0].item : null);
+        setTag(r.items[0] && resolveAccessoryTag(r.items[0].item, useSettings.getState().accessoryTags) ? r.items[0].item : null);
         setDescription(r.description ?? '');
         setAmount(r.amountCents !== null ? formatAmount(r.amountCents) : '');
         setOdometer(r.odometer !== null ? formatInt(r.odometer) : '');
@@ -103,6 +104,11 @@ function QuickRecordSheet({ req, visible, onClose }: { req: QuickRequest; visibl
   }, [vehicleId]);
 
   const vehicle = vehicles.find((v) => v.id === vehicleId);
+  const tagPrefs = useSettings((s) => s.accessoryTags);
+  // the user's tags; a removed one stays listed while editing an accessory that uses it
+  const activeTags = activeAccessoryTags(tagPrefs);
+  const current = tag && !activeTags.some((t) => t.key === tag) ? resolveAccessoryTag(tag, tagPrefs) : undefined;
+  const tagOptions = current ? [current, ...activeTags] : activeTags;
   const lastKm = vehicle ? currentOdometer(vehicle.initialOdometer, readings) : null;
   const km = parseIntInput(odometer);
 
@@ -189,7 +195,7 @@ function QuickRecordSheet({ req, visible, onClose }: { req: QuickRequest; visibl
             <View>
               <FieldLabel label="Etiqueta" hint={tag ? undefined : 'Opcional: para encontrarlo y filtrar el historial'} />
               <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: 6 }}>
-                {ACCESSORY_TAGS.map((s) => {
+                {tagOptions.map((s) => {
                   const active = tag === s.key;
                   return (
                     <Pressable
@@ -209,7 +215,7 @@ function QuickRecordSheet({ req, visible, onClose }: { req: QuickRequest; visibl
                         borderColor: active ? colors.primary : colors.border,
                         backgroundColor: active ? colors.primarySoft : colors.surface,
                       }}>
-                      <Icon name={ACCESSORY_ICONS[s.key] ?? 'star-four-points'} size={15} color={active ? colors.primary : colors.textMuted} />
+                      <Icon name={s.icon} size={15} color={active ? colors.primary : colors.textMuted} />
                       <AppText variant="caption" color={active ? colors.primary : colors.text}>
                         {s.label}
                       </AppText>
